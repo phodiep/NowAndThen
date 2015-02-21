@@ -1,5 +1,5 @@
 //
-//  ViewController.h
+//  MapViewController.h
 //  NowAndThen
 //
 //  Created by Pho Diep on 2/21/15.
@@ -8,8 +8,6 @@
 
 #import <UIKit/UIKit.h>
 
-@interface ViewController : UIViewController
-
+@interface MapViewController : UIViewController
 
 @end
-

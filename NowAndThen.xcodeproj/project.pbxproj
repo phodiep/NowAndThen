@@ -10,12 +10,15 @@
 		1D6266881A99418700882D81 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D6266871A99418700882D81 /* main.m */; };
 		1D62668B1A99418700882D81 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D62668A1A99418700882D81 /* AppDelegate.m */; };
 		1D62668E1A99418700882D81 /* NowAndThen.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 1D62668C1A99418700882D81 /* NowAndThen.xcdatamodeld */; };
-		1D6266911A99418700882D81 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D6266901A99418700882D81 /* ViewController.m */; };
 		1D6266941A99418700882D81 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1D6266921A99418700882D81 /* Main.storyboard */; };
 		1D6266961A99418700882D81 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 1D6266951A99418700882D81 /* Images.xcassets */; };
 		1D6266991A99418700882D81 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 1D6266971A99418700882D81 /* LaunchScreen.xib */; };
 		1D6266A51A99418700882D81 /* NowAndThenTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D6266A41A99418700882D81 /* NowAndThenTests.m */; };
 		1D6266AF1A99419400882D81 /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = 1D6266AE1A99419400882D81 /* .gitignore */; };
+		1D6266B51A9944A400882D81 /* BuildingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D6266B41A9944A400882D81 /* BuildingViewController.m */; };
+		1D6266B81A9944B900882D81 /* MapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D6266B71A9944B900882D81 /* MapViewController.m */; };
+		1D6266BB1A9944CC00882D81 /* SkylineViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D6266BA1A9944CC00882D81 /* SkylineViewController.m */; };
+		1D6266BE1A99452B00882D81 /* NetworkController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D6266BD1A99452B00882D81 /* NetworkController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -35,8 +38,6 @@
 		1D6266891A99418700882D81 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		1D62668A1A99418700882D81 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		1D62668D1A99418700882D81 /* NowAndThen.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = NowAndThen.xcdatamodel; sourceTree = "<group>"; };
-		1D62668F1A99418700882D81 /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
-		1D6266901A99418700882D81 /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
 		1D6266931A99418700882D81 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		1D6266951A99418700882D81 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Images.xcassets; sourceTree = "<group>"; };
 		1D6266981A99418700882D81 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/LaunchScreen.xib; sourceTree = "<group>"; };
@@ -44,6 +45,14 @@
 		1D6266A31A99418700882D81 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		1D6266A41A99418700882D81 /* NowAndThenTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NowAndThenTests.m; sourceTree = "<group>"; };
 		1D6266AE1A99419400882D81 /* .gitignore */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
+		1D6266B31A9944A400882D81 /* BuildingViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BuildingViewController.h; sourceTree = "<group>"; };
+		1D6266B41A9944A400882D81 /* BuildingViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BuildingViewController.m; sourceTree = "<group>"; };
+		1D6266B61A9944B900882D81 /* MapViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MapViewController.h; sourceTree = "<group>"; };
+		1D6266B71A9944B900882D81 /* MapViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MapViewController.m; sourceTree = "<group>"; };
+		1D6266B91A9944CC00882D81 /* SkylineViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SkylineViewController.h; sourceTree = "<group>"; };
+		1D6266BA1A9944CC00882D81 /* SkylineViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SkylineViewController.m; sourceTree = "<group>"; };
+		1D6266BC1A99452B00882D81 /* NetworkController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NetworkController.h; sourceTree = "<group>"; };
+		1D6266BD1A99452B00882D81 /* NetworkController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NetworkController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -88,12 +97,9 @@
 			children = (
 				1D6266891A99418700882D81 /* AppDelegate.h */,
 				1D62668A1A99418700882D81 /* AppDelegate.m */,
-				1D62668F1A99418700882D81 /* ViewController.h */,
-				1D6266901A99418700882D81 /* ViewController.m */,
-				1D6266921A99418700882D81 /* Main.storyboard */,
-				1D6266951A99418700882D81 /* Images.xcassets */,
-				1D6266971A99418700882D81 /* LaunchScreen.xib */,
-				1D62668C1A99418700882D81 /* NowAndThen.xcdatamodeld */,
+				1D6266B01A9943CE00882D81 /* Models */,
+				1D6266B11A9943DE00882D81 /* Views */,
+				1D6266B21A9943F200882D81 /* Controllers */,
 				1D6266851A99418700882D81 /* Supporting Files */,
 			);
 			path = NowAndThen;
@@ -123,6 +129,39 @@
 				1D6266A31A99418700882D81 /* Info.plist */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		1D6266B01A9943CE00882D81 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				1D62668C1A99418700882D81 /* NowAndThen.xcdatamodeld */,
+			);
+			name = Models;
+			sourceTree = "<group>";
+		};
+		1D6266B11A9943DE00882D81 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				1D6266971A99418700882D81 /* LaunchScreen.xib */,
+				1D6266951A99418700882D81 /* Images.xcassets */,
+				1D6266921A99418700882D81 /* Main.storyboard */,
+			);
+			name = Views;
+			sourceTree = "<group>";
+		};
+		1D6266B21A9943F200882D81 /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				1D6266B31A9944A400882D81 /* BuildingViewController.h */,
+				1D6266B41A9944A400882D81 /* BuildingViewController.m */,
+				1D6266B61A9944B900882D81 /* MapViewController.h */,
+				1D6266B71A9944B900882D81 /* MapViewController.m */,
+				1D6266B91A9944CC00882D81 /* SkylineViewController.h */,
+				1D6266BA1A9944CC00882D81 /* SkylineViewController.m */,
+				1D6266BC1A99452B00882D81 /* NetworkController.h */,
+				1D6266BD1A99452B00882D81 /* NetworkController.m */,
+			);
+			name = Controllers;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -226,9 +265,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1D6266B51A9944A400882D81 /* BuildingViewController.m in Sources */,
 				1D62668B1A99418700882D81 /* AppDelegate.m in Sources */,
+				1D6266B81A9944B900882D81 /* MapViewController.m in Sources */,
 				1D62668E1A99418700882D81 /* NowAndThen.xcdatamodeld in Sources */,
-				1D6266911A99418700882D81 /* ViewController.m in Sources */,
+				1D6266BE1A99452B00882D81 /* NetworkController.m in Sources */,
+				1D6266BB1A9944CC00882D81 /* SkylineViewController.m in Sources */,
 				1D6266881A99418700882D81 /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -7,8 +7,15 @@
 //
 
 #import "AppDelegate.h"
+#import "MapViewController.h"
+
+#import "BuildingViewController.h"
+#import "MapViewController.h"
+#import "SkylineViewController.h"
 
 @interface AppDelegate ()
+
+@property (strong, nonatomic) UITabBarController *tabBar;
 
 @end
 
@@ -17,8 +24,48 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
+    
+    self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+    [self.window makeKeyAndVisible];
+//    UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:[[MapViewController alloc] init]];
+    
+
+    [self setupTabBar];
+    
+    self.window.rootViewController = self.tabBar;
+    
+
+    
     return YES;
 }
+
+- (void)setupTabBar {
+    self.tabBar = [[UITabBarController alloc] init];
+    
+    
+    BuildingViewController *buildingVC = [[BuildingViewController alloc] init];
+    buildingVC.tabBarItem.title = @"Building";
+    buildingVC.tabBarItem.image = [UIImage imageNamed:@"building"];
+    
+    MapViewController *mapVC = [[MapViewController alloc] init];
+    mapVC.tabBarItem.title = @"MapView";
+    mapVC.tabBarItem.image = [UIImage imageNamed:@"map"];
+    
+    SkylineViewController *skylineVC = [[SkylineViewController alloc] init];
+    skylineVC.tabBarItem.title = @"Skyline";
+    skylineVC.tabBarItem.image = [UIImage imageNamed:@"skyline"];
+
+    self.tabBar.viewControllers = @[buildingVC,
+                                    mapVC,
+                                    skylineVC];
+    
+    self.tabBar.view.autoresizingMask = UIViewAutoresizingFlexibleHeight;
+    
+}
+
+
+
+
 
 - (void)applicationWillResignActive:(UIApplication *)application {
     // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
