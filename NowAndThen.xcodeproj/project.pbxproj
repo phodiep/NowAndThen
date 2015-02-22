@@ -19,6 +19,7 @@
 		1D6266B81A9944B900882D81 /* MapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D6266B71A9944B900882D81 /* MapViewController.m */; };
 		1D6266BB1A9944CC00882D81 /* SkylineViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D6266BA1A9944CC00882D81 /* SkylineViewController.m */; };
 		1D6266BE1A99452B00882D81 /* NetworkController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D6266BD1A99452B00882D81 /* NetworkController.m */; };
+		1D6266C11A99523500882D81 /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D6266C01A99523500882D81 /* MapKit.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -53,6 +54,7 @@
 		1D6266BA1A9944CC00882D81 /* SkylineViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SkylineViewController.m; sourceTree = "<group>"; };
 		1D6266BC1A99452B00882D81 /* NetworkController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NetworkController.h; sourceTree = "<group>"; };
 		1D6266BD1A99452B00882D81 /* NetworkController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NetworkController.m; sourceTree = "<group>"; };
+		1D6266C01A99523500882D81 /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -60,6 +62,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1D6266C11A99523500882D81 /* MapKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -76,6 +79,7 @@
 		1D6266791A99418700882D81 = {
 			isa = PBXGroup;
 			children = (
+				1D6266C01A99523500882D81 /* MapKit.framework */,
 				1D6266AE1A99419400882D81 /* .gitignore */,
 				1D6266841A99418700882D81 /* NowAndThen */,
 				1D6266A11A99418700882D81 /* NowAndThenTests */,
@@ -213,6 +217,11 @@
 				TargetAttributes = {
 					1D6266811A99418700882D81 = {
 						CreatedOnToolsVersion = 6.1.1;
+						SystemCapabilities = {
+							com.apple.Maps.iOS = {
+								enabled = 1;
+							};
+						};
 					};
 					1D62669D1A99418700882D81 = {
 						CreatedOnToolsVersion = 6.1.1;

@@ -7,29 +7,69 @@
 //
 
 #import "MapViewController.h"
+#import <MapKit/MapKit.h>
+#import <CoreLocation/CoreLocation.h>
 
-@interface MapViewController ()
+@interface MapViewController () <MKMapViewDelegate>
+
+@property (strong, nonatomic) MKMapView *mapView;
+@property (strong, nonatomic) CLLocationManager *locationManager;
 
 @end
 
 @implementation MapViewController
 
+#pragma mark - UIViewController Lifecycle
 - (void)loadView {
-    UIView *rootView = [[UIView alloc] init];
     
-    rootView.frame = [[UIScreen mainScreen] bounds];
+    self.mapView.frame = [[UIScreen mainScreen] bounds];
     
-
-    
-    self.view = rootView;
+    self.view = self.mapView;
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     self.title = @"MapView";
-    self.view.backgroundColor = [UIColor greenColor];
     
+    [self setupCoreLocationAuthorization];
+}
+
+#pragma mark - CoreLocation
+- (void)setupCoreLocationAuthorization {
+    if ([CLLocationManager authorizationStatus] == kCLAuthorizationStatusNotDetermined) {
+        [self.locationManager requestWhenInUseAuthorization];
+    } else {
+        self.mapView.showsUserLocation = true;
+        [self.locationManager startUpdatingLocation];
+    }
+    
+}
+
+#pragma mark - MKMapViewDelegate
+-(void)mapView:(MKMapView *)mapView didUpdateUserLocation:(MKUserLocation *)userLocation {
+    MKCoordinateRegion mapRegion;
+    mapRegion.center = self.mapView.userLocation.coordinate;
+    mapRegion.span.latitudeDelta = 0.6;
+    mapRegion.span.longitudeDelta = 0.6;
+    
+    [self.mapView setRegion:mapRegion animated:true];
+}
+
+
+#pragma mark - Lazy Loading Getters
+-(MKMapView *)mapView {
+    if (_mapView == nil) {
+        _mapView = [[MKMapView alloc] init];
+    }
+    return _mapView;
+}
+
+-(CLLocationManager *)locationManager {
+    if (_locationManager == nil) {
+        _locationManager = [[CLLocationManager alloc] init];
+    }
+    return _locationManager;
 }
 
 @end
