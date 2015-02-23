@@ -7,11 +7,13 @@
 //
 
 #import "MenuViewController.h"
+#import "BuildingViewController.h"
 
-@interface MenuViewController () <UITableViewDataSource, UITableViewDelegate>
+@interface MenuViewController () <UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate>
 
 @property (strong, nonatomic) NSArray *results;
 @property (strong, nonatomic) UITableView *tableView;
+@property (strong, nonatomic) UISearchBar *searchBar;
 
 @end
 
@@ -19,24 +21,41 @@
 
 -(void)loadView {
     UIView *rootView = [[UIView alloc] init];
+    rootView.backgroundColor = [UIColor whiteColor];
+    
+    [self.searchBar setTranslatesAutoresizingMaskIntoConstraints:false];
     
     [self.tableView setTranslatesAutoresizingMaskIntoConstraints:false];
     
+    [rootView addSubview:self.searchBar];
     [rootView addSubview:self.tableView];
 
-    NSDictionary *views = @{ @"tableView":self.tableView };
+    NSDictionary *views = @{ @"tableView":self.tableView,
+                             @"searchBar":self.searchBar};
     
-    [rootView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[tableView]|" options:0 metrics:nil views: views]];
-    [rootView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-20-[tableView]|" options:0 metrics:nil views: views]];
+    [rootView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-20-[searchBar]-[tableView]|" options:0 metrics:nil views: views]];
+    [rootView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[searchBar(250)]-(>=0)-|" options:0 metrics:nil views: views]];
+    [rootView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[tableView(250)]-(>=0)-|" options:0 metrics:nil views: views]];
     
     self.view = rootView;
+    
+    BuildingViewController *buildingVC = [[BuildingViewController alloc] init];
+    
+    [self addChildViewController:buildingVC];
+    [self.view addSubview:buildingVC.view];
+    [buildingVC didMoveToParentViewController:self];
+    
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     
     self.results = @[@"Smith Tower", @"Columbia Tower", @"Dexter Horton Building"];
-
+    self.tableView.dataSource = self;
+    self.tableView.delegate = self;
+    self.searchBar.delegate = self;
+    [self.tableView registerClass:UITableViewCell.class forCellReuseIdentifier:@"MENU_CELL"];
+    
     
 }
 
@@ -54,12 +73,30 @@
     return cell;
 }
 
+#pragma mark - UISearchBarDelegate
+-(BOOL)searchBarShouldBeginEditing:(UISearchBar *)searchBar {
+    [self.searchBar setShowsCancelButton:true];
+    return true;
+}
 
+-(void)searchBarCancelButtonClicked:(UISearchBar *)searchBar {
+    [self.searchBar resignFirstResponder];
+    [self.searchBar setShowsCancelButton:false];
+}
+
+#pragma mark - Lazy Loading Getters
 -(UITableView *)tableView {
     if (_tableView == nil) {
         _tableView = [[UITableView alloc] init];
     }
     return _tableView;
+}
+
+-(UISearchBar *)searchBar {
+    if (_searchBar == nil) {
+        _searchBar = [[UISearchBar alloc] init];
+    }
+    return _searchBar;
 }
 
 @end
