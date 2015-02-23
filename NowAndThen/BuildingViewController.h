@@ -11,5 +11,8 @@
 @interface BuildingViewController : UIViewController
 
 @property (strong, nonatomic) NSString *buildingName;
+@property (strong, nonatomic) UILabel *buildingLabel;
+
+-(void)closePanel;
 
 @end

@@ -20,11 +20,10 @@
 
 @property (strong, nonatomic) UIImageView *oldImage;
 @property (strong, nonatomic) UIImageView *currentImage;
-@property (strong, nonatomic) UILabel *buildingLabel;
+
 @property (strong, nonatomic) UILabel *buildingInfo;
 
 @property (strong, nonatomic) UIButton *menuButton;
-//@property (strong, nonatomic) MenuViewController *menuVC;
 
 @property (strong, nonatomic) UITapGestureRecognizer *tapToClose;
 
@@ -36,6 +35,7 @@
     
     [self setScrollViewFrameForFullScreen];
     self.scrollView.bounces = true;
+    self.scrollView.backgroundColor = [UIColor whiteColor];
     
     [self setSampleView];
     
@@ -55,7 +55,6 @@
     [self setupAutolayoutForRootView];
     [self setupAutolayoutConstraintsForRootView];
 
-    
     self.view = self.rootView;
 }
 
@@ -145,7 +144,10 @@
     [UIView animateWithDuration:0.3 animations:^{
         weakSelf.view.center = CGPointMake(weakSelf.view.center.x + 250, weakSelf.view.center.y);
     } completion:^(BOOL finished) {
+        [weakSelf.menuButton removeTarget:weakSelf action:@selector(menuButtonPressed) forControlEvents:UIControlEventTouchUpInside];
+        [weakSelf.menuButton addTarget:weakSelf action:@selector(closePanel) forControlEvents:UIControlEventTouchUpInside];
         [weakSelf.view addGestureRecognizer:weakSelf.tapToClose];
+        
     }];
 }
 
@@ -156,6 +158,8 @@
         weakSelf.view.center = CGPointMake(weakSelf.view.center.x - 250, weakSelf.view.center.y);
     } completion:^(BOOL finished) {
         [weakSelf.view removeGestureRecognizer:weakSelf.tapToClose];
+        [weakSelf.menuButton removeTarget:weakSelf action:@selector(closePanel) forControlEvents:UIControlEventTouchUpInside];
+        [weakSelf.menuButton addTarget:weakSelf action:@selector(menuButtonPressed) forControlEvents:UIControlEventTouchUpInside];
     }];
 }
 
@@ -216,5 +220,6 @@
     }
     return _menuButton;
 }
+
 
 @end
