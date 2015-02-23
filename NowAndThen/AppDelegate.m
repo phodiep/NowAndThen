@@ -12,6 +12,7 @@
 #import "BuildingViewController.h"
 #import "MapViewController.h"
 #import "SkylineViewController.h"
+#import "MenuViewController.h"
 
 @interface AppDelegate ()
 
@@ -42,8 +43,8 @@
 - (void)setupTabBar {
     self.tabBar = [[UITabBarController alloc] init];
     
-    
-    BuildingViewController *buildingVC = [[BuildingViewController alloc] init];
+    MenuViewController *buildingVC = [[MenuViewController alloc] init];
+//    BuildingViewController *buildingVC = [[BuildingViewController alloc] init];
     buildingVC.tabBarItem.title = @"Building";
     buildingVC.tabBarItem.image = [UIImage imageNamed:@"building"];
     
