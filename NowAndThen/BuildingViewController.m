@@ -7,30 +7,35 @@
 //
 
 #import "BuildingViewController.h"
+#import "MenuViewController.h"
 
 @interface BuildingViewController ()
 
 @property (strong, nonatomic) NSMutableDictionary *views;
+@property (strong, nonatomic) UIView *rootView;
+@property (strong, nonatomic) UIScrollView *scrollView;
+
+@property (nonatomic) CGFloat *screenWidth;
+@property (nonatomic) CGFloat *screenHeight;
+
 @property (strong, nonatomic) UIImageView *oldImage;
 @property (strong, nonatomic) UIImageView *currentImage;
 @property (strong, nonatomic) UILabel *buildingLabel;
 @property (strong, nonatomic) UILabel *buildingInfo;
+
+@property (strong, nonatomic) UIButton *menuButton;
+//@property (strong, nonatomic) MenuViewController *menuVC;
+
+@property (strong, nonatomic) UITapGestureRecognizer *tapToClose;
 
 @end
 
 @implementation BuildingViewController
 
 - (void)loadView {
-    UIView *rootView = [[UIView alloc] initWithFrame:[UIScreen mainScreen].applicationFrame];
     
-    CGFloat screenWidth = CGRectGetWidth([UIScreen mainScreen].applicationFrame);
-    CGFloat screenHeight = CGRectGetHeight([UIScreen mainScreen].applicationFrame) - 25;
-
-    UIScrollView *scrollView = [[UIScrollView alloc] init];
-    scrollView.frame = CGRectMake(0, 25, screenWidth, screenHeight);
-    scrollView.contentSize = CGSizeMake(screenWidth, screenHeight);
-
-    scrollView.bounces = true;
+    [self setScrollViewFrameForFullScreen];
+    self.scrollView.bounces = true;
     
     [self setSampleView];
     
@@ -39,30 +44,77 @@
     
     self.buildingInfo.numberOfLines = 0;
     self.buildingInfo.lineBreakMode = NSLineBreakByWordWrapping;
+
+    UIImage *menuImage = [UIImage imageNamed:@"menu"];
+    [self.menuButton setImage:menuImage forState:UIControlStateNormal];
+    [self.menuButton addTarget:self action:@selector(menuButtonPressed) forControlEvents:UIControlEventTouchUpInside];
     
-    [self setupObjectForAutoLayout: self.oldImage       addToSubView:scrollView  addToDictionary:@"oldImage"];
-    [self setupObjectForAutoLayout: self.currentImage   addToSubView:scrollView  addToDictionary:@"currentImage"];
-    [self setupObjectForAutoLayout: self.buildingLabel  addToSubView:scrollView  addToDictionary:@"buildingLabel"];
-    [self setupObjectForAutoLayout: self.buildingInfo   addToSubView:scrollView  addToDictionary:@"buildingInfo"];
+    [self setupAutolayoutForScrollView];
+    [self setupAutolayoutConstraintsForScrollView];
+
+    [self setupAutolayoutForRootView];
+    [self setupAutolayoutConstraintsForRootView];
+
     
-    [scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-20-[buildingLabel]-8-[buildingInfo]-8-[oldImage]-[currentImage]-|" options:0 metrics:nil views:self.views]];
-    [scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-8-[buildingLabel]-8-|" options:0 metrics:nil views:self.views]];
-    [scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-8-[oldImage]-8-|" options:0 metrics:nil views:self.views]];
-    [scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-8-[currentImage]-8-|" options:0 metrics:nil views:self.views]];
-    [scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-8-[buildingInfo(width)]-8-|" options:0 metrics:@{@"width": @(screenWidth - 16) } views:self.views]];
-    
-    [rootView addSubview:scrollView];
-    self.view = rootView;
+    self.view = self.rootView;
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
-    self.title = @"Building";
-    self.view.backgroundColor = [UIColor lightGrayColor];
+    self.title = self.buildingName;
+    self.view.backgroundColor = [UIColor whiteColor];
+    
+    self.tapToClose = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(closePanel)];
     
 }
 
+-(void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
+    //reset autolayout constraints when screen is rotated
+    [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+    
+    [coordinator animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext> context) {
+        [self setupAutolayoutConstraintsForScrollView];
+    } completion:nil];
+}
+
+-(void)setupAutolayoutForRootView {
+    [self setupObjectForAutoLayout: self.scrollView  addToSubView:self.rootView  addToDictionary:@"scrollView"];
+    [self setupObjectForAutoLayout: self.buildingLabel  addToSubView:self.rootView  addToDictionary:@"buildingLabel"];
+    [self setupObjectForAutoLayout: self.menuButton  addToSubView:self.rootView  addToDictionary:@"menuButton"];
+
+}
+
+-(void)setupAutolayoutConstraintsForRootView {
+    [self.rootView removeConstraints:[self.rootView constraints]];
+    [self.rootView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[scrollView]|" options:0 metrics:nil views:self.views]];
+    [self.rootView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-8-[menuButton]-16-[buildingLabel]-(>=0)-|" options:NSLayoutFormatAlignAllCenterY metrics:nil views:self.views]];
+    [self.rootView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-20-[menuButton]-8-[scrollView]|" options:0 metrics:nil views:self.views]];
+
+    
+}
+
+-(void)setupAutolayoutForScrollView {
+    [self setupObjectForAutoLayout: self.oldImage       addToSubView:self.scrollView  addToDictionary:@"oldImage"];
+    [self setupObjectForAutoLayout: self.currentImage   addToSubView:self.scrollView  addToDictionary:@"currentImage"];
+    [self setupObjectForAutoLayout: self.buildingInfo   addToSubView:self.scrollView  addToDictionary:@"buildingInfo"];
+}
+
+-(void)setupAutolayoutConstraintsForScrollView {
+    [self.scrollView removeConstraints:[self.scrollView constraints]];
+    [self.scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[buildingInfo]-8-[oldImage]-[currentImage]-|" options:0 metrics:nil views:self.views]];
+    [self.scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-8-[oldImage]-8-|" options:0 metrics:nil views:self.views]];
+    [self.scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-8-[currentImage]-8-|" options:0 metrics:nil views:self.views]];
+    [self.scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-[buildingInfo(width)]-|" options:0
+                                                                            metrics: @{@"width": @(CGRectGetWidth([[UIScreen mainScreen] applicationFrame]) - 16) }
+                                                                              views:self.views]];
+}
+
+-(void)setScrollViewFrameForFullScreen {
+    self.scrollView.frame = CGRectMake(0, 0,
+                                       CGRectGetWidth([[UIScreen mainScreen] applicationFrame]),
+                                       CGRectGetHeight([[UIScreen mainScreen] applicationFrame]));
+}
 
 -(void)setSampleView {
     self.oldImage.image = [UIImage imageNamed:@"smithTowerOld"];
@@ -86,6 +138,26 @@
     
 }
 
+#pragma mark - Button Actions
+-(void)menuButtonPressed {
+
+    __weak BuildingViewController *weakSelf = self;
+    [UIView animateWithDuration:0.3 animations:^{
+        weakSelf.view.center = CGPointMake(weakSelf.view.center.x + 250, weakSelf.view.center.y);
+    } completion:^(BOOL finished) {
+        [weakSelf.view addGestureRecognizer:weakSelf.tapToClose];
+    }];
+}
+
+-(void)closePanel {
+    
+    __weak BuildingViewController *weakSelf = self;
+    [UIView animateWithDuration:0.3 animations:^{
+        weakSelf.view.center = CGPointMake(weakSelf.view.center.x - 250, weakSelf.view.center.y);
+    } completion:^(BOOL finished) {
+        [weakSelf.view removeGestureRecognizer:weakSelf.tapToClose];
+    }];
+}
 
 #pragma mark - Lazy Loading Getters
 -(NSMutableDictionary *)views {
@@ -94,6 +166,21 @@
     }
     return _views;
 }
+
+-(UIView *)rootView {
+    if (_rootView == nil) {
+        _rootView = [[UIView alloc] initWithFrame:[UIScreen mainScreen].applicationFrame];
+    }
+    return _rootView;
+}
+
+-(UIScrollView *)scrollView {
+    if (_scrollView == nil) {
+        _scrollView = [[UIScrollView alloc] init];
+    }
+    return _scrollView;
+}
+
 
 -(UIImageView *)oldImage {
     if (_oldImage == nil) {
@@ -121,6 +208,13 @@
         _buildingLabel = [[UILabel alloc] init];
     }
     return _buildingLabel;
+}
+
+-(UIButton *)menuButton {
+    if (_menuButton == nil) {
+        _menuButton = [[UIButton alloc] init];
+    }
+    return _menuButton;
 }
 
 @end
