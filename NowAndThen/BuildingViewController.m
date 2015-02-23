@@ -11,6 +11,12 @@
 @interface BuildingViewController ()
 
 @property (strong, nonatomic) NSMutableDictionary *views;
+@property (strong, nonatomic) UIView *rootView;
+@property (strong, nonatomic) UIScrollView *scrollView;
+
+@property (nonatomic) CGFloat *screenWidth;
+@property (nonatomic) CGFloat *screenHeight;
+
 @property (strong, nonatomic) UIImageView *oldImage;
 @property (strong, nonatomic) UIImageView *currentImage;
 @property (strong, nonatomic) UILabel *buildingLabel;
@@ -21,16 +27,9 @@
 @implementation BuildingViewController
 
 - (void)loadView {
-    UIView *rootView = [[UIView alloc] initWithFrame:[UIScreen mainScreen].applicationFrame];
     
-    CGFloat screenWidth = CGRectGetWidth([UIScreen mainScreen].applicationFrame);
-    CGFloat screenHeight = CGRectGetHeight([UIScreen mainScreen].applicationFrame) - 25;
-
-    UIScrollView *scrollView = [[UIScrollView alloc] init];
-    scrollView.frame = CGRectMake(0, 25, screenWidth, screenHeight);
-    scrollView.contentSize = CGSizeMake(screenWidth, screenHeight);
-
-    scrollView.bounces = true;
+    [self setScrollViewFrameForFullScreen];
+    self.scrollView.bounces = true;
     
     [self setSampleView];
     
@@ -40,19 +39,17 @@
     self.buildingInfo.numberOfLines = 0;
     self.buildingInfo.lineBreakMode = NSLineBreakByWordWrapping;
     
-    [self setupObjectForAutoLayout: self.oldImage       addToSubView:scrollView  addToDictionary:@"oldImage"];
-    [self setupObjectForAutoLayout: self.currentImage   addToSubView:scrollView  addToDictionary:@"currentImage"];
-    [self setupObjectForAutoLayout: self.buildingLabel  addToSubView:scrollView  addToDictionary:@"buildingLabel"];
-    [self setupObjectForAutoLayout: self.buildingInfo   addToSubView:scrollView  addToDictionary:@"buildingInfo"];
+    [self setupAutolayoutForScrollView];
+    [self setupAutolayoutConstraints];
     
-    [scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-20-[buildingLabel]-8-[buildingInfo]-8-[oldImage]-[currentImage]-|" options:0 metrics:nil views:self.views]];
-    [scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-8-[buildingLabel]-8-|" options:0 metrics:nil views:self.views]];
-    [scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-8-[oldImage]-8-|" options:0 metrics:nil views:self.views]];
-    [scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-8-[currentImage]-8-|" options:0 metrics:nil views:self.views]];
-    [scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-8-[buildingInfo(width)]-8-|" options:0 metrics:@{@"width": @(screenWidth - 16) } views:self.views]];
+    [self.scrollView setTranslatesAutoresizingMaskIntoConstraints:false];
     
-    [rootView addSubview:scrollView];
-    self.view = rootView;
+    [self.rootView addSubview:self.scrollView];
+    
+    [self.rootView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[scrollView]|" options:0 metrics:nil views:@{@"scrollView":self.scrollView}]];
+    [self.rootView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[scrollView]|" options:0 metrics:nil views:@{@"scrollView":self.scrollView}]];
+    
+    self.view = self.rootView;
 }
 
 - (void)viewDidLoad {
@@ -63,6 +60,40 @@
     
 }
 
+-(void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
+    //reset autolayout constraints when screen is rotated
+    [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
+    
+    [coordinator animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext> context) {
+        [self setupAutolayoutConstraints];
+    } completion:nil];
+}
+
+
+-(void)setupAutolayoutForScrollView {
+    [self setupObjectForAutoLayout: self.oldImage       addToSubView:self.scrollView  addToDictionary:@"oldImage"];
+    [self setupObjectForAutoLayout: self.currentImage   addToSubView:self.scrollView  addToDictionary:@"currentImage"];
+    [self setupObjectForAutoLayout: self.buildingLabel  addToSubView:self.scrollView  addToDictionary:@"buildingLabel"];
+    [self setupObjectForAutoLayout: self.buildingInfo   addToSubView:self.scrollView  addToDictionary:@"buildingInfo"];
+    
+}
+
+-(void)setupAutolayoutConstraints {
+    [self.scrollView removeConstraints:[self.scrollView constraints]];
+    [self.scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-20-[buildingLabel]-8-[buildingInfo]-8-[oldImage]-[currentImage]-|" options:0 metrics:nil views:self.views]];
+    [self.scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-8-[buildingLabel]-8-|" options:0 metrics:nil views:self.views]];
+    [self.scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-8-[oldImage]-8-|" options:0 metrics:nil views:self.views]];
+    [self.scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-8-[currentImage]-8-|" options:0 metrics:nil views:self.views]];
+    [self.scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-[buildingInfo(width)]-|" options:0
+                                                                            metrics: @{@"width": @(CGRectGetWidth([[UIScreen mainScreen] applicationFrame]) - 16) }
+                                                                              views:self.views]];
+}
+
+-(void)setScrollViewFrameForFullScreen {
+    self.scrollView.frame = CGRectMake(0, 25,
+                                       CGRectGetWidth([[UIScreen mainScreen] applicationFrame]),
+                                       CGRectGetHeight([[UIScreen mainScreen] applicationFrame]));
+}
 
 -(void)setSampleView {
     self.oldImage.image = [UIImage imageNamed:@"smithTowerOld"];
@@ -94,6 +125,21 @@
     }
     return _views;
 }
+
+-(UIView *)rootView {
+    if (_rootView == nil) {
+        _rootView = [[UIView alloc] initWithFrame:[UIScreen mainScreen].applicationFrame];
+    }
+    return _rootView;
+}
+
+-(UIScrollView *)scrollView {
+    if (_scrollView == nil) {
+        _scrollView = [[UIScrollView alloc] init];
+    }
+    return _scrollView;
+}
+
 
 -(UIImageView *)oldImage {
     if (_oldImage == nil) {
