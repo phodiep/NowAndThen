@@ -20,7 +20,7 @@
 
 @property (strong, nonatomic) UIImageView *oldImage;
 @property (strong, nonatomic) UIImageView *currentImage;
-@property (strong, nonatomic) UILabel *buildingLabel;
+
 @property (strong, nonatomic) UILabel *buildingInfo;
 
 @property (strong, nonatomic) UIButton *menuButton;

@@ -14,6 +14,7 @@
 @property (strong, nonatomic) NSArray *results;
 @property (strong, nonatomic) UITableView *tableView;
 @property (strong, nonatomic) UISearchBar *searchBar;
+@property (strong, nonatomic) BuildingViewController *buildingVC;
 
 @end
 
@@ -39,11 +40,11 @@
     
     self.view = rootView;
     
-    BuildingViewController *buildingVC = [[BuildingViewController alloc] init];
+    self.buildingVC = [[BuildingViewController alloc] init];
     
-    [self addChildViewController:buildingVC];
-    [self.view addSubview:buildingVC.view];
-    [buildingVC didMoveToParentViewController:self];
+    [self addChildViewController:self.buildingVC];
+    [self.view addSubview:self.buildingVC.view];
+    [self.buildingVC didMoveToParentViewController:self];
     
 }
 
@@ -59,7 +60,7 @@
     
 }
 
-
+#pragma mark - UITableViewDataSource
 -(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     if ([self.results count] >0 ) {
         return [self.results count];
@@ -72,6 +73,15 @@
     cell.textLabel.text = self.results[indexPath.row];
     return cell;
 }
+
+#pragma mark - UITableViewDelegate
+-(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+    [self.searchBar resignFirstResponder];
+    self.buildingVC.buildingLabel.text = self.results[indexPath.row];
+    //TODO - pass over new building
+    [self.buildingVC closePanel];
+}
+
 
 #pragma mark - UISearchBarDelegate
 -(BOOL)searchBarShouldBeginEditing:(UISearchBar *)searchBar {
