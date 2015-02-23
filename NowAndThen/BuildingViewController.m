@@ -26,6 +26,8 @@
 @property (strong, nonatomic) UIButton *menuButton;
 //@property (strong, nonatomic) MenuViewController *menuVC;
 
+@property (strong, nonatomic) UITapGestureRecognizer *tapToClose;
+
 @end
 
 @implementation BuildingViewController
@@ -61,9 +63,9 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     self.title = self.buildingName;
-    self.view.backgroundColor = [UIColor lightGrayColor];
+    self.view.backgroundColor = [UIColor whiteColor];
     
-    
+    self.tapToClose = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(closePanel)];
     
 }
 
@@ -100,8 +102,7 @@
 
 -(void)setupAutolayoutConstraintsForScrollView {
     [self.scrollView removeConstraints:[self.scrollView constraints]];
-    [self.scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[buildingInfo]-8-[oldImage]-[currentImage]-|" options:0 metrics:nil views:self.views]]; //-20-[buildingLabel]-8-
-//    [self.scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-8-[buildingLabel]-8-|" options:0 metrics:nil views:self.views]];
+    [self.scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[buildingInfo]-8-[oldImage]-[currentImage]-|" options:0 metrics:nil views:self.views]];
     [self.scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-8-[oldImage]-8-|" options:0 metrics:nil views:self.views]];
     [self.scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-8-[currentImage]-8-|" options:0 metrics:nil views:self.views]];
     [self.scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-[buildingInfo(width)]-|" options:0
@@ -142,9 +143,19 @@
 
     __weak BuildingViewController *weakSelf = self;
     [UIView animateWithDuration:0.3 animations:^{
-        weakSelf.view.center = CGPointMake(weakSelf.view.center.x + 300, weakSelf.view.center.y);
+        weakSelf.view.center = CGPointMake(weakSelf.view.center.x + 250, weakSelf.view.center.y);
     } completion:^(BOOL finished) {
-        // TODO - add tap to close gesture
+        [weakSelf.view addGestureRecognizer:weakSelf.tapToClose];
+    }];
+}
+
+-(void)closePanel {
+    
+    __weak BuildingViewController *weakSelf = self;
+    [UIView animateWithDuration:0.3 animations:^{
+        weakSelf.view.center = CGPointMake(weakSelf.view.center.x - 250, weakSelf.view.center.y);
+    } completion:^(BOOL finished) {
+        [weakSelf.view removeGestureRecognizer:weakSelf.tapToClose];
     }];
 }
 
