@@ -9,7 +9,7 @@
 #import "BuildingViewController.h"
 #import "MenuViewController.h"
 
-@interface BuildingViewController ()
+@interface BuildingViewController () <UICollectionViewDataSource, UICollectionViewDelegateFlowLayout>
 
 @property (strong, nonatomic) NSMutableDictionary *views;
 @property (strong, nonatomic) UIView *rootView;
@@ -18,8 +18,11 @@
 @property (nonatomic) CGFloat *screenWidth;
 @property (nonatomic) CGFloat *screenHeight;
 
-@property (strong, nonatomic) UIImageView *oldImage;
-@property (strong, nonatomic) UIImageView *currentImage;
+@property (strong, nonatomic) UICollectionView *imageCollectionView;
+@property (strong, nonatomic) NSMutableArray *images;
+
+@property (strong, nonatomic) UIImage *oldImage;
+@property (strong, nonatomic) UIImage *currentImage;
 
 @property (strong, nonatomic) UILabel *buildingInfo;
 
@@ -33,11 +36,19 @@
 
 - (void)loadView {
     
+    self.oldImage = [UIImage imageNamed:@"smithTowerOld"];
+    self.currentImage = [UIImage imageNamed:@"smithTowerNew"];
+    [self.images addObject:self.oldImage];
+    [self.images addObject:self.currentImage];
+    
+    
     [self setScrollViewFrameForFullScreen];
     self.scrollView.bounces = true;
     self.scrollView.backgroundColor = [UIColor whiteColor];
     
     [self setSampleView];
+    
+    [self setupImageCollectionView];
     
     self.buildingLabel.font = [UIFont fontWithName:@"HelveticaNeue-Bold" size:20.0f];
     self.buildingInfo.font = [UIFont fontWithName:@"HelveticaNeue-Thin" size:18.0f];
@@ -64,9 +75,14 @@
     self.title = self.buildingName;
     self.view.backgroundColor = [UIColor whiteColor];
     
+    self.imageCollectionView.dataSource = self;
+    self.imageCollectionView.delegate = self;
+    [self.imageCollectionView registerClass:UICollectionViewCell.class forCellWithReuseIdentifier:@"IMAGE_CELL"];
+    
     self.tapToClose = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(closePanel)];
     
 }
+
 
 -(void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
     //reset autolayout constraints when screen is rotated
@@ -78,10 +94,26 @@
 }
 
 -(void)setupAutolayoutForRootView {
-    [self setupObjectForAutoLayout: self.scrollView  addToSubView:self.rootView  addToDictionary:@"scrollView"];
+    [self setupObjectForAutoLayout: self.scrollView     addToSubView:self.rootView  addToDictionary:@"scrollView"];
     [self setupObjectForAutoLayout: self.buildingLabel  addToSubView:self.rootView  addToDictionary:@"buildingLabel"];
-    [self setupObjectForAutoLayout: self.menuButton  addToSubView:self.rootView  addToDictionary:@"menuButton"];
+    [self setupObjectForAutoLayout: self.menuButton     addToSubView:self.rootView  addToDictionary:@"menuButton"];
+}
 
+-(void)setupImageCollectionView {
+    UICollectionViewFlowLayout *layout=[[UICollectionViewFlowLayout alloc] init];
+    self.imageCollectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:layout];
+    self.imageCollectionView.pagingEnabled = true;
+    layout.minimumInteritemSpacing = 0;
+    layout.minimumLineSpacing = 0;
+    layout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
+    layout.itemSize = CGSizeMake(300,300);
+    [layout setSectionInset:UIEdgeInsetsMake(0,0,0,0)];
+    
+    
+    [self.imageCollectionView setTranslatesAutoresizingMaskIntoConstraints:false];
+    self.imageCollectionView.backgroundColor = [UIColor blackColor];
+    [self.scrollView addSubview:self.imageCollectionView];
+    
 }
 
 -(void)setupAutolayoutConstraintsForRootView {
@@ -94,19 +126,18 @@
 }
 
 -(void)setupAutolayoutForScrollView {
-    [self setupObjectForAutoLayout: self.oldImage       addToSubView:self.scrollView  addToDictionary:@"oldImage"];
-    [self setupObjectForAutoLayout: self.currentImage   addToSubView:self.scrollView  addToDictionary:@"currentImage"];
     [self setupObjectForAutoLayout: self.buildingInfo   addToSubView:self.scrollView  addToDictionary:@"buildingInfo"];
+    [self setupObjectForAutoLayout:self.imageCollectionView addToSubView:self.scrollView addToDictionary:@"imageFlow"];
 }
 
 -(void)setupAutolayoutConstraintsForScrollView {
     [self.scrollView removeConstraints:[self.scrollView constraints]];
-    [self.scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[buildingInfo]-8-[oldImage]-[currentImage]-|" options:0 metrics:nil views:self.views]];
-    [self.scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-8-[oldImage]-8-|" options:0 metrics:nil views:self.views]];
-    [self.scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-8-[currentImage]-8-|" options:0 metrics:nil views:self.views]];
+    [self.scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[buildingInfo]-20-[imageFlow(300)]-50-|" options:0 metrics:nil views:self.views]];
+
     [self.scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-[buildingInfo(width)]-|" options:0
                                                                             metrics: @{@"width": @(CGRectGetWidth([[UIScreen mainScreen] applicationFrame]) - 16) }
                                                                               views:self.views]];
+    [self.scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[imageFlow]|" options:0 metrics:nil views:self.views]];
 }
 
 -(void)setScrollViewFrameForFullScreen {
@@ -116,11 +147,7 @@
 }
 
 -(void)setSampleView {
-    self.oldImage.image = [UIImage imageNamed:@"smithTowerOld"];
-    self.oldImage.contentMode = UIViewContentModeScaleAspectFit;
-    
-    self.currentImage.image = [UIImage imageNamed:@"smithTowerNew"];
-    self.currentImage.contentMode = UIViewContentModeScaleAspectFit;
+
     
     self.buildingLabel.text = @"Smith Tower";
     
@@ -136,6 +163,33 @@
     [self.views setObject:object forKey:reference];
     
 }
+
+#pragma mark - UICollectionViewFlowDelegate
+-(NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
+    if ([self.images count] > 0) {
+        return [self.images count];
+    }
+    return 0;
+}
+
+-(UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
+    UICollectionViewCell *cell = (UICollectionViewCell*)[self.imageCollectionView dequeueReusableCellWithReuseIdentifier:@"IMAGE_CELL" forIndexPath:indexPath];
+    
+    UIImageView *cellImage = [[UIImageView alloc] init];
+
+    cellImage.image = self.images[indexPath.row];
+    cellImage.contentMode = UIViewContentModeScaleAspectFit;
+    
+    [cellImage setTranslatesAutoresizingMaskIntoConstraints:false];
+    [cell addSubview:cellImage];
+    
+    [cell addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[image]|" options:0 metrics:nil views:@{@"image":cellImage}]];
+    [cell addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[image]|" options:0 metrics:nil views:@{@"image":cellImage}]];
+    
+        
+    return cell;
+}
+
 
 #pragma mark - Button Actions
 -(void)menuButtonPressed {
@@ -186,16 +240,16 @@
 }
 
 
--(UIImageView *)oldImage {
+-(UIImage *)oldImage {
     if (_oldImage == nil) {
-        _oldImage = [[UIImageView alloc] init];
+        _oldImage = [[UIImage alloc] init];
     }
     return _oldImage;
 }
 
--(UIImageView *)currentImage {
+-(UIImage *)currentImage {
     if (_currentImage == nil) {
-        _currentImage = [[UIImageView alloc] init];
+        _currentImage = [[UIImage alloc] init];
     }
     return _currentImage;
 }
@@ -221,5 +275,18 @@
     return _menuButton;
 }
 
+-(UICollectionView *)imageCollectionView {
+    if (_imageCollectionView == nil) {
+        _imageCollectionView = [[UICollectionView alloc] init];
+    }
+    return _imageCollectionView;
+}
+
+-(NSMutableArray *)images {
+    if (_images == nil) {
+        _images = [[NSMutableArray alloc] init];
+    }
+    return _images;
+}
 
 @end

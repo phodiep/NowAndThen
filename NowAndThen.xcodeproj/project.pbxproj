@@ -21,6 +21,7 @@
 		1D6266BE1A99452B00882D81 /* NetworkController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D6266BD1A99452B00882D81 /* NetworkController.m */; };
 		1D6266C11A99523500882D81 /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D6266C01A99523500882D81 /* MapKit.framework */; };
 		1D6266C71A9AEA4100882D81 /* MenuViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D6266C61A9AEA4100882D81 /* MenuViewController.m */; };
+		1D6266CA1A9BAC3E00882D81 /* InfoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D6266C91A9BAC3E00882D81 /* InfoViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -58,6 +59,8 @@
 		1D6266C01A99523500882D81 /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
 		1D6266C51A9AEA4100882D81 /* MenuViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MenuViewController.h; sourceTree = "<group>"; };
 		1D6266C61A9AEA4100882D81 /* MenuViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MenuViewController.m; sourceTree = "<group>"; };
+		1D6266C81A9BAC3E00882D81 /* InfoViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InfoViewController.h; sourceTree = "<group>"; };
+		1D6266C91A9BAC3E00882D81 /* InfoViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InfoViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -169,6 +172,8 @@
 				1D6266BA1A9944CC00882D81 /* SkylineViewController.m */,
 				1D6266BC1A99452B00882D81 /* NetworkController.h */,
 				1D6266BD1A99452B00882D81 /* NetworkController.m */,
+				1D6266C81A9BAC3E00882D81 /* InfoViewController.h */,
+				1D6266C91A9BAC3E00882D81 /* InfoViewController.m */,
 			);
 			name = Controllers;
 			sourceTree = "<group>";
@@ -281,6 +286,7 @@
 			files = (
 				1D6266B51A9944A400882D81 /* BuildingViewController.m in Sources */,
 				1D62668B1A99418700882D81 /* AppDelegate.m in Sources */,
+				1D6266CA1A9BAC3E00882D81 /* InfoViewController.m in Sources */,
 				1D6266B81A9944B900882D81 /* MapViewController.m in Sources */,
 				1D6266C71A9AEA4100882D81 /* MenuViewController.m in Sources */,
 				1D62668E1A99418700882D81 /* NowAndThen.xcdatamodeld in Sources */,
@@ -479,6 +485,7 @@
 				1D6266AA1A99418700882D81 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		1D6266AB1A99418700882D81 /* Build configuration list for PBXNativeTarget "NowAndThenTests" */ = {
 			isa = XCConfigurationList;
@@ -487,6 +494,7 @@
 				1D6266AD1A99418700882D81 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 

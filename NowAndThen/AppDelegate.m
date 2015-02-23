@@ -13,6 +13,7 @@
 #import "MapViewController.h"
 #import "SkylineViewController.h"
 #import "MenuViewController.h"
+#import "InfoViewController.h"
 
 @interface AppDelegate ()
 
@@ -55,10 +56,15 @@
     SkylineViewController *skylineVC = [[SkylineViewController alloc] init];
     skylineVC.tabBarItem.title = @"Skyline";
     skylineVC.tabBarItem.image = [UIImage imageNamed:@"skyline"];
+    
+    InfoViewController *infoVC = [[InfoViewController alloc] init];
+    infoVC.tabBarItem.title = @"Info";
+    infoVC.tabBarItem.image = [UIImage imageNamed:@"info"];
 
     self.tabBar.viewControllers = @[buildingVC,
                                     mapVC,
-                                    skylineVC];
+                                    skylineVC,
+                                    infoVC];
     
     self.tabBar.view.autoresizingMask = UIViewAutoresizingFlexibleHeight;
     
