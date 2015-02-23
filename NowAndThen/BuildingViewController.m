@@ -7,6 +7,7 @@
 //
 
 #import "BuildingViewController.h"
+#import "MenuViewController.h"
 
 @interface BuildingViewController ()
 
@@ -21,6 +22,9 @@
 @property (strong, nonatomic) UIImageView *currentImage;
 @property (strong, nonatomic) UILabel *buildingLabel;
 @property (strong, nonatomic) UILabel *buildingInfo;
+
+@property (strong, nonatomic) UIButton *menuButton;
+//@property (strong, nonatomic) MenuViewController *menuVC;
 
 @end
 
@@ -38,16 +42,17 @@
     
     self.buildingInfo.numberOfLines = 0;
     self.buildingInfo.lineBreakMode = NSLineBreakByWordWrapping;
+
+    UIImage *menuImage = [UIImage imageNamed:@"menu"];
+    [self.menuButton setImage:menuImage forState:UIControlStateNormal];
+    [self.menuButton addTarget:self action:@selector(menuButtonPressed) forControlEvents:UIControlEventTouchUpInside];
     
     [self setupAutolayoutForScrollView];
-    [self setupAutolayoutConstraints];
-    
-    [self.scrollView setTranslatesAutoresizingMaskIntoConstraints:false];
-    
-    [self.rootView addSubview:self.scrollView];
-    
-    [self.rootView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[scrollView]|" options:0 metrics:nil views:@{@"scrollView":self.scrollView}]];
-    [self.rootView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[scrollView]|" options:0 metrics:nil views:@{@"scrollView":self.scrollView}]];
+    [self setupAutolayoutConstraintsForScrollView];
+
+    [self setupAutolayoutForRootView];
+    [self setupAutolayoutConstraintsForRootView];
+
     
     self.view = self.rootView;
 }
@@ -55,8 +60,10 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
-    self.title = @"Building";
+    self.title = self.buildingName;
     self.view.backgroundColor = [UIColor lightGrayColor];
+    
+    
     
 }
 
@@ -65,23 +72,36 @@
     [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
     
     [coordinator animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext> context) {
-        [self setupAutolayoutConstraints];
+        [self setupAutolayoutConstraintsForScrollView];
     } completion:nil];
 }
 
+-(void)setupAutolayoutForRootView {
+    [self setupObjectForAutoLayout: self.scrollView  addToSubView:self.rootView  addToDictionary:@"scrollView"];
+    [self setupObjectForAutoLayout: self.buildingLabel  addToSubView:self.rootView  addToDictionary:@"buildingLabel"];
+    [self setupObjectForAutoLayout: self.menuButton  addToSubView:self.rootView  addToDictionary:@"menuButton"];
+
+}
+
+-(void)setupAutolayoutConstraintsForRootView {
+    [self.rootView removeConstraints:[self.rootView constraints]];
+    [self.rootView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[scrollView]|" options:0 metrics:nil views:self.views]];
+    [self.rootView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-8-[menuButton]-16-[buildingLabel]-(>=0)-|" options:NSLayoutFormatAlignAllCenterY metrics:nil views:self.views]];
+    [self.rootView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-20-[menuButton]-8-[scrollView]|" options:0 metrics:nil views:self.views]];
+
+    
+}
 
 -(void)setupAutolayoutForScrollView {
     [self setupObjectForAutoLayout: self.oldImage       addToSubView:self.scrollView  addToDictionary:@"oldImage"];
     [self setupObjectForAutoLayout: self.currentImage   addToSubView:self.scrollView  addToDictionary:@"currentImage"];
-    [self setupObjectForAutoLayout: self.buildingLabel  addToSubView:self.scrollView  addToDictionary:@"buildingLabel"];
     [self setupObjectForAutoLayout: self.buildingInfo   addToSubView:self.scrollView  addToDictionary:@"buildingInfo"];
-    
 }
 
--(void)setupAutolayoutConstraints {
+-(void)setupAutolayoutConstraintsForScrollView {
     [self.scrollView removeConstraints:[self.scrollView constraints]];
-    [self.scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-20-[buildingLabel]-8-[buildingInfo]-8-[oldImage]-[currentImage]-|" options:0 metrics:nil views:self.views]];
-    [self.scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-8-[buildingLabel]-8-|" options:0 metrics:nil views:self.views]];
+    [self.scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[buildingInfo]-8-[oldImage]-[currentImage]-|" options:0 metrics:nil views:self.views]]; //-20-[buildingLabel]-8-
+//    [self.scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-8-[buildingLabel]-8-|" options:0 metrics:nil views:self.views]];
     [self.scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-8-[oldImage]-8-|" options:0 metrics:nil views:self.views]];
     [self.scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-8-[currentImage]-8-|" options:0 metrics:nil views:self.views]];
     [self.scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-[buildingInfo(width)]-|" options:0
@@ -90,7 +110,7 @@
 }
 
 -(void)setScrollViewFrameForFullScreen {
-    self.scrollView.frame = CGRectMake(0, 25,
+    self.scrollView.frame = CGRectMake(0, 0,
                                        CGRectGetWidth([[UIScreen mainScreen] applicationFrame]),
                                        CGRectGetHeight([[UIScreen mainScreen] applicationFrame]));
 }
@@ -117,6 +137,16 @@
     
 }
 
+#pragma mark - Button Actions
+-(void)menuButtonPressed {
+
+    __weak BuildingViewController *weakSelf = self;
+    [UIView animateWithDuration:0.3 animations:^{
+        weakSelf.view.center = CGPointMake(weakSelf.view.center.x + 300, weakSelf.view.center.y);
+    } completion:^(BOOL finished) {
+        // TODO - add tap to close gesture
+    }];
+}
 
 #pragma mark - Lazy Loading Getters
 -(NSMutableDictionary *)views {
@@ -167,6 +197,13 @@
         _buildingLabel = [[UILabel alloc] init];
     }
     return _buildingLabel;
+}
+
+-(UIButton *)menuButton {
+    if (_menuButton == nil) {
+        _menuButton = [[UIButton alloc] init];
+    }
+    return _menuButton;
 }
 
 @end

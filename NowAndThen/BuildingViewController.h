@@ -10,4 +10,6 @@
 
 @interface BuildingViewController : UIViewController
 
+@property (strong, nonatomic) NSString *buildingName;
+
 @end
