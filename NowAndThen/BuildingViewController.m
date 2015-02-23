@@ -9,7 +9,7 @@
 #import "BuildingViewController.h"
 #import "MenuViewController.h"
 
-@interface BuildingViewController ()
+@interface BuildingViewController () <UICollectionViewDataSource, UICollectionViewDelegateFlowLayout>
 
 @property (strong, nonatomic) NSMutableDictionary *views;
 @property (strong, nonatomic) UIView *rootView;
@@ -17,6 +17,9 @@
 
 @property (nonatomic) CGFloat *screenWidth;
 @property (nonatomic) CGFloat *screenHeight;
+
+@property (strong, nonatomic) UICollectionView *imageCollectionView;
+@property (strong, nonatomic) NSMutableArray *images;
 
 @property (strong, nonatomic) UIImageView *oldImage;
 @property (strong, nonatomic) UIImageView *currentImage;
@@ -38,6 +41,8 @@
     self.scrollView.backgroundColor = [UIColor whiteColor];
     
     [self setSampleView];
+    
+    [self setupImageCollectionView];
     
     self.buildingLabel.font = [UIFont fontWithName:@"HelveticaNeue-Bold" size:20.0f];
     self.buildingInfo.font = [UIFont fontWithName:@"HelveticaNeue-Thin" size:18.0f];
@@ -64,9 +69,14 @@
     self.title = self.buildingName;
     self.view.backgroundColor = [UIColor whiteColor];
     
+    self.imageCollectionView.dataSource = self;
+    self.imageCollectionView.delegate = self;
+    [self.imageCollectionView registerClass:UICollectionViewCell.class forCellWithReuseIdentifier:@"IMAGE_CELL"];
+    
     self.tapToClose = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(closePanel)];
     
 }
+
 
 -(void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
     //reset autolayout constraints when screen is rotated
@@ -81,7 +91,16 @@
     [self setupObjectForAutoLayout: self.scrollView  addToSubView:self.rootView  addToDictionary:@"scrollView"];
     [self setupObjectForAutoLayout: self.buildingLabel  addToSubView:self.rootView  addToDictionary:@"buildingLabel"];
     [self setupObjectForAutoLayout: self.menuButton  addToSubView:self.rootView  addToDictionary:@"menuButton"];
+}
 
+-(void)setupImageCollectionView {
+    UICollectionViewFlowLayout *layout=[[UICollectionViewFlowLayout alloc] init];
+    self.imageCollectionView = [[UICollectionView alloc] initWithFrame:CGRectZero collectionViewLayout:layout];
+    
+    [self.imageCollectionView setTranslatesAutoresizingMaskIntoConstraints:false];
+    
+    [self.scrollView addSubview:self.imageCollectionView];
+    
 }
 
 -(void)setupAutolayoutConstraintsForRootView {
@@ -94,16 +113,19 @@
 }
 
 -(void)setupAutolayoutForScrollView {
-    [self setupObjectForAutoLayout: self.oldImage       addToSubView:self.scrollView  addToDictionary:@"oldImage"];
-    [self setupObjectForAutoLayout: self.currentImage   addToSubView:self.scrollView  addToDictionary:@"currentImage"];
+//    [self setupObjectForAutoLayout: self.oldImage       addToSubView:self.scrollView  addToDictionary:@"oldImage"];
+//    [self setupObjectForAutoLayout: self.currentImage   addToSubView:self.scrollView  addToDictionary:@"currentImage"];
     [self setupObjectForAutoLayout: self.buildingInfo   addToSubView:self.scrollView  addToDictionary:@"buildingInfo"];
+    [self setupObjectForAutoLayout:self.imageCollectionView addToSubView:self.scrollView addToDictionary:@"imageFlow"];
 }
 
 -(void)setupAutolayoutConstraintsForScrollView {
     [self.scrollView removeConstraints:[self.scrollView constraints]];
-    [self.scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[buildingInfo]-8-[oldImage]-[currentImage]-|" options:0 metrics:nil views:self.views]];
-    [self.scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-8-[oldImage]-8-|" options:0 metrics:nil views:self.views]];
-    [self.scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-8-[currentImage]-8-|" options:0 metrics:nil views:self.views]];
+//    [self.scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[buildingInfo]-8-[oldImage]-[currentImage]-|" options:0 metrics:nil views:self.views]];
+    [self.scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[buildingInfo]-8-[imageFlow]-|" options:0 metrics:nil views:self.views]];
+
+//    [self.scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-8-[oldImage]-8-|" options:0 metrics:nil views:self.views]];
+//    [self.scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-8-[currentImage]-8-|" options:0 metrics:nil views:self.views]];
     [self.scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-[buildingInfo(width)]-|" options:0
                                                                             metrics: @{@"width": @(CGRectGetWidth([[UIScreen mainScreen] applicationFrame]) - 16) }
                                                                               views:self.views]];
@@ -122,6 +144,9 @@
     self.currentImage.image = [UIImage imageNamed:@"smithTowerNew"];
     self.currentImage.contentMode = UIViewContentModeScaleAspectFit;
     
+    [self.images addObject:self.oldImage];
+    [self.images addObject:self.currentImage];
+    
     self.buildingLabel.text = @"Smith Tower";
     
     self.buildingInfo.text = @"Smith Tower is a skyscraper in Pioneer Square in Seattle, Washington. Completed in 1914, the 38-story, 149 m (489 ft) tower is the oldest skyscraper in the city and was the tallest office building west of the Mississippi River until the Kansas City Power & Light Building was built in 1931. It remained the tallest building on the West Coast until the Space Needle overtook it in 1962. \n\nSmith Tower is named after its builder, firearm and typewriter magnate Lyman Cornelius Smith, and is a designated Seattle landmark.";
@@ -136,6 +161,25 @@
     [self.views setObject:object forKey:reference];
     
 }
+
+#pragma mark - UICollectionViewFlowDelegate
+-(NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
+    if ([self.images count] > 0) {
+        return [self.images count];
+    }
+    return 0;
+}
+
+-(UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
+    UICollectionViewCell *cell = (UICollectionViewCell*)[self.imageCollectionView dequeueReusableCellWithReuseIdentifier:@"IMAGE_CELL" forIndexPath:indexPath];
+    cell.backgroundColor = [UIColor greenColor];
+    return cell;
+}
+
+-(CGSize)collectionView:(UICollectionView *)collectionView layout:(UICollectionViewLayout *)collectionViewLayout sizeForItemAtIndexPath:(NSIndexPath *)indexPath {
+    return CGSizeMake(100, 100);
+}
+
 
 #pragma mark - Button Actions
 -(void)menuButtonPressed {
@@ -221,5 +265,11 @@
     return _menuButton;
 }
 
+-(UICollectionView *)imageCollectionView {
+    if (_imageCollectionView == nil) {
+        _imageCollectionView = [[UICollectionView alloc] init];
+    }
+    return _imageCollectionView;
+}
 
 @end
