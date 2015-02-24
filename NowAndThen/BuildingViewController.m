@@ -44,7 +44,7 @@
     
     [self setScrollViewFrameForFullScreen];
     self.scrollView.bounces = true;
-    self.scrollView.backgroundColor = [UIColor whiteColor];
+    self.scrollView.backgroundColor = [UIColor greenColor];
     
     [self setSampleView];
     
@@ -73,7 +73,7 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     self.title = self.buildingName;
-    self.view.backgroundColor = [UIColor whiteColor];
+    self.view.backgroundColor = [UIColor redColor];
     
     self.imageCollectionView.dataSource = self;
     self.imageCollectionView.delegate = self;
@@ -89,6 +89,7 @@
     [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
     
     [coordinator animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext> context) {
+//        [self setScrollViewFrameForFullScreen];
         [self setupAutolayoutConstraintsForScrollView];
     } completion:nil];
 }
@@ -126,8 +127,8 @@
 }
 
 -(void)setupAutolayoutForScrollView {
-    [self setupObjectForAutoLayout: self.buildingInfo   addToSubView:self.scrollView  addToDictionary:@"buildingInfo"];
-    [self setupObjectForAutoLayout:self.imageCollectionView addToSubView:self.scrollView addToDictionary:@"imageFlow"];
+    [self setupObjectForAutoLayout: self.buildingInfo       addToSubView:self.scrollView  addToDictionary:@"buildingInfo"];
+    [self setupObjectForAutoLayout:self.imageCollectionView addToSubView:self.scrollView  addToDictionary:@"imageFlow"];
 }
 
 -(void)setupAutolayoutConstraintsForScrollView {
