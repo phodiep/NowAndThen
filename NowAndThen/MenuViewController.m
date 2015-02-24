@@ -8,6 +8,7 @@
 
 #import "MenuViewController.h"
 #import "BuildingViewController.h"
+#import "Building.h"
 
 @interface MenuViewController () <UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate>
 
@@ -42,6 +43,7 @@
     self.view = self.rootView;
     
     self.buildingVC = [[BuildingViewController alloc] init];
+    self.buildingVC.building = [[Building alloc] initFakeBuilding];
     
     [self addChildViewController:self.buildingVC];
     [self.view addSubview:self.buildingVC.view];

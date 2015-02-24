@@ -34,13 +34,24 @@
 
 @property (strong, nonatomic) UIAlertController *buildingSnapShot;
 
+//methods for setting up views
 -(void)createViews;
 -(void)createConstraints;
+
 -(void)transitionToBuildingDetail;
+
+//methods for getting the current screen region
+-(CLLocationCoordinate2D)getCoordFromMapRectPoint:(double)X andY:(double)Y;
+-(CLLocationCoordinate2D)getNECoordinate:(MKMapRect)mapRect;
+-(CLLocationCoordinate2D)getSWCoordinate:(MKMapRect)mapRect;
+
+-(NSArray *)getBoundingBox:(MKMapRect)mapRect;
+
 //custom method for setting locations
 -(CLLocationCoordinate2D)createBuildingLocation:(double)latitude
                                   withLongitude:(double)longitude
                                  withIdentifier:(NSString *)name;
+
 
 @end
 
@@ -52,11 +63,8 @@
 #pragma mark - UIViewController Lifecycle
 - (void)loadView
 {
-  self.mapView.delegate = self;
-  self.toolBar.delegate = self;
-  self.trackingBar.delegate = self;
-  self.mapView.frame = [[UIScreen mainScreen] bounds];
   self.view          = self.mapView;
+  self.mapView.frame = [[UIScreen mainScreen] bounds];
 }
 
 
@@ -67,15 +75,15 @@
   self.title = @"MapView";
   
   [self setupCoreLocationAuthorization];
-  self.mapView.alpha = 0;
   [self createViews];
   [self createConstraints];
+
+  self.mapView.alpha = 0;
   
   CLLocationCoordinate2D startLocation;
-  // startLocation.latitude = self.mapView.userLocation.coordinate.latitude;
-  // startLocation.longitude = self.mapView.userLocation.coordinate.longitude;
-  startLocation.latitude = 47.6204;    //TODO: these are just temp variables due to simulator issues
-  startLocation.longitude = -122.3491;
+  startLocation.latitude  = self.mapView.userLocation.coordinate.latitude;
+  startLocation.longitude = self.mapView.userLocation.coordinate.longitude;
+  
   MKCoordinateRegion startRegion = MKCoordinateRegionMakeWithDistance(startLocation, 750, 750);
   
   [UIView animateWithDuration:.5 animations:^{
@@ -105,27 +113,60 @@
   }
 }
 
-
+//this will refresh the view to center over the user sporadically
 #pragma mark - MKMapViewDelegate
--(void)mapView:(MKMapView *)mapView didUpdateUserLocation:(MKUserLocation *)userLocation
+//-(void)mapView:(MKMapView *)mapView didUpdateUserLocation:(MKUserLocation *)userLocation
+//{
+////  NSLog(@"mapviewDelegate");
+////  MKCoordinateRegion mapRegion;
+////  mapRegion.center = self.mapView.userLocation.coordinate;
+////  mapRegion.span.latitudeDelta = 0.6;
+////  mapRegion.span.longitudeDelta = 0.6;
+////    
+////  [self.mapView setRegion:mapRegion
+////                 animated:true];
+//}
+
+#pragma methods for generating a bounding box -> to be used in geoJSON fetch
+-(CLLocationCoordinate2D)getNECoordinate:(MKMapRect)mapRect
 {
-  NSLog(@"mapviewDelegate");
-  MKCoordinateRegion mapRegion;
-  mapRegion.center = self.mapView.userLocation.coordinate;
-  mapRegion.span.latitudeDelta = 0.6;
-  mapRegion.span.longitudeDelta = 0.6;
-    
-  [self.mapView setRegion:mapRegion
-                 animated:true];
+  return [self getCoordFromMapRectPoint:MKMapRectGetMaxX(mapRect)
+                                   andY:mapRect.origin.y];
 }
 
+-(CLLocationCoordinate2D)getSWCoordinate:(MKMapRect)mapRect
+{
+  return [self getCoordFromMapRectPoint:mapRect.origin.x
+                                   andY:MKMapRectGetMaxY(mapRect)];
+}
+
+-(CLLocationCoordinate2D)getCoordFromMapRectPoint:(double)X andY:(double)Y
+{
+  MKMapPoint swMapPoint = MKMapPointMake(X, Y);
+  return MKCoordinateForMapPoint(swMapPoint);
+}
+
+-(NSArray *)getBoundingBox:(MKMapRect)mapRect
+{
+  CLLocationCoordinate2D bottomLeft = [self getSWCoordinate:mapRect];
+  CLLocationCoordinate2D topRight   = [self getNECoordinate:mapRect];
+  
+  NSArray *temp =  @[[NSNumber numberWithDouble:bottomLeft.latitude],
+           [NSNumber numberWithDouble:bottomLeft.longitude],
+           [NSNumber numberWithDouble:topRight.latitude],
+           [NSNumber numberWithDouble:topRight.longitude]];
+  
+  NSLog(@"%@",temp);
+  return temp;
+}
 
 #pragma mark - Lazy Loading Getters
 -(MKMapView *)mapView
 {
     if (_mapView == nil)
     {
-        _mapView = [[MKMapView alloc] init];
+      _mapView = [[MKMapView alloc] init];
+      _mapView.delegate = self;
     }
     return _mapView;
 }
@@ -144,6 +185,7 @@
   if(!_toolBar)
   {
     _toolBar = [[UIToolbar alloc] init];
+    _toolBar.delegate = self;
   }
   return _toolBar;
 }
@@ -153,6 +195,7 @@
   if(!_trackingBar)
   {
     _trackingBar = [[UIToolbar alloc] init];
+    _trackingBar.delegate = self;
   }
   return _trackingBar;
 }
@@ -189,6 +232,7 @@
   }
   return _userTrackingItem;
 }
+
 -(UIBarButtonItem *)centerOnUser
 {
   if (!_centerOnUser)
@@ -243,11 +287,36 @@
   
   [self.mapView setRegion:userRegion
                  animated:true];
+  
+  MKMapRect mapRect = self.mapView.visibleMapRect;
+  [self getBoundingBox:mapRect];
 }
 
+#pragma create Annotations
 -(IBAction)findPortals:(id)sender
 {
-  NSLog(@"get portals for map area");
+  MKPointAnnotation *kerryPark = [[MKPointAnnotation alloc] init];
+  
+  kerryPark.coordinate = [self createBuildingLocation: 47.629547
+                                        withLongitude: -122.360137
+                                       withIdentifier:@"kerryPark"];
+  kerryPark.title = @"Kerry Park";
+  
+  
+  [self.mapView addAnnotation:kerryPark];
+  
+  CLLocationCoordinate2D coord;
+  coord.latitude = kerryPark.coordinate.latitude;
+  coord.longitude = kerryPark.coordinate.longitude;
+  
+  MKCoordinateRegion region = MKCoordinateRegionMakeWithDistance(coord, 750, 750);
+  
+  [self.mapView setRegion:region
+                 animated:true];
+  
+  MKMapRect mapRect = self.mapView.visibleMapRect;
+  [self getBoundingBox:mapRect];
+  
 }
 
 -(IBAction)findBuildings:(id)sender
@@ -276,6 +345,9 @@
   [self.mapView addAnnotation:point0];
   [self.mapView addAnnotation:point1];
   [self.mapView addAnnotation:point2];
+  
+  MKMapRect mapRect = self.mapView.visibleMapRect;
+  [self getBoundingBox:mapRect];
 }
 
 
@@ -288,12 +360,16 @@
   
   MKPinAnnotationView *annotationView = [[MKPinAnnotationView alloc] initWithAnnotation:annotation
                                                                         reuseIdentifier:@"annotationView"];
-  
   annotationView.pinColor       = MKPinAnnotationColorPurple;
   annotationView.animatesDrop   = true;
   annotationView.canShowCallout = true;
   
   annotationView.rightCalloutAccessoryView = [UIButton buttonWithType:UIButtonTypeDetailDisclosure];
+  
+  UIImageView *leftCalloutAccessoryImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"smithTowerNew"]];
+  leftCalloutAccessoryImage.frame = CGRectMake(0, 0, 46, 46);
+  
+  annotationView.leftCalloutAccessoryView = leftCalloutAccessoryImage;
   
   return annotationView;
 }
@@ -308,7 +384,6 @@
                                                       object:self
                                                     userInfo:@{@"Building" : view.annotation.title}];
   [self transitionToBuildingDetail];
-  
 }
 
 
@@ -337,7 +412,7 @@
                                                                     metrics:nil
                                                                       views:views]];
 
-  [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-20-[toolBar(30)]"
+  [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-20-[toolBar(40)]"
                                                                     options:0
                                                                     metrics:nil
                                                                       views:views]];
@@ -348,7 +423,7 @@
                                                                     metrics:nil
                                                                       views:views]];
   
-  [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[trackingBar(30)]-50-|"
+  [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[trackingBar(40)]-50-|"
                                                                     options:0
                                                                     metrics:nil
                                                                       views:views]];

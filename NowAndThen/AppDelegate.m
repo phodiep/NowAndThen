@@ -42,10 +42,9 @@
 - (void)setupTabBar {
     self.tabBar = [[UITabBarController alloc] init];
     
-    MenuViewController *buildingVC = [[MenuViewController alloc] init];
-//    BuildingViewController *buildingVC = [[BuildingViewController alloc] init];
-    buildingVC.tabBarItem.title = @"Building";
-    buildingVC.tabBarItem.image = [UIImage imageNamed:@"building"];
+    MenuViewController *menuVC = [[MenuViewController alloc] init];
+    menuVC.tabBarItem.title = @"Building";
+    menuVC.tabBarItem.image = [UIImage imageNamed:@"building"];
     
     MapViewController *mapVC = [[MapViewController alloc] init];
     mapVC.tabBarItem.title = @"MapView";
@@ -59,7 +58,7 @@
     infoVC.tabBarItem.title = @"Info";
     infoVC.tabBarItem.image = [UIImage imageNamed:@"info"];
 
-    self.tabBar.viewControllers = @[buildingVC,
+    self.tabBar.viewControllers = @[menuVC,
                                     mapVC,
                                     skylineVC,
                                     infoVC];
