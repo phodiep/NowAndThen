@@ -305,4 +305,10 @@
     return _images;
 }
 
+//removes self as listner
+-(void)viewDidDisappear:(BOOL)animated
+{
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
 @end
