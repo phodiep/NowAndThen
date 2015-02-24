@@ -1,0 +1,32 @@
+[query: {
+    count = 1;
+    created = "2015-02-22T01:08:06Z";
+    lang = "en-us";
+    results =     {
+        building =         {
+           Id = 100;
+           Latitude = "";
+            Longitude = "";
+            BuildingName = "";
+            BuildingAddress = "" ;
+            City = "Seattle"
+            State = "Washington"
+            ZipCode = "98119";
+            BuildDate = "";
+            BuildCompletion = "" ;
+            CrossStreetEastWest = "";
+            CrossStreetNorthSouth = "";
+                        InfoSites {
+                                    Wikipedia = "http:…"
+                                    Yahoo = "http:…"
+                                    Ect = "http://www.google.com"
+                        }
+                        Images {
+                                    Url = "http://images"
+                                    Url1900 = "http://images"
+                                    Etc = "http://www.google.com/images"
+                        }
+        };  // Building Info
+    };      // Query Results
+}]          // Query
+

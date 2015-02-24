@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import "AppDelegate.h"
+#import "Building.h"
 
 int main(int argc, char * argv[]) {
     @autoreleasepool {

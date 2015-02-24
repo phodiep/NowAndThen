@@ -7,9 +7,11 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "Building.h"
 
 @interface BuildingViewController : UIViewController
 
 @property (strong, nonatomic) NSString *buildingName;
+@property (strong, nonatomic) Building *building;
 
 @end

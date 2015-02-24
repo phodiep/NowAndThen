@@ -6,10 +6,18 @@
 //  Copyright (c) 2015 Pho Diep. All rights reserved.
 //
 
+#import <Foundation/Foundation.h>
+
 #import "BuildingViewController.h"
 #import "MenuViewController.h"
+#import "Building.h"
 
 @interface BuildingViewController ()
+
+@property (strong, nonatomic) NSMutableArray *buildings;      // Array of 'Building' NSMutableDictionary(s)
+
+//@property (strong, nonatomic) Building *building;
+//@property (strong, nonatomic) Building *currentBuilding;
 
 @property (strong, nonatomic) NSMutableDictionary *views;
 @property (strong, nonatomic) UIView *rootView;
@@ -33,14 +41,16 @@
 @implementation BuildingViewController
 
 - (void)loadView {
-    
+
+    self.building = [[Building alloc]init];
+
     [self setScrollViewFrameForFullScreen];
     self.scrollView.bounces = true;
     
     [self setSampleView];
     
     self.buildingLabel.font = [UIFont fontWithName:@"HelveticaNeue-Bold" size:20.0f];
-    self.buildingInfo.font = [UIFont fontWithName:@"HelveticaNeue-Thin" size:18.0f];
+    self.buildingInfo.font  = [UIFont fontWithName:@"HelveticaNeue-Thin" size:18.0f];
     
     self.buildingInfo.numberOfLines = 0;
     self.buildingInfo.lineBreakMode = NSLineBreakByWordWrapping;
@@ -55,7 +65,6 @@
     [self setupAutolayoutForRootView];
     [self setupAutolayoutConstraintsForRootView];
 
-    
     self.view = self.rootView;
 }
 
@@ -122,11 +131,19 @@
     
     self.currentImage.image = [UIImage imageNamed:@"smithTowerNew"];
     self.currentImage.contentMode = UIViewContentModeScaleAspectFit;
+
+
     
-    self.buildingLabel.text = @"Smith Tower";
+    self.buildingLabel.text = @"Smith Tower";  //self.building.buildingName;
+//    self.buildingLabel.text = _building[@"BuildingName"];
+//    NSLog(@"%@", self.buildingLabel.text );
+//    NSLog(@"%@", self.building.buildingName );
+
     
     self.buildingInfo.text = @"Smith Tower is a skyscraper in Pioneer Square in Seattle, Washington. Completed in 1914, the 38-story, 149 m (489 ft) tower is the oldest skyscraper in the city and was the tallest office building west of the Mississippi River until the Kansas City Power & Light Building was built in 1931. It remained the tallest building on the West Coast until the Space Needle overtook it in 1962. \n\nSmith Tower is named after its builder, firearm and typewriter magnate Lyman Cornelius Smith, and is a designated Seattle landmark.";
+}
 
+-(void)setupBuildingInformation:(id)object getBuildingInfo:(Building*)building {
 
 }
 

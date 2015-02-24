@@ -20,8 +20,13 @@
 		1D6266BB1A9944CC00882D81 /* SkylineViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D6266BA1A9944CC00882D81 /* SkylineViewController.m */; };
 		1D6266BE1A99452B00882D81 /* NetworkController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D6266BD1A99452B00882D81 /* NetworkController.m */; };
 		1D6266C11A99523500882D81 /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D6266C01A99523500882D81 /* MapKit.framework */; };
-		740A93151A9A94E200ACBA12 /* Building.m in Sources */ = {isa = PBXBuildFile; fileRef = 740A93141A9A94E200ACBA12 /* Building.m */; };
 		1D6266C71A9AEA4100882D81 /* MenuViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D6266C61A9AEA4100882D81 /* MenuViewController.m */; };
+		740A93151A9A94E200ACBA12 /* Building.m in Sources */ = {isa = PBXBuildFile; fileRef = 740A93141A9A94E200ACBA12 /* Building.m */; };
+		745CDA541A9BBB62000846EA /* singleBuildingData.json in Sources */ = {isa = PBXBuildFile; fileRef = 745CDA531A9BBB62000846EA /* singleBuildingData.json */; };
+		745CDA571A9BE11E000846EA /* singleBuildingData.dictionary in Resources */ = {isa = PBXBuildFile; fileRef = 745CDA561A9BE11E000846EA /* singleBuildingData.dictionary */; };
+		745CDA5A1A9C2C3E000846EA /* simple.json in Resources */ = {isa = PBXBuildFile; fileRef = 745CDA591A9C2C3D000846EA /* simple.json */; };
+		745CDA5D1A9C313D000846EA /* simpleBuilding.json in Resources */ = {isa = PBXBuildFile; fileRef = 745CDA5C1A9C313D000846EA /* simpleBuilding.json */; };
+		745CDA601A9CE60A000846EA /* simple01.json in Resources */ = {isa = PBXBuildFile; fileRef = 745CDA5F1A9CE60A000846EA /* simple01.json */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -57,10 +62,15 @@
 		1D6266BC1A99452B00882D81 /* NetworkController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NetworkController.h; sourceTree = "<group>"; };
 		1D6266BD1A99452B00882D81 /* NetworkController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NetworkController.m; sourceTree = "<group>"; };
 		1D6266C01A99523500882D81 /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
-		740A93131A9A94E200ACBA12 /* Building.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Building.h; sourceTree = "<group>"; };
-		740A93141A9A94E200ACBA12 /* Building.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Building.m; sourceTree = "<group>"; };
 		1D6266C51A9AEA4100882D81 /* MenuViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MenuViewController.h; sourceTree = "<group>"; };
 		1D6266C61A9AEA4100882D81 /* MenuViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MenuViewController.m; sourceTree = "<group>"; };
+		740A93131A9A94E200ACBA12 /* Building.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Building.h; sourceTree = "<group>"; };
+		740A93141A9A94E200ACBA12 /* Building.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Building.m; sourceTree = "<group>"; };
+		745CDA531A9BBB62000846EA /* singleBuildingData.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = singleBuildingData.json; sourceTree = "<group>"; };
+		745CDA561A9BE11E000846EA /* singleBuildingData.dictionary */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = singleBuildingData.dictionary; sourceTree = "<group>"; };
+		745CDA591A9C2C3D000846EA /* simple.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = simple.json; sourceTree = "<group>"; };
+		745CDA5C1A9C313D000846EA /* simpleBuilding.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = simpleBuilding.json; sourceTree = "<group>"; };
+		745CDA5F1A9CE60A000846EA /* simple01.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = simple01.json; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -118,8 +128,13 @@
 		1D6266851A99418700882D81 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				745CDA531A9BBB62000846EA /* singleBuildingData.json */,
+				745CDA561A9BE11E000846EA /* singleBuildingData.dictionary */,
 				1D6266861A99418700882D81 /* Info.plist */,
 				1D6266871A99418700882D81 /* main.m */,
+				745CDA591A9C2C3D000846EA /* simple.json */,
+				745CDA5C1A9C313D000846EA /* simpleBuilding.json */,
+				745CDA5F1A9CE60A000846EA /* simple01.json */,
 			);
 			name = "Supporting Files";
 			sourceTree = "<group>";
@@ -263,10 +278,14 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				745CDA601A9CE60A000846EA /* simple01.json in Resources */,
 				1D6266AF1A99419400882D81 /* .gitignore in Resources */,
 				1D6266941A99418700882D81 /* Main.storyboard in Resources */,
 				1D6266991A99418700882D81 /* LaunchScreen.xib in Resources */,
 				1D6266961A99418700882D81 /* Images.xcassets in Resources */,
+				745CDA5D1A9C313D000846EA /* simpleBuilding.json in Resources */,
+				745CDA571A9BE11E000846EA /* singleBuildingData.dictionary in Resources */,
+				745CDA5A1A9C2C3E000846EA /* simple.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -287,6 +306,7 @@
 				1D6266B51A9944A400882D81 /* BuildingViewController.m in Sources */,
 				1D62668B1A99418700882D81 /* AppDelegate.m in Sources */,
 				1D6266B81A9944B900882D81 /* MapViewController.m in Sources */,
+				745CDA541A9BBB62000846EA /* singleBuildingData.json in Sources */,
 				740A93151A9A94E200ACBA12 /* Building.m in Sources */,
 				1D6266C71A9AEA4100882D81 /* MenuViewController.m in Sources */,
 				1D62668E1A99418700882D81 /* NowAndThen.xcdatamodeld in Sources */,

@@ -8,11 +8,16 @@
 
 #import <Foundation/Foundation.h>
 
-//@interface Building : NSObject
-//
-//-(void) initialize: (NSDictionary*) buildingInformation;
-//-(void) print;
-//-(void) setLatitude: (NSString*) latitude;
-//-(NSString*) getLatitude;
-//
-//@end
+@interface Building : NSObject
+
+@property (strong, nonatomic) NSString* latitude;
+@property (strong, nonatomic) NSString* longitude;
+@property (strong, nonatomic) NSString* buildingName;
+
+//@property (strong, nonatomic) NSDictionary *aBuilding;
+//@property (strong, nonatomic) Building *building;
+
++(NSArray*)fetchBuildingDataFromFile;
+-(void) print;
+
+@end
