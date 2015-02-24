@@ -11,34 +11,35 @@
 
 @interface MenuViewController () <UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate>
 
+@property (strong, nonatomic) UIView *rootView;
+@property (strong, nonatomic) NSDictionary *views;
 @property (strong, nonatomic) NSArray *results;
 @property (strong, nonatomic) UITableView *tableView;
 @property (strong, nonatomic) UISearchBar *searchBar;
 @property (strong, nonatomic) BuildingViewController *buildingVC;
+
 
 @end
 
 @implementation MenuViewController
 
 -(void)loadView {
-    UIView *rootView = [[UIView alloc] init];
-    rootView.backgroundColor = [UIColor whiteColor];
+    self.rootView = [[UIView alloc] init];
+    self.rootView.backgroundColor = [UIColor whiteColor];
     
     [self.searchBar setTranslatesAutoresizingMaskIntoConstraints:false];
     
     [self.tableView setTranslatesAutoresizingMaskIntoConstraints:false];
     
-    [rootView addSubview:self.searchBar];
-    [rootView addSubview:self.tableView];
+    [self.rootView addSubview:self.searchBar];
+    [self.rootView addSubview:self.tableView];
 
-    NSDictionary *views = @{ @"tableView":self.tableView,
+    self.views = @{ @"tableView":self.tableView,
                              @"searchBar":self.searchBar};
     
-    [rootView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-20-[searchBar]-[tableView]|" options:0 metrics:nil views: views]];
-    [rootView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[searchBar(250)]-(>=0)-|" options:0 metrics:nil views: views]];
-    [rootView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[tableView(250)]-(>=0)-|" options:0 metrics:nil views: views]];
+    [self applyAutolayoutConstraints];
     
-    self.view = rootView;
+    self.view = self.rootView;
     
     self.buildingVC = [[BuildingViewController alloc] init];
     
@@ -56,8 +57,19 @@
     self.tableView.delegate = self;
     self.searchBar.delegate = self;
     [self.tableView registerClass:UITableViewCell.class forCellReuseIdentifier:@"MENU_CELL"];
-    
-    
+}
+
+-(void)viewWillLayoutSubviews {
+    //update child frame in case of screen rotation
+    self.buildingVC.view.frame = self.view.frame;
+}
+
+
+-(void)applyAutolayoutConstraints {
+    [self.rootView removeConstraints:[self.rootView constraints]];
+    [self.rootView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-20-[searchBar]-[tableView]-50-|" options:0 metrics:nil views: self.views]];
+    [self.rootView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[searchBar(250)]-(>=0)-|" options:0 metrics:nil views: self.views]];
+    [self.rootView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[tableView(250)]-(>=0)-|" options:0 metrics:nil views: self.views]];
 }
 
 #pragma mark - UITableViewDataSource

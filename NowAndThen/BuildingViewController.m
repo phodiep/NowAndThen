@@ -44,7 +44,7 @@
     
     [self setScrollViewFrameForFullScreen];
     self.scrollView.bounces = true;
-    self.scrollView.backgroundColor = [UIColor greenColor];
+    self.scrollView.backgroundColor = [UIColor whiteColor];
     
     [self setSampleView];
     
@@ -73,7 +73,7 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view.
     self.title = self.buildingName;
-    self.view.backgroundColor = [UIColor redColor];
+    self.view.backgroundColor = [UIColor whiteColor];
     
     self.imageCollectionView.dataSource = self;
     self.imageCollectionView.delegate = self;
@@ -89,8 +89,9 @@
     [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
     
     [coordinator animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext> context) {
-//        [self setScrollViewFrameForFullScreen];
+
         [self setupAutolayoutConstraintsForScrollView];
+        
     } completion:nil];
 }
 
@@ -121,7 +122,7 @@
     [self.rootView removeConstraints:[self.rootView constraints]];
     [self.rootView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[scrollView]|" options:0 metrics:nil views:self.views]];
     [self.rootView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-8-[menuButton]-16-[buildingLabel]-(>=0)-|" options:NSLayoutFormatAlignAllCenterY metrics:nil views:self.views]];
-    [self.rootView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-20-[menuButton]-8-[scrollView]|" options:0 metrics:nil views:self.views]];
+    [self.rootView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-25-[menuButton]-8-[scrollView]|" options:0 metrics:nil views:self.views]];
 
     
 }
