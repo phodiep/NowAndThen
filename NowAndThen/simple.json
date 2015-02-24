@@ -1,0 +1,50 @@
+{
+    "MONDAY": [
+               {
+               "TITLE": "TEST DRIVEN DEVELOPMENT",
+               "SPEAKER": "JASON SHAPIRO",
+               "TIME": "9:00 AM",
+               "ROOM": "MATISSE",
+               "DETAILS": "EXPLORE THE TOPICS AND TOOLS RELATED TO TEST DRIVEN DEVELOPMENT."
+               },
+               {
+               "TITLE": "JAVA TOOLS",
+               "SPEAKER": "JIM WHITE",
+               "TIME": "9:00 AM",
+               "ROOM": "ROTHKO",
+               "DETAILS": "DISCUSS THE LATEST SET OF TOOLS USED TO HELP EASE SOFTWARE DEVELOPMENT."
+               }
+               ],
+    "TUESDAY": [
+                {
+                "TITLE": "MONGODB",
+                "SPEAKER": "DAVINMICKELSON",
+                "TIME": "1: 00PM",
+                "ROOM": "PICASSO",
+                "DETAILS": "LEARNABOUT\"NOSQL\"DATABASES."
+                },
+                {
+                "TITLE": "DEBUGGINGWITHXCODE",
+                "SPEAKER": "JASONSHAPIRO",
+                "TIME": "1: 00PM",
+                "ROOM": "VANGOGH",
+                "DETAILS": "EXPLOREDIFFERENTPATTERNSFORDEBUGGINGYOURIOSAPPS."
+                }
+                ],
+    "WEDNESDAY": [
+                  {
+                  "TITLE": "SCRUM MASTER",
+                  "SPEAKER": "DAVIN MICKELSON",
+                  "TIME": "1:00 PM",
+                  "ROOM": "MATISSE",
+                  "DETAILS": "LEARN THE ROLES AND RESPONSIBILITIES OF A SCRUM MASTER"
+                  },
+                  {
+                  "TITLE": "DESIGN PATTERNS",
+                  "SPEAKER": "JIM WHITE",
+                  "TIME": "1:00 PM",
+                  "ROOM": "ROTHKO",
+                  "DETAILS": "APPLY BEST PRACTICES AND SOUND ARCHITECTURES TO SOFTWARE DESIGN."
+                  }
+                  ]
+}
