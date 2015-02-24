@@ -12,6 +12,8 @@
 #import "BuildingViewController.h"
 #import "MapViewController.h"
 #import "SkylineViewController.h"
+#import "MenuViewController.h"
+#import "InfoViewController.h"
 
 @interface AppDelegate ()
 
@@ -40,8 +42,8 @@
 - (void)setupTabBar {
     self.tabBar = [[UITabBarController alloc] init];
     
-    
-    BuildingViewController *buildingVC = [[BuildingViewController alloc] init];
+    MenuViewController *buildingVC = [[MenuViewController alloc] init];
+//    BuildingViewController *buildingVC = [[BuildingViewController alloc] init];
     buildingVC.tabBarItem.title = @"Building";
     buildingVC.tabBarItem.image = [UIImage imageNamed:@"building"];
     
@@ -52,10 +54,15 @@
     SkylineViewController *skylineVC = [[SkylineViewController alloc] init];
     skylineVC.tabBarItem.title = @"Skyline";
     skylineVC.tabBarItem.image = [UIImage imageNamed:@"skyline"];
+    
+    InfoViewController *infoVC = [[InfoViewController alloc] init];
+    infoVC.tabBarItem.title = @"Info";
+    infoVC.tabBarItem.image = [UIImage imageNamed:@"info"];
 
     self.tabBar.viewControllers = @[buildingVC,
                                     mapVC,
-                                    skylineVC];
+                                    skylineVC,
+                                    infoVC];
     
     self.tabBar.view.autoresizingMask = UIViewAutoresizingFlexibleHeight;
     

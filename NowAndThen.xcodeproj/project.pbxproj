@@ -27,6 +27,7 @@
 		745CDA5A1A9C2C3E000846EA /* simple.json in Resources */ = {isa = PBXBuildFile; fileRef = 745CDA591A9C2C3D000846EA /* simple.json */; };
 		745CDA5D1A9C313D000846EA /* simpleBuilding.json in Resources */ = {isa = PBXBuildFile; fileRef = 745CDA5C1A9C313D000846EA /* simpleBuilding.json */; };
 		745CDA601A9CE60A000846EA /* simple01.json in Resources */ = {isa = PBXBuildFile; fileRef = 745CDA5F1A9CE60A000846EA /* simple01.json */; };
+		1D6266CA1A9BAC3E00882D81 /* InfoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D6266C91A9BAC3E00882D81 /* InfoViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -71,6 +72,8 @@
 		745CDA591A9C2C3D000846EA /* simple.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = simple.json; sourceTree = "<group>"; };
 		745CDA5C1A9C313D000846EA /* simpleBuilding.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = simpleBuilding.json; sourceTree = "<group>"; };
 		745CDA5F1A9CE60A000846EA /* simple01.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = simple01.json; sourceTree = "<group>"; };
+		1D6266C81A9BAC3E00882D81 /* InfoViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = InfoViewController.h; sourceTree = "<group>"; };
+		1D6266C91A9BAC3E00882D81 /* InfoViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InfoViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -189,6 +192,8 @@
 				1D6266BA1A9944CC00882D81 /* SkylineViewController.m */,
 				1D6266BC1A99452B00882D81 /* NetworkController.h */,
 				1D6266BD1A99452B00882D81 /* NetworkController.m */,
+				1D6266C81A9BAC3E00882D81 /* InfoViewController.h */,
+				1D6266C91A9BAC3E00882D81 /* InfoViewController.m */,
 			);
 			name = Controllers;
 			sourceTree = "<group>";
@@ -305,6 +310,7 @@
 			files = (
 				1D6266B51A9944A400882D81 /* BuildingViewController.m in Sources */,
 				1D62668B1A99418700882D81 /* AppDelegate.m in Sources */,
+				1D6266CA1A9BAC3E00882D81 /* InfoViewController.m in Sources */,
 				1D6266B81A9944B900882D81 /* MapViewController.m in Sources */,
 				745CDA541A9BBB62000846EA /* singleBuildingData.json in Sources */,
 				740A93151A9A94E200ACBA12 /* Building.m in Sources */,

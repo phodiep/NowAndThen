@@ -7,7 +7,10 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "BuildingViewController.h"
 
 @interface MapViewController : UIViewController
+
+@property (weak, nonatomic) BuildingViewController *buildingVC;
 
 @end

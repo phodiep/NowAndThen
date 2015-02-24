@@ -10,12 +10,5 @@
 
 @implementation NetworkController
 
-+(id)buildingCreator {
-    static NetworkController *networkControllerService;
-    static dispatch_once_t dispatchToken;
-        dispatch_once( &dispatchToken, ^{networkControllerService = [[NetworkController alloc] init];
-    });
-    return networkControllerService;
-}
 
 @end

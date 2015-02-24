@@ -59,10 +59,10 @@
         NSLog( @"%@\n", buildingsDictionary[@"buildings"]);
     }
 
-    NSInteger numberOfBuildings = buildingsDictionary.count;
+//  NSInteger numberOfBuildings = buildingsDictionary.count;
 
     NSArray             *arrayOfBuildings   = buildingsDictionary[@"buildings"];
-    NSInteger numberOfKeys = arrayOfBuildings.count;
+//  NSInteger numberOfKeys = arrayOfBuildings.count;
     NSLog( @"%@\n\n", arrayOfBuildings[0] );
 
     return arrayOfBuildings;

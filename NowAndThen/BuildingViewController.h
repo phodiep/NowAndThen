@@ -13,5 +13,8 @@
 
 @property (strong, nonatomic) NSString *buildingName;
 @property (strong, nonatomic) Building *building;
+@property (strong, nonatomic) UILabel *buildingLabel;
+
+-(void)closePanel;
 
 @end
