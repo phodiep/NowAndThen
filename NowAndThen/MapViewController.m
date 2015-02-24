@@ -36,6 +36,7 @@
 
 -(void)createViews;
 -(void)createConstraints;
+-(void)transitionToBuildingDetail;
 //custom method for setting locations
 -(CLLocationCoordinate2D)createBuildingLocation:(double)latitude
                                   withLongitude:(double)longitude
@@ -69,22 +70,24 @@
   self.mapView.alpha = 0;
   [self createViews];
   [self createConstraints];
-}
-
-
-- (void)viewDidAppear:(BOOL)animated
-{
+  
   CLLocationCoordinate2D startLocation;
- // startLocation.latitude = self.mapView.userLocation.coordinate.latitude;
- // startLocation.longitude = self.mapView.userLocation.coordinate.longitude;
+  // startLocation.latitude = self.mapView.userLocation.coordinate.latitude;
+  // startLocation.longitude = self.mapView.userLocation.coordinate.longitude;
   startLocation.latitude = 47.6204;    //TODO: these are just temp variables due to simulator issues
   startLocation.longitude = -122.3491;
   MKCoordinateRegion startRegion = MKCoordinateRegionMakeWithDistance(startLocation, 750, 750);
   
   [UIView animateWithDuration:.5 animations:^{
     self.mapView.alpha = 1.0;
-   [self.mapView setRegion:startRegion];
+    [self.mapView setRegion:startRegion];
   }];
+}
+
+
+- (void)viewDidAppear:(BOOL)animated
+{
+
 }
 
 
@@ -248,49 +251,64 @@
 }
 
 -(IBAction)findBuildings:(id)sender
-{/*
-  struct building
-  {
-    double latitude;
-    double longitude;
-  };
-  
-  struct building *Smith;
-  struct building *Columbia;
-  struct building *Dexter;
-  
-  Smith->latitude = 47.6021;
-  Smith->longitude = -122.3318;
-  
-  Columbia->latitude = 47.604633;
-  Columbia->longitude = -122.330698;
-  
-  Dexter->latitude = 47.6034693;
-  Dexter->longitude = -122.3328106;
-  */
-//  NSDictionary *tempBuildingLocations = @{@"Smith": @{@"latitude": @47.6021, @"longitude": @-122.3318},
-//                                          @"Colombia":@{@"latitude":@47.604633, @"longitude":@-122.330698},
-//                                          @"Dexter":@{@"latitude":@47.6034693, @"longitude":@-122.3328106}};
-  
-  {
-    MKPointAnnotation *point0 = [[MKPointAnnotation alloc] init];
-    MKPointAnnotation *point1 = [[MKPointAnnotation alloc] init];
-    MKPointAnnotation *point2 = [[MKPointAnnotation alloc] init];
+{
+  MKPointAnnotation *point0 = [[MKPointAnnotation alloc] init];
+  MKPointAnnotation *point1 = [[MKPointAnnotation alloc] init];
+  MKPointAnnotation *point2 = [[MKPointAnnotation alloc] init];
 
-    point0.coordinate = [self createBuildingLocation:47.6021 withLongitude:-122.3318 withIdentifier:@"Smith"];
-    point0.title = @"Smith";
+  NSArray *tempBuildings = @[@"Smith Tower", @"Columbia Tower", @"Dexter Horton Building"];
     
-    point1.coordinate = [self createBuildingLocation:47.604633 withLongitude:-122.330698 withIdentifier:@"Columbia"];
-    point1.title = @"Columbia";
+  point0.coordinate = [self createBuildingLocation: 47.6021
+                                     withLongitude: -122.3318
+                                    withIdentifier: tempBuildings[0]];
+  point0.title = tempBuildings[0];
     
-    point2.coordinate = [self createBuildingLocation:47.6034693 withLongitude:-122.3328106 withIdentifier:@"Dexter"];
-    point2.title = @"Dexter";
+  point1.coordinate = [self createBuildingLocation: 47.604633
+                                     withLongitude: -122.330698
+                                    withIdentifier: tempBuildings[1]];
+  point1.title = tempBuildings[1];
     
-    [self.mapView addAnnotation:point0];
-    [self.mapView addAnnotation:point1];
-    [self.mapView addAnnotation:point2];
+  point2.coordinate = [self createBuildingLocation: 47.6034693
+                                     withLongitude: -122.3328106
+                                    withIdentifier: tempBuildings[2]];
+  point2.title = tempBuildings[2];
+  
+  [self.mapView addAnnotation:point0];
+  [self.mapView addAnnotation:point1];
+  [self.mapView addAnnotation:point2];
+}
+
+
+-(MKAnnotationView *)mapView:(MKMapView *)mapView viewForAnnotation:(id<MKAnnotation>)annotation
+{
+  if ([annotation isEqual:self.mapView.userLocation])
+  {
+    return nil;
   }
-  NSLog(@"get buildings for map area");
+  
+  MKPinAnnotationView *annotationView = [[MKPinAnnotationView alloc] initWithAnnotation:annotation
+                                                                        reuseIdentifier:@"annotationView"];
+  
+  annotationView.pinColor       = MKPinAnnotationColorPurple;
+  annotationView.animatesDrop   = true;
+  annotationView.canShowCallout = true;
+  
+  annotationView.rightCalloutAccessoryView = [UIButton buttonWithType:UIButtonTypeDetailDisclosure];
+  
+  return annotationView;
+}
+
+
+-(void)mapView:(MKMapView *)mapView annotationView:(MKAnnotationView *)view
+                     calloutAccessoryControlTapped:(UIControl *)control
+{
+  MKPointAnnotation *annotation = view.annotation;
+  annotation.title = view.annotation.title;
+  [[NSNotificationCenter defaultCenter] postNotificationName:@"SelectedBuilding"
+                                                      object:self
+                                                    userInfo:@{@"Building" : view.annotation.title}];
+  [self transitionToBuildingDetail];
+  
 }
 
 
@@ -337,33 +355,7 @@
 }
 
 
--(MKAnnotationView *)mapView:(MKMapView *)mapView viewForAnnotation:(id<MKAnnotation>)annotation
-{
-  if ([annotation isEqual:self.mapView.userLocation])
-  {
-    return nil;
-  }
- 
-  MKPinAnnotationView *annotationView = [[MKPinAnnotationView alloc] initWithAnnotation:annotation
-                                                                        reuseIdentifier:@"annotationView"];
-  
-  annotationView.pinColor       = MKPinAnnotationColorPurple;
-  annotationView.animatesDrop   = true;
-  annotationView.canShowCallout = true;
-  
-  annotationView.rightCalloutAccessoryView = [UIButton buttonWithType:UIButtonTypeContactAdd];
-  
-  return annotationView;
-  
-}
-
-//
-//-(void)mapView:(MKMapView *)mapView annotationView:(MKAnnotationView *)view
-//                     calloutAccessoryControlTapped:(UIControl *)control
-//{
-//  MKPointAnnotation *annotation = view.annotation;
-//  //annotation.title =
-//}
+#pragma createBuildingLocation
 -(CLLocationCoordinate2D)createBuildingLocation:(double)latitude
                                   withLongitude:(double)longitude
                                  withIdentifier:(NSString *)name
@@ -375,4 +367,24 @@
   return location;
 }
 
+#pragma transitionToBuildingDetail
+- (void)transitionToBuildingDetail
+{
+  int tabIndex = 0;
+  
+  UITabBarController *tabBarController = self.tabBarController;
+  UIView *fromView = tabBarController.selectedViewController.view;
+  UIView *toView = [[tabBarController.viewControllers objectAtIndex:tabIndex] view];
+  
+  [UIView transitionFromView:fromView
+                      toView:toView
+                    duration:0.5
+                     options:(tabIndex > tabBarController.selectedIndex ? UIViewAnimationOptionTransitionCrossDissolve : UIViewAnimationOptionTransitionFlipFromBottom)
+                  completion:^(BOOL finished) {
+    if (finished)
+    {
+      tabBarController.selectedIndex = tabIndex;
+    }
+  }];
+}
 @end

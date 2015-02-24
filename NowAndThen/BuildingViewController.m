@@ -30,6 +30,8 @@
 
 @property (strong, nonatomic) UITapGestureRecognizer *tapToClose;
 
+-(void)updateBuildingName:(NSNotification *)notification;
+
 @end
 
 @implementation BuildingViewController
@@ -80,7 +82,14 @@
     [self.imageCollectionView registerClass:UICollectionViewCell.class forCellWithReuseIdentifier:@"IMAGE_CELL"];
     
     self.tapToClose = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(closePanel)];
-    
+  
+  //used to update which building is displayed 
+  NSNotificationCenter *notificationCenter = [NSNotificationCenter defaultCenter];
+  [notificationCenter addObserver:self
+                         selector:@selector(updateBuildingName:)
+                             name:@"SelectedBuilding"
+                           object:nil];
+
 }
 
 
@@ -215,6 +224,13 @@
         [weakSelf.menuButton removeTarget:weakSelf action:@selector(closePanel) forControlEvents:UIControlEventTouchUpInside];
         [weakSelf.menuButton addTarget:weakSelf action:@selector(menuButtonPressed) forControlEvents:UIControlEventTouchUpInside];
     }];
+}
+
+#pragma updateBuildingName
+- (void)updateBuildingName:(NSNotification *)notification
+{
+  self.buildingName = [notification userInfo][@"Building"];
+  self.buildingLabel.text = [notification userInfo][@"Building"];
 }
 
 #pragma mark - Lazy Loading Getters

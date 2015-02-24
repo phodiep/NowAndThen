@@ -48,6 +48,7 @@
     
 }
 
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     
@@ -78,6 +79,7 @@
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [self.searchBar resignFirstResponder];
     self.buildingVC.buildingLabel.text = self.results[indexPath.row];
+    self.buildingVC.buildingName = self.results[indexPath.row];
     //TODO - pass over new building
     [self.buildingVC closePanel];
 }
