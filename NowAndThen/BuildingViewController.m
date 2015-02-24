@@ -98,7 +98,9 @@
     [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
     
     [coordinator animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext> context) {
+
         [self setupAutolayoutConstraintsForScrollView];
+        
     } completion:nil];
 }
 
@@ -129,14 +131,14 @@
     [self.rootView removeConstraints:[self.rootView constraints]];
     [self.rootView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[scrollView]|" options:0 metrics:nil views:self.views]];
     [self.rootView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-8-[menuButton]-16-[buildingLabel]-(>=0)-|" options:NSLayoutFormatAlignAllCenterY metrics:nil views:self.views]];
-    [self.rootView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-20-[menuButton]-8-[scrollView]|" options:0 metrics:nil views:self.views]];
+    [self.rootView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-25-[menuButton]-8-[scrollView]|" options:0 metrics:nil views:self.views]];
 
     
 }
 
 -(void)setupAutolayoutForScrollView {
-    [self setupObjectForAutoLayout: self.buildingInfo   addToSubView:self.scrollView  addToDictionary:@"buildingInfo"];
-    [self setupObjectForAutoLayout:self.imageCollectionView addToSubView:self.scrollView addToDictionary:@"imageFlow"];
+    [self setupObjectForAutoLayout: self.buildingInfo       addToSubView:self.scrollView  addToDictionary:@"buildingInfo"];
+    [self setupObjectForAutoLayout:self.imageCollectionView addToSubView:self.scrollView  addToDictionary:@"imageFlow"];
 }
 
 -(void)setupAutolayoutConstraintsForScrollView {
