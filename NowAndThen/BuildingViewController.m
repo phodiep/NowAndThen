@@ -11,6 +11,7 @@
 #import "BuildingViewController.h"
 #import "MenuViewController.h"
 #import "Building.h"
+#import "ImageCell.h"
 
 @interface BuildingViewController () <UICollectionViewDataSource, UICollectionViewDelegateFlowLayout>
 
@@ -29,6 +30,12 @@
 
 -(void)updateBuildingName:(NSNotification *)notification;
 
+@property (strong, nonatomic) UILabel *addressLabel;
+@property (strong, nonatomic) UILabel *buildLabel;
+@property (strong, nonatomic) UILabel *completionLabel;
+@property (strong, nonatomic) UILabel *crossEWLabel;
+@property (strong, nonatomic) UILabel *crossNSLabel;
+@property (strong, nonatomic) UILabel *infoLabel;
 
 @property (strong, nonatomic) UILabel *buildingInfo;
 @property (strong, nonatomic) UILabel *address;
@@ -38,13 +45,14 @@
 @property (strong, nonatomic) UILabel *crossStreetEW;
 @property (strong, nonatomic) UILabel *crossStreetNS;
 
+@property (nonatomic) BOOL firstScrollCollectionView;
 @end
 
 @implementation BuildingViewController
 
 - (void)loadView {
     
-    
+    self.firstScrollCollectionView = false;
 
     self.scrollView.frame = CGRectMake(0, 0,
                                        CGRectGetWidth([[UIScreen mainScreen] applicationFrame]),
@@ -79,15 +87,17 @@
     // Do any additional setup after loading the view.
     self.title = self.buildingName;
     self.view.backgroundColor = [UIColor whiteColor];
+
+    [self setBuildingLabelValues];
     
     self.imageCollectionView.dataSource = self;
     self.imageCollectionView.delegate = self;
-    [self.imageCollectionView registerClass:UICollectionViewCell.class forCellWithReuseIdentifier:@"IMAGE_CELL"];
+    [self.imageCollectionView registerClass:ImageCell.class forCellWithReuseIdentifier:@"IMAGE_CELL"];
+
     
     self.tapToClose = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(closePanel)];
 
-    [self initBuildingLabels];
-    [self setBuildingLabelValues];
+
   
   //used to update which building is displayed 
   NSNotificationCenter *notificationCenter = [NSNotificationCenter defaultCenter];
@@ -97,7 +107,16 @@
                            object:nil];
 
 }
+-(void)viewDidLayoutSubviews {
 
+    if (self.firstScrollCollectionView == false) {
+        [self.imageCollectionView scrollToItemAtIndexPath: [NSIndexPath indexPathForItem:50 inSection:0]
+                                     atScrollPosition:UICollectionViewScrollPositionCenteredVertically animated:false];
+        
+        self.firstScrollCollectionView = true;
+    }
+    
+}
 
 -(void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
     //reset autolayout constraints when screen is rotated
@@ -108,6 +127,11 @@
         [self setupAutolayoutConstraintsForScrollView];
         
     } completion:nil];
+}
+
+-(void)dealloc {
+    //removes self as listner
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 -(void)setupAutolayoutForRootView {
@@ -152,14 +176,31 @@
     [self setupObjectForAutoLayout: self.completionDate      addToSubView:self.scrollView  addToDictionary:@"completionDate"];
     [self setupObjectForAutoLayout: self.crossStreetEW       addToSubView:self.scrollView  addToDictionary:@"crossEW"];
     [self setupObjectForAutoLayout: self.crossStreetNS       addToSubView:self.scrollView  addToDictionary:@"crossNS"];
+
+    [self setupObjectForAutoLayout: self.addressLabel       addToSubView:self.scrollView  addToDictionary:@"addressLabel"];
+    [self setupObjectForAutoLayout: self.buildLabel       addToSubView:self.scrollView  addToDictionary:@"buildLabel"];
+    [self setupObjectForAutoLayout: self.completionLabel       addToSubView:self.scrollView  addToDictionary:@"completionLabel"];
+    [self setupObjectForAutoLayout: self.crossEWLabel       addToSubView:self.scrollView  addToDictionary:@"crossEWLabel"];
+    [self setupObjectForAutoLayout: self.crossNSLabel       addToSubView:self.scrollView  addToDictionary:@"crossNSLabel"];
+    [self setupObjectForAutoLayout: self.infoLabel       addToSubView:self.scrollView  addToDictionary:@"infoLabel"];
 }
 
 -(void)setupAutolayoutConstraintsForScrollView {
     [self.scrollView removeConstraints:[self.scrollView constraints]];
-    [self.scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[address]-[cityStateZip]-16-[buildDate]-[completionDate]-16-[crossEW]-[crossNS]-16-[buildingInfo]-20-[imageFlow(300)]-50-|"
-                                                                            options:NSLayoutFormatAlignAllLeading metrics:nil views:self.views]];
-    [self.scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-8-[address]" options:0 metrics:nil views:self.views]];
-
+    [self.scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[addressLabel]-[address]-[cityStateZip]-25-[buildLabel]-[buildDate]-[completionLabel]-[completionDate]-25-[crossNSLabel]-[crossNS]-[crossEWLabel]-[crossEW]-25-[infoLabel]-[buildingInfo]-25-[imageFlow(300)]-50-|"
+                                                                            options:0 metrics:nil views:self.views]];
+    [self.scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-8-[addressLabel]-8-|" options:0 metrics:nil views:self.views]];
+    [self.scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-8-[address]-8-|" options:0 metrics:nil views:self.views]];
+    [self.scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-8-[cityStateZip]-8-|" options:0 metrics:nil views:self.views]];
+    [self.scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-8-[buildLabel]-8-|" options:0 metrics:nil views:self.views]];
+    [self.scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-8-[buildDate]-8-|" options:0 metrics:nil views:self.views]];
+    [self.scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-8-[completionLabel]-8-|" options:0 metrics:nil views:self.views]];
+    [self.scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-8-[completionDate]-8-|" options:0 metrics:nil views:self.views]];
+    [self.scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-8-[crossNSLabel]-8-|" options:0 metrics:nil views:self.views]];
+    [self.scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-8-[crossNS]-8-|" options:0 metrics:nil views:self.views]];
+    [self.scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-8-[crossEWLabel]-8-|" options:0 metrics:nil views:self.views]];
+    [self.scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-8-[crossEW]-8-|" options:0 metrics:nil views:self.views]];
+    [self.scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-8-[infoLabel]-8-|" options:0 metrics:nil views:self.views]];
     
     [self.scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-8-[buildingInfo(width)]-|" options:0
                                                                             metrics: @{@"width": @(CGRectGetWidth([[UIScreen mainScreen] applicationFrame]) - 16) }
@@ -167,30 +208,40 @@
     [self.scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[imageFlow]|" options:0 metrics:nil views:self.views]];
 }
 
--(void)initBuildingLabels {
-}
 
 -(void)setBuildingLabelValues {
+    self.addressLabel.text = @"Address";
+    self.buildLabel.text = @"Build Date";
+    self.completionLabel.text = @"Completion Date";
+    self.crossEWLabel.text = @"Cross Streets East/West";
+    self.crossNSLabel.text = @"Cross Streets North/South";
+    self.infoLabel.text = @"More Information";
+
+    self.addressLabel.textColor = [UIColor grayColor];
+    self.buildLabel.textColor = [UIColor grayColor];
+    self.completionLabel.textColor = [UIColor grayColor];
+    self.crossEWLabel.textColor = [UIColor grayColor];
+    self.crossNSLabel.textColor = [UIColor grayColor];
+    self.infoLabel.textColor = [UIColor grayColor];
+    
     self.buildingLabel.text = self.building.name;
     self.address.text = self.building.address;
     self.cityStateZip.text = [NSString stringWithFormat:@"%@ %@, %@",
                               self.building.city,
                               self.building.state,
                               self.building.zipcode];
-    self.buildDate.text = [NSString stringWithFormat:@"Build Date: %@", self.building.buildDate];
-    self.completionDate.text = [NSString stringWithFormat:@"CompetionDate : %@", self.building.buildCompletion];
-    self.crossStreetEW.text = [NSString stringWithFormat:@"cross street E/W: %@", self.building.crossStreetEastWest];
-    self.crossStreetNS.text = [NSString stringWithFormat:@"cross street N/S: %@", self.building.crossStreetNorthSouth];
+    self.buildDate.text = self.building.buildDate;
+    self.completionDate.text = self.building.buildCompletion;
+    self.crossStreetEW.text = self.building.crossStreetEastWest;
+    self.crossStreetNS.text = self.building.crossStreetNorthSouth;
     self.buildingInfo.text = @"Lorem ipsum dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nam liber te conscient to factor tum poen legum odioque civiuda.";
-    
     [self.images addObject: [UIImage imageNamed:@"smithTowerOld"]];
     [self.images addObject: [UIImage imageNamed:@"smithTowerNew"]];
-
+    [self.images addObject: [UIImage imageNamed:@"smithTowerOld"]];
+    [self.images addObject: [UIImage imageNamed:@"smithTowerNew"]];
+    
 }
 
--(void)setupBuildingInformation:(id)object getBuildingInfo:(Building*)building {
-
-}
 
 -(void)setupObjectForAutoLayout:(id)object addToSubView:(UIView*)view addToDictionary:(NSString*)reference {
 
@@ -203,26 +254,19 @@
 #pragma mark - UICollectionViewFlowDelegate
 -(NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
     if ([self.images count] > 0) {
-        return [self.images count];
+//        return [self.images count];
+        return 100;
     }
     return 0;
 }
 
 -(UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
-    UICollectionViewCell *cell = (UICollectionViewCell*)[self.imageCollectionView dequeueReusableCellWithReuseIdentifier:@"IMAGE_CELL" forIndexPath:indexPath];
-    
-    UIImageView *cellImage = [[UIImageView alloc] init];
+    ImageCell *cell = (ImageCell*)[self.imageCollectionView dequeueReusableCellWithReuseIdentifier:@"IMAGE_CELL" forIndexPath:indexPath];
 
-    cellImage.image = self.images[indexPath.row];
-    cellImage.contentMode = UIViewContentModeScaleAspectFit;
+    int index = (int)(indexPath.row % [self.images count]);
+    cell.imageView.image = self.images[index];
     
-    [cellImage setTranslatesAutoresizingMaskIntoConstraints:false];
-    [cell addSubview:cellImage];
-    
-    [cell addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[image]|" options:0 metrics:nil views:@{@"image":cellImage}]];
-    [cell addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[image]|" options:0 metrics:nil views:@{@"image":cellImage}]];
-    
-        
+    cell.imageView.contentMode = UIViewContentModeScaleAspectFit;
     return cell;
 }
 
@@ -360,12 +404,47 @@
     return _images;
 }
 
-
-
-//removes self as listner
--(void)dealloc
-{
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
+-(UILabel *)addressLabel {
+    if (_addressLabel == nil) {
+        _addressLabel = [[UILabel alloc] init];
+    }
+    return _addressLabel;
 }
+
+-(UILabel *)buildLabel {
+    if (_buildLabel == nil) {
+        _buildLabel = [[UILabel alloc] init];
+    }
+    return _buildLabel;
+}
+
+- (UILabel *)completionLabel {
+    if (_completionLabel == nil) {
+        _completionLabel = [[UILabel alloc] init];
+    }
+    return _completionLabel;
+}
+
+-(UILabel *)crossEWLabel {
+    if (_crossEWLabel == nil) {
+        _crossEWLabel = [[UILabel alloc] init];
+    }
+    return _crossEWLabel;
+}
+
+-(UILabel *)crossNSLabel {
+    if (_crossNSLabel == nil) {
+        _crossNSLabel = [[UILabel alloc] init];
+    }
+    return _crossNSLabel;
+}
+
+-(UILabel *)infoLabel {
+    if (_infoLabel == nil) {
+        _infoLabel = [[UILabel alloc] init];
+    }
+    return _infoLabel;
+}
+
 
 @end
