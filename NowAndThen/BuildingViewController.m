@@ -265,6 +265,10 @@
     }];
 }
 
+-(void)scrollToTopOfView {
+    [self.scrollView setContentOffset:CGPointMake(0, -self.scrollView.contentInset.top) animated:true];
+}
+
 -(void)mapButtonPressed {
     NSLog(@"lat: %@ ... long: %@", self.building.latitude, self.building.longitude);
     
