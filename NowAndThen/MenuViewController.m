@@ -19,6 +19,9 @@
 @property (strong, nonatomic) UISearchBar *searchBar;
 @property (strong, nonatomic) BuildingViewController *buildingVC;
 
+@property (strong, nonatomic) UITapGestureRecognizer *tapOffKeyboard;
+@property (strong, nonatomic) UITapGestureRecognizer *tapOffKeyboardOnChild;
+
 
 @end
 
@@ -49,6 +52,8 @@
     [self.view addSubview:self.buildingVC.view];
     [self.buildingVC didMoveToParentViewController:self];
     
+    self.tapOffKeyboard = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(dismissSearchBarKeyboard)];
+    self.tapOffKeyboardOnChild = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(dismissSearchBarKeyboard)];
 }
 
 
@@ -91,7 +96,7 @@
 
 #pragma mark - UITableViewDelegate
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    [self.searchBar resignFirstResponder];
+    [self dismissSearchBarKeyboard];
     self.buildingVC.buildingLabel.text = self.results[indexPath.row];
     self.buildingVC.buildingName = self.results[indexPath.row];
     //TODO - pass over new building
@@ -102,12 +107,22 @@
 #pragma mark - UISearchBarDelegate
 -(BOOL)searchBarShouldBeginEditing:(UISearchBar *)searchBar {
     [self.searchBar setShowsCancelButton:true];
+    [self.view addGestureRecognizer:self.tapOffKeyboard];
+    [self.buildingVC.view addGestureRecognizer:self.tapOffKeyboardOnChild];
     return true;
 }
 
+
 -(void)searchBarCancelButtonClicked:(UISearchBar *)searchBar {
-    [self.searchBar resignFirstResponder];
+    [self dismissSearchBarKeyboard];
     [self.searchBar setShowsCancelButton:false];
+    [self.view removeGestureRecognizer:self.tapOffKeyboard];
+}
+
+-(void)dismissSearchBarKeyboard {
+    [self.searchBar resignFirstResponder];
+    [self.view removeGestureRecognizer:self.tapOffKeyboard];
+    [self.buildingVC.view removeGestureRecognizer:self.tapOffKeyboardOnChild];
 }
 
 #pragma mark - Lazy Loading Getters
