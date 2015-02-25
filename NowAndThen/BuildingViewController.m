@@ -26,6 +26,9 @@
 @property (strong, nonatomic) UIButton *menuButton;
 @property (strong, nonatomic) UITapGestureRecognizer *tapToClose;
 
+@property (strong, nonatomic) UIButton *mapButton;
+
+
 #pragma mark - Labels
 @property (strong, nonatomic) UILabel *addressLabel;
 @property (strong, nonatomic) UILabel *buildLabel;
@@ -62,6 +65,9 @@
     [self.menuButton setImage:[UIImage imageNamed:@"menu"] forState:UIControlStateNormal];
     [self.menuButton addTarget:self action:@selector(menuButtonPressed) forControlEvents:UIControlEventTouchUpInside];
     
+    [self.mapButton setImage:[UIImage imageNamed:@"location"] forState:UIControlStateNormal];
+    [self.mapButton addTarget:self action:@selector(mapButtonPressed) forControlEvents:UIControlEventTouchUpInside];
+    
     [self prepareScrollViewForAutolayout];
     [self applyAutolayoutConstraintsToScrollView];
 
@@ -73,7 +79,6 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
 
-    self.title = self.buildingName;
     self.view.backgroundColor = [UIColor whiteColor];
 
     [self setBuildingLabelValues];
@@ -172,9 +177,10 @@
     [self prepObjectForAutoLayout: self.scrollView     addToSubView:self.rootView  addToDictionary:@"scrollView"];
     [self prepObjectForAutoLayout: self.buildingLabel  addToSubView:self.rootView  addToDictionary:@"buildingLabel"];
     [self prepObjectForAutoLayout: self.menuButton     addToSubView:self.rootView  addToDictionary:@"menuButton"];
+    [self prepObjectForAutoLayout: self.mapButton      addToSubView:self.rootView  addToDictionary:@"mapButton"];
     
     [self.rootView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[scrollView]|"                              options:0 metrics:nil views:self.views]];
-    [self.rootView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-8-[menuButton]-16-[buildingLabel]-(>=0)-|" options:NSLayoutFormatAlignAllCenterY metrics:nil views:self.views]];
+    [self.rootView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-8-[menuButton]-16-[buildingLabel]-(>=8)-[mapButton]-8-|" options:NSLayoutFormatAlignAllCenterY metrics:nil views:self.views]];
     [self.rootView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-25-[menuButton]-8-[scrollView]|"           options:0 metrics:nil views:self.views]];
 }
 
@@ -257,6 +263,29 @@
         [weakSelf.menuButton removeTarget:weakSelf action:@selector(closePanel) forControlEvents:UIControlEventTouchUpInside];
         [weakSelf.menuButton addTarget:weakSelf action:@selector(menuButtonPressed) forControlEvents:UIControlEventTouchUpInside];
     }];
+}
+
+-(void)mapButtonPressed {
+    NSLog(@"lat: %@ ... long: %@", self.building.latitude, self.building.longitude);
+    
+    [self transitionToMapViewController];
+}
+
+-(void)transitionToMapViewController {
+    int tabIndex = 1;
+    
+    UITabBarController *tabBarController = self.tabBarController;
+    UIView *fromView = tabBarController.selectedViewController.view;
+    UIView *toView = [[tabBarController.viewControllers objectAtIndex:tabIndex] view];
+    
+    [UIView transitionFromView:fromView toView:toView duration:0.5
+                       options:(tabIndex > tabBarController.selectedIndex ? UIViewAnimationOptionTransitionFlipFromTop : UIViewAnimationOptionTransitionCrossDissolve)
+                    completion:^(BOOL finished) {
+                        if (finished) {
+                            tabBarController.selectedIndex = tabIndex;
+                        }
+                    }];
+    
 }
 
 #pragma updateBuildingName
@@ -349,6 +378,13 @@
         _menuButton = [[UIButton alloc] init];
     }
     return _menuButton;
+}
+
+-(UIButton *)mapButton {
+    if (_mapButton == nil) {
+        _mapButton = [[UIButton alloc] init];
+    }
+    return _mapButton;
 }
 
 -(UICollectionView *)imageCollectionView {
