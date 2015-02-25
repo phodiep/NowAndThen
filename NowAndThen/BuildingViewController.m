@@ -19,6 +19,8 @@
 @property (strong, nonatomic) UIView *rootView;
 @property (strong, nonatomic) UIScrollView *scrollView;
 
+@property (strong, nonatomic) UIView *moreMenuView;
+
 @property (strong, nonatomic) UICollectionView *imageCollectionView;
 @property (strong, nonatomic) NSMutableArray *images;
 @property (nonatomic) BOOL firstScrollCollectionView;
@@ -26,8 +28,14 @@
 @property (strong, nonatomic) UIButton *menuButton;
 @property (strong, nonatomic) UITapGestureRecognizer *tapToClose;
 
+@property (strong, nonatomic) UIButton *moreButton;
+@property (nonatomic) BOOL moreMenuShowing;
+
 @property (strong, nonatomic) UIButton *mapButton;
 
+@property (strong, nonatomic) UIButton *googleButton;
+@property (strong, nonatomic) UIButton *yahooButton;
+@property (strong, nonatomic) UIButton *wikipediaButton;
 
 #pragma mark - Labels
 @property (strong, nonatomic) UILabel *addressLabel;
@@ -64,14 +72,28 @@
 
     [self.menuButton setImage:[UIImage imageNamed:@"menu"] forState:UIControlStateNormal];
     [self.menuButton addTarget:self action:@selector(menuButtonPressed) forControlEvents:UIControlEventTouchUpInside];
+
+    [self.moreButton setImage:[UIImage imageNamed:@"more"] forState:UIControlStateNormal];
+    [self.moreButton addTarget:self action:@selector(moreButtonPressed) forControlEvents:UIControlEventTouchUpInside];
     
     [self.mapButton setImage:[UIImage imageNamed:@"location"] forState:UIControlStateNormal];
     [self.mapButton addTarget:self action:@selector(mapButtonPressed) forControlEvents:UIControlEventTouchUpInside];
     
+    [self.googleButton setImage:[UIImage imageNamed:@"google"] forState:UIControlStateNormal];
+    [self.googleButton addTarget:self action:@selector(googleButtonPressed) forControlEvents:UIControlEventTouchUpInside];
+    
+    [self.wikipediaButton setImage:[UIImage imageNamed:@"wikipedia"] forState:UIControlStateNormal];
+    [self.wikipediaButton addTarget:self action:@selector(wikipediaButtonPressed) forControlEvents:UIControlEventTouchUpInside];
+    
+    [self.yahooButton setImage:[UIImage imageNamed:@"yahoo"] forState:UIControlStateNormal];
+    [self.yahooButton addTarget:self action:@selector(yahooButtonPressed) forControlEvents:UIControlEventTouchUpInside];
+    
     [self prepareScrollViewForAutolayout];
     [self applyAutolayoutConstraintsToScrollView];
 
+
     [self setupAutolayoutForRootView];
+    [self setupAutolayoutForMoreMenuView];
 
     self.view = self.rootView;
 }
@@ -81,6 +103,8 @@
 
     self.view.backgroundColor = [UIColor whiteColor];
 
+    self.moreMenuShowing = NO;
+    
     [self setBuildingLabelValues];
     
     self.imageCollectionView.dataSource = self;
@@ -110,6 +134,7 @@
     [super viewWillTransitionToSize:size withTransitionCoordinator:coordinator];
     [coordinator animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext> context) {
         [self applyAutolayoutConstraintsToScrollView];
+        [self hideMoreMenu];
     } completion:nil];
 }
 
@@ -177,13 +202,36 @@
     [self prepObjectForAutoLayout: self.scrollView     addToSubView:self.rootView  addToDictionary:@"scrollView"];
     [self prepObjectForAutoLayout: self.buildingLabel  addToSubView:self.rootView  addToDictionary:@"buildingLabel"];
     [self prepObjectForAutoLayout: self.menuButton     addToSubView:self.rootView  addToDictionary:@"menuButton"];
-    [self prepObjectForAutoLayout: self.mapButton      addToSubView:self.rootView  addToDictionary:@"mapButton"];
+    
+    [self prepObjectForAutoLayout: self.moreButton     addToSubView:self.rootView  addToDictionary:@"moreButton"];
     
     [self.rootView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[scrollView]|"                              options:0 metrics:nil views:self.views]];
-    [self.rootView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-8-[menuButton]-16-[buildingLabel]-(>=8)-[mapButton]-8-|" options:NSLayoutFormatAlignAllCenterY metrics:nil views:self.views]];
+    [self.rootView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-8-[menuButton]-16-[buildingLabel]-(>=8)-[moreButton]-8-|" options:NSLayoutFormatAlignAllCenterY metrics:nil views:self.views]];
     [self.rootView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-25-[menuButton]-8-[scrollView]|"           options:0 metrics:nil views:self.views]];
 }
 
+-(void)setupAutolayoutForMoreMenuView {
+    self.moreMenuView.backgroundColor = [UIColor lightGrayColor];
+    self.moreMenuView.alpha = 0.75;
+    [self prepObjectForAutoLayout:self.moreMenuView         addToSubView:self.rootView      addToDictionary:@"moreView"];
+    
+    [self prepObjectForAutoLayout:self.mapButton            addToSubView:self.moreMenuView  addToDictionary:@"mapButton"];
+    [self prepObjectForAutoLayout:self.googleButton         addToSubView:self.moreMenuView  addToDictionary:@"google"];
+    [self prepObjectForAutoLayout:self.yahooButton          addToSubView:self.moreMenuView  addToDictionary:@"yahoo"];
+    [self prepObjectForAutoLayout:self.wikipediaButton      addToSubView:self.moreMenuView  addToDictionary:@"wikipedia"];
+    
+    [self.moreMenuView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-8-[mapButton(34)]-16-[google(34)]-16-[wikipedia(34)]-16-[yahoo(34)]-8-|"               options:NSLayoutFormatAlignAllCenterX metrics:nil     views:self.views]];
+
+    [self.moreMenuView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-8-[mapButton(34)]-8-|"               options:NSLayoutFormatAlignAllCenterY metrics:nil     views:self.views]];
+    [self.moreMenuView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-8-[google(34)]-8-|"               options:NSLayoutFormatAlignAllCenterY metrics:nil     views:self.views]];
+    [self.moreMenuView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-8-[wikipedia(34)]-8-|"               options:NSLayoutFormatAlignAllCenterY metrics:nil     views:self.views]];
+    [self.moreMenuView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-8-[yahoo(34)]-8-|"               options:NSLayoutFormatAlignAllCenterY metrics:nil     views:self.views]];
+
+    [self.rootView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:[moreView]-(-50)-|"               options:0 metrics:nil     views:self.views]];
+    [self.rootView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-60-[moreView]"               options:0 metrics:nil     views:self.views]];
+
+    
+}
 
 -(void)prepareScrollViewForAutolayout {
     [self prepObjectForAutoLayout: self.buildingInfo        addToSubView:self.scrollView  addToDictionary:@"buildingInfo"];
@@ -221,6 +269,7 @@
     [self.scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-8-[infoLabel]-8-|"         options:0 metrics:nil     views:self.views]];
     [self.scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-8-[buildingInfo(width)]-|" options:0 metrics:metrics views:self.views]];
     [self.scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[imageFlow]|"               options:0 metrics:nil     views:self.views]];
+
 }
 
 
@@ -265,6 +314,38 @@
     }];
 }
 
+-(void)moreButtonPressed {
+    if (self.moreMenuShowing) {
+        //is showing
+        [self hideMoreMenu];
+    } else {
+        //is hidden
+        [self showMoreMenu];
+    }
+}
+
+-(void)showMoreMenu {
+    if (self.moreMenuShowing == NO) {
+        __weak BuildingViewController *weakSelf = self;
+        [UIView animateWithDuration:0.3 animations:^{
+            weakSelf.moreMenuView.center = CGPointMake(weakSelf.moreMenuView.center.x - 50, weakSelf.moreMenuView.center.y);
+        } completion:^(BOOL finished) {
+            self.moreMenuShowing = YES;
+        }];
+    }
+}
+
+-(void)hideMoreMenu {
+    if (self.moreMenuShowing == YES) {
+        __weak BuildingViewController *weakSelf = self;
+        [UIView animateWithDuration:0.3 animations:^{
+            weakSelf.moreMenuView.center = CGPointMake(weakSelf.moreMenuView.center.x + 50, weakSelf.moreMenuView.center.y);
+        } completion:^(BOOL finished) {
+            self.moreMenuShowing = NO;
+        }];
+    }
+}
+
 -(void)scrollToTopOfView {
     [self.scrollView setContentOffset:CGPointMake(0, -self.scrollView.contentInset.top) animated:true];
 }
@@ -290,6 +371,18 @@
                         }
                     }];
     
+}
+
+-(void)googleButtonPressed {
+    NSLog(@"Google");
+}
+
+-(void)yahooButtonPressed {
+    NSLog(@"Yahoo");
+}
+
+-(void)wikipediaButtonPressed {
+    NSLog(@"Wikipedia");
 }
 
 #pragma updateBuildingName
@@ -319,6 +412,13 @@
         _scrollView = [[UIScrollView alloc] init];
     }
     return _scrollView;
+}
+
+-(UIView *)moreMenuView {
+    if (_moreMenuView == nil) {
+        _moreMenuView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 50, 200)];
+    }
+    return _moreMenuView;
 }
 
 -(UILabel *)buildingInfo {
@@ -377,6 +477,13 @@
     return _crossStreetNS;
 }
 
+-(UIButton *)moreButton {
+    if (_moreButton == nil) {
+        _moreButton = [[UIButton alloc] init];
+    }
+    return _moreButton;
+}
+
 -(UIButton *)menuButton {
     if (_menuButton == nil) {
         _menuButton = [[UIButton alloc] init];
@@ -389,6 +496,26 @@
         _mapButton = [[UIButton alloc] init];
     }
     return _mapButton;
+}
+-(UIButton *)googleButton {
+    if (_googleButton == nil) {
+        _googleButton = [[UIButton alloc] init];
+    }
+    return _googleButton;
+}
+
+-(UIButton *)yahooButton {
+    if (_yahooButton == nil) {
+        _yahooButton = [[UIButton alloc] init];
+    }
+    return _yahooButton;
+}
+
+-(UIButton *)wikipediaButton {
+    if (_wikipediaButton == nil) {
+        _wikipediaButton = [[UIButton alloc] init];
+    }
+    return _wikipediaButton;
 }
 
 -(UICollectionView *)imageCollectionView {
