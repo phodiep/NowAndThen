@@ -121,6 +121,10 @@
                              object:nil];
 }
 
+-(void)viewWillAppear:(BOOL)animated {
+    [self hideMoreMenu];
+}
+
 -(void)viewDidLayoutSubviews {
     if (self.firstScrollCollectionView == false) {
         [self.imageCollectionView scrollToItemAtIndexPath: [NSIndexPath indexPathForItem:50 inSection:0]
@@ -297,6 +301,7 @@
     [UIView animateWithDuration:0.3 animations:^{
         weakSelf.view.center = CGPointMake(weakSelf.view.center.x + 250, weakSelf.view.center.y);
     } completion:^(BOOL finished) {
+        [self hideMoreMenu];
         [weakSelf.menuButton removeTarget:weakSelf action:@selector(menuButtonPressed) forControlEvents:UIControlEventTouchUpInside];
         [weakSelf.menuButton addTarget:weakSelf action:@selector(closePanel) forControlEvents:UIControlEventTouchUpInside];
         [weakSelf.view addGestureRecognizer:weakSelf.tapToClose];
