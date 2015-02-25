@@ -26,28 +26,9 @@
 
 -(instancetype)initWithJson:(NSDictionary*) jsonDictionary;
 -(instancetype)initFakeBuilding;
++(NSArray*)fetchBuildingsFromJsonData:(NSArray*)data;
 
 +(NSArray*)fetchBuildingDataFromFile;
 -(void) print;
 
 @end
-
-
-/*
-  {"loc": { "type": "Point", coordinates: [ -73.88, 40.78 ] },
- "buildingName": "Replace Test - changed lat and long",  
- "buildingAddress": "2001 W. Garfield Street",  
- "city": "Seattle",  
- "state": "WA",  
- "zipcode": "98119-3115",  
- "buildDate": "1944",  
- "buildCompletion": "1944",  
- "crossStreetEastWest": "W. Garfield Street",  
- "crossStreetNorthSouth": "15th Ave W",  
- "infosites": {
-    "wikipediaURL": "",    "yahooURL": "",    "googleURL": "http://www.seattle.gov/neighborhoods/preservation/documents/DesRptAdmiralsHouse.pdf"
- },  "images": {
- "url1900": "",    "url2010": "http://seamlessmoves.com/blog/wp-content/uploads/2012/12/Admirals-House.jpg"
- 
- "tags": ["Washington Mutual","Tower", "tall buildings"],  "crtTimestamp": "2-23-2015 16:00",  "crtUser": "Initial_Load",  "updtTimestamp": "2-23-2015 16:00",  "updtUser": "Initial_Load"}'
-*/

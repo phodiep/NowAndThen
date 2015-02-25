@@ -17,29 +17,27 @@
 
 -(instancetype)initFakeBuilding {
     self = [super init];
-    self.longitude = @"-73.88";
-    self.latitude = @"40.78";
-    
-    self.name = @"Fake Building";
-    self.address = @"2001 W. Garfield Street";
-    self.city = @"Seattle";
-    self.state = @"WA";
-    self.zipcode = @"98119-3115";
-    self.buildDate = @"1944";
-    self.buildCompletion = @"1944";
-    self.crossStreetEastWest = @"W. Garfield Street";
-    self.crossStreetNorthSouth = @"15th Ave W";
-    self.infosites = @[@"http://www.seattle.gov/neighborhoods/preservation/documents/DesRptAdmiralsHouse.pdf"];
-    self.imageUrls = @[@"http://seamlessmoves.com/blog/wp-content/uploads/2012/12/Admirals-House.jpg"];
-    
+    if (self) {
+        self.longitude = @"-73.88";
+        self.latitude = @"40.78";
+        
+        self.name = @"Fake Building";
+        self.address = @"2001 W. Garfield Street";
+        self.city = @"Seattle";
+        self.state = @"WA";
+        self.zipcode = @"98119-3115";
+        self.buildDate = @"1944";
+        self.buildCompletion = @"1944";
+        self.crossStreetEastWest = @"W. Garfield Street";
+        self.crossStreetNorthSouth = @"15th Ave W";
+        self.infosites = @[@"http://www.seattle.gov/neighborhoods/preservation/documents/DesRptAdmiralsHouse.pdf"];
+        self.imageUrls = @[@"http://seamlessmoves.com/blog/wp-content/uploads/2012/12/Admirals-House.jpg"];
+    }
     return self;
-    
 }
 
 -(instancetype)initWithJson:(NSDictionary*) jsonDictionary {
-    
     self = [super init];
-    
     if (self) {
         NSDictionary *location = jsonDictionary[@"loc"];
         NSArray *coordinates = location[@"coordinates"];
@@ -61,7 +59,7 @@
     return self;
 }
 
-+ (NSArray*)fetchBuildingsFromJsonData:(NSArray*) data {
++(NSArray*)fetchBuildingsFromJsonData:(NSArray*)data {
     NSMutableArray *buildings = [[NSMutableArray alloc] init];
     
     for ( NSDictionary *item in data ) {
@@ -71,6 +69,8 @@
     
     return buildings;
 }
+
+
 
 
 -(id) init {
