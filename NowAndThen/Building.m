@@ -9,16 +9,75 @@
 #import <Foundation/Foundation.h>
 #import "Building.h"
 
+@interface Building ()
 
-@implementation Building {
+@end
 
+@implementation Building
+
+-(instancetype)initFakeBuilding {
+    self = [super init];
+    self.longitude = @"-73.88";
+    self.latitude = @"40.78";
+    
+    self.name = @"Fake Building";
+    self.address = @"2001 W. Garfield Street";
+    self.city = @"Seattle";
+    self.state = @"WA";
+    self.zipcode = @"98119-3115";
+    self.buildDate = @"1944";
+    self.buildCompletion = @"1944";
+    self.crossStreetEastWest = @"W. Garfield Street";
+    self.crossStreetNorthSouth = @"15th Ave W";
+    self.infosites = @[@"http://www.seattle.gov/neighborhoods/preservation/documents/DesRptAdmiralsHouse.pdf"];
+    self.imageUrls = @[@"http://seamlessmoves.com/blog/wp-content/uploads/2012/12/Admirals-House.jpg"];
+    
+    return self;
+    
 }
+
+-(instancetype)initWithJson:(NSDictionary*) jsonDictionary {
+    
+    self = [super init];
+    
+    if (self) {
+        NSDictionary *location = jsonDictionary[@"loc"];
+        NSArray *coordinates = location[@"coordinates"];
+        self.longitude = coordinates[0];
+        self.latitude = coordinates[1];
+
+        self.name = jsonDictionary[@"buildingName"];
+        self.address = jsonDictionary[@"buildingAddress"];
+        self.city = jsonDictionary[@"city"];
+        self.state = jsonDictionary[@"state"];
+        self.zipcode = jsonDictionary[@"zipcode"];
+        self.buildDate = jsonDictionary[@"buildDate"];
+        self.buildCompletion = jsonDictionary[@"buildCompletion"];
+        self.crossStreetEastWest = jsonDictionary[@"crossStreetEastWest"];
+        self.crossStreetNorthSouth = jsonDictionary[@"crossStreetNorthSouth"];
+        self.infosites = jsonDictionary[@"infosites"];
+        self.imageUrls = jsonDictionary[@"images"];
+    }
+    return self;
+}
+
++ (NSArray*)fetchBuildingsFromJsonData:(NSArray*) data {
+    NSMutableArray *buildings = [[NSMutableArray alloc] init];
+    
+    for ( NSDictionary *item in data ) {
+        Building *building = [[Building alloc] initWithJson:item];
+        [buildings addObject:building];
+    }
+    
+    return buildings;
+}
+
 
 -(id) init {
     self = [super init];
     if ( self ) {
-        self.buildingName = @"Test: Smith Tower";
-        NSLog( @"%@", self.buildingName);
+        self.name = @"Test: Smith Tower";
+        NSLog( @"%@", self.name);
     }
     return self;
 }
@@ -28,8 +87,8 @@
 
     self = [super init];
     if ( self ) {
-        self.buildingName = @"Test: Smith Tower";
-        NSLog( @"%@", self.buildingName);
+        self.name = @"Test: Smith Tower";
+        NSLog( @"%@", self.name);
     }
     return self;
 }

@@ -14,11 +14,6 @@
 
 @interface BuildingViewController () <UICollectionViewDataSource, UICollectionViewDelegateFlowLayout>
 
-@property (strong, nonatomic) NSMutableArray *buildings;      // Array of 'Building' NSMutableDictionary(s)
-
-//@property (strong, nonatomic) Building *building;
-//@property (strong, nonatomic) Building *currentBuilding;
-
 @property (strong, nonatomic) NSMutableDictionary *views;
 @property (strong, nonatomic) UIView *rootView;
 @property (strong, nonatomic) UIScrollView *scrollView;
@@ -29,35 +24,34 @@
 @property (strong, nonatomic) UICollectionView *imageCollectionView;
 @property (strong, nonatomic) NSMutableArray *images;
 
-@property (strong, nonatomic) UIImage *oldImage;
-@property (strong, nonatomic) UIImage *currentImage;
-
-@property (strong, nonatomic) UILabel *buildingInfo;
-
 @property (strong, nonatomic) UIButton *menuButton;
-
 @property (strong, nonatomic) UITapGestureRecognizer *tapToClose;
 
 -(void)updateBuildingName:(NSNotification *)notification;
+
+
+@property (strong, nonatomic) UILabel *buildingInfo;
+@property (strong, nonatomic) UILabel *address;
+@property (strong, nonatomic) UILabel *cityStateZip;
+@property (strong, nonatomic) UILabel *buildDate;
+@property (strong, nonatomic) UILabel *completionDate;
+@property (strong, nonatomic) UILabel *crossStreetEW;
+@property (strong, nonatomic) UILabel *crossStreetNS;
 
 @end
 
 @implementation BuildingViewController
 
 - (void)loadView {
-
-    self.building = [[Building alloc]init];
     
-    self.oldImage = [UIImage imageNamed:@"smithTowerOld"];
-    self.currentImage = [UIImage imageNamed:@"smithTowerNew"];
-    [self.images addObject:self.oldImage];
-    [self.images addObject:self.currentImage];
+    
 
-    [self setScrollViewFrameForFullScreen];
+    self.scrollView.frame = CGRectMake(0, 0,
+                                       CGRectGetWidth([[UIScreen mainScreen] applicationFrame]),
+                                       CGRectGetHeight([[UIScreen mainScreen] applicationFrame]));
+    
     self.scrollView.bounces = true;
     self.scrollView.backgroundColor = [UIColor whiteColor];
-    
-    [self setSampleView];
     
     [self setupImageCollectionView];
     
@@ -91,6 +85,9 @@
     [self.imageCollectionView registerClass:UICollectionViewCell.class forCellWithReuseIdentifier:@"IMAGE_CELL"];
     
     self.tapToClose = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(closePanel)];
+
+    [self initBuildingLabels];
+    [self setBuildingLabelValues];
   
   //used to update which building is displayed 
   NSNotificationCenter *notificationCenter = [NSNotificationCenter defaultCenter];
@@ -146,40 +143,49 @@
 }
 
 -(void)setupAutolayoutForScrollView {
-    [self setupObjectForAutoLayout: self.buildingInfo       addToSubView:self.scrollView  addToDictionary:@"buildingInfo"];
-    [self setupObjectForAutoLayout:self.imageCollectionView addToSubView:self.scrollView  addToDictionary:@"imageFlow"];
+    [self setupObjectForAutoLayout: self.buildingInfo        addToSubView:self.scrollView  addToDictionary:@"buildingInfo"];
+    [self setupObjectForAutoLayout: self.imageCollectionView addToSubView:self.scrollView  addToDictionary:@"imageFlow"];
+
+    [self setupObjectForAutoLayout: self.address             addToSubView:self.scrollView  addToDictionary:@"address"];
+    [self setupObjectForAutoLayout: self.cityStateZip        addToSubView:self.scrollView  addToDictionary:@"cityStateZip"];
+    [self setupObjectForAutoLayout: self.buildDate           addToSubView:self.scrollView  addToDictionary:@"buildDate"];
+    [self setupObjectForAutoLayout: self.completionDate      addToSubView:self.scrollView  addToDictionary:@"completionDate"];
+    [self setupObjectForAutoLayout: self.crossStreetEW       addToSubView:self.scrollView  addToDictionary:@"crossEW"];
+    [self setupObjectForAutoLayout: self.crossStreetNS       addToSubView:self.scrollView  addToDictionary:@"crossNS"];
 }
 
 -(void)setupAutolayoutConstraintsForScrollView {
     [self.scrollView removeConstraints:[self.scrollView constraints]];
-    [self.scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[buildingInfo]-20-[imageFlow(300)]-50-|" options:0 metrics:nil views:self.views]];
+    [self.scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[address]-[cityStateZip]-16-[buildDate]-[completionDate]-16-[crossEW]-[crossNS]-16-[buildingInfo]-20-[imageFlow(300)]-50-|"
+                                                                            options:NSLayoutFormatAlignAllLeading metrics:nil views:self.views]];
+    [self.scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-8-[address]" options:0 metrics:nil views:self.views]];
 
-    [self.scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-[buildingInfo(width)]-|" options:0
+    
+    [self.scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-8-[buildingInfo(width)]-|" options:0
                                                                             metrics: @{@"width": @(CGRectGetWidth([[UIScreen mainScreen] applicationFrame]) - 16) }
                                                                               views:self.views]];
     [self.scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[imageFlow]|" options:0 metrics:nil views:self.views]];
 }
 
--(void)setScrollViewFrameForFullScreen {
-    self.scrollView.frame = CGRectMake(0, 0,
-                                       CGRectGetWidth([[UIScreen mainScreen] applicationFrame]),
-                                       CGRectGetHeight([[UIScreen mainScreen] applicationFrame]));
+-(void)initBuildingLabels {
 }
 
--(void)setSampleView {
-//    self.oldImage.images = [UIImage imageNamed:@"smithTowerOld"];
-//    self.oldImage.contentMode = UIViewContentModeScaleAspectFit;
+-(void)setBuildingLabelValues {
+    self.buildingLabel.text = self.building.name;
+    self.address.text = self.building.address;
+    self.cityStateZip.text = [NSString stringWithFormat:@"%@ %@, %@",
+                              self.building.city,
+                              self.building.state,
+                              self.building.zipcode];
+    self.buildDate.text = [NSString stringWithFormat:@"Build Date: %@", self.building.buildDate];
+    self.completionDate.text = [NSString stringWithFormat:@"CompetionDate : %@", self.building.buildCompletion];
+    self.crossStreetEW.text = [NSString stringWithFormat:@"cross street E/W: %@", self.building.crossStreetEastWest];
+    self.crossStreetNS.text = [NSString stringWithFormat:@"cross street N/S: %@", self.building.crossStreetNorthSouth];
+    self.buildingInfo.text = @"Lorem ipsum dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nam liber te conscient to factor tum poen legum odioque civiuda.";
     
-//    self.currentImage.images = [UIImage imageNamed:@"smithTowerNew"];
-//    self.currentImage.contentMode = UIViewContentModeScaleAspectFit;
-    
-    self.buildingLabel.text = @"Smith Tower";  //self.building.buildingName;
-//    self.buildingLabel.text = _building[@"BuildingName"];
-//    NSLog(@"%@", self.buildingLabel.text );
-//    NSLog(@"%@", self.building.buildingName );
+    [self.images addObject: [UIImage imageNamed:@"smithTowerOld"]];
+    [self.images addObject: [UIImage imageNamed:@"smithTowerNew"]];
 
-    
-    self.buildingInfo.text = @"Smith Tower is a skyscraper in Pioneer Square in Seattle, Washington. Completed in 1914, the 38-story, 149 m (489 ft) tower is the oldest skyscraper in the city and was the tallest office building west of the Mississippi River until the Kansas City Power & Light Building was built in 1931. It remained the tallest building on the West Coast until the Space Needle overtook it in 1962. \n\nSmith Tower is named after its builder, firearm and typewriter magnate Lyman Cornelius Smith, and is a designated Seattle landmark.";
 }
 
 -(void)setupBuildingInformation:(id)object getBuildingInfo:(Building*)building {
@@ -276,21 +282,6 @@
     return _scrollView;
 }
 
-
--(UIImage *)oldImage {
-    if (_oldImage == nil) {
-        _oldImage = [[UIImage alloc] init];
-    }
-    return _oldImage;
-}
-
--(UIImage *)currentImage {
-    if (_currentImage == nil) {
-        _currentImage = [[UIImage alloc] init];
-    }
-    return _currentImage;
-}
-
 -(UILabel *)buildingInfo {
     if (_buildingInfo == nil) {
         _buildingInfo = [[UILabel alloc] init];
@@ -304,6 +295,49 @@
     }
     return _buildingLabel;
 }
+
+-(UILabel *)address {
+    if (_address == nil) {
+        _address = [[UILabel alloc] init];
+    }
+    return _address;
+}
+
+-(UILabel *)cityStateZip {
+    if (_cityStateZip == nil) {
+        _cityStateZip = [[UILabel alloc] init];
+    }
+    return _cityStateZip;
+}
+
+-(UILabel *)buildDate {
+    if (_buildDate == nil) {
+        _buildDate = [[UILabel alloc] init];
+    }
+    return _buildDate;
+}
+
+-(UILabel *)completionDate {
+    if (_completionDate == nil) {
+        _completionDate = [[UILabel alloc] init];
+    }
+    return _completionDate;
+}
+
+-(UILabel *)crossStreetEW {
+    if (_crossStreetEW == nil) {
+        _crossStreetEW = [[UILabel alloc] init];
+    }
+    return _crossStreetEW;
+}
+
+-(UILabel *)crossStreetNS {
+    if (_crossStreetNS == nil) {
+        _crossStreetNS = [[UILabel alloc] init];
+    }
+    return _crossStreetNS;
+}
+
 
 -(UIButton *)menuButton {
     if (_menuButton == nil) {
@@ -325,6 +359,8 @@
     }
     return _images;
 }
+
+
 
 //removes self as listner
 -(void)dealloc
