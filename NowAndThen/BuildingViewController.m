@@ -11,6 +11,7 @@
 #import "BuildingViewController.h"
 #import "MenuViewController.h"
 #import "Building.h"
+#import "ImageCell.h"
 
 @interface BuildingViewController () <UICollectionViewDataSource, UICollectionViewDelegateFlowLayout>
 
@@ -44,13 +45,14 @@
 @property (strong, nonatomic) UILabel *crossStreetEW;
 @property (strong, nonatomic) UILabel *crossStreetNS;
 
+@property (nonatomic) BOOL firstScrollCollectionView;
 @end
 
 @implementation BuildingViewController
 
 - (void)loadView {
     
-    
+    self.firstScrollCollectionView = false;
 
     self.scrollView.frame = CGRectMake(0, 0,
                                        CGRectGetWidth([[UIScreen mainScreen] applicationFrame]),
@@ -85,15 +87,17 @@
     // Do any additional setup after loading the view.
     self.title = self.buildingName;
     self.view.backgroundColor = [UIColor whiteColor];
+
+    [self setBuildingLabelValues];
     
     self.imageCollectionView.dataSource = self;
     self.imageCollectionView.delegate = self;
-    [self.imageCollectionView registerClass:UICollectionViewCell.class forCellWithReuseIdentifier:@"IMAGE_CELL"];
+    [self.imageCollectionView registerClass:ImageCell.class forCellWithReuseIdentifier:@"IMAGE_CELL"];
+
     
     self.tapToClose = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(closePanel)];
 
-    [self initBuildingLabels];
-    [self setBuildingLabelValues];
+
   
   //used to update which building is displayed 
   NSNotificationCenter *notificationCenter = [NSNotificationCenter defaultCenter];
@@ -103,7 +107,16 @@
                            object:nil];
 
 }
+-(void)viewDidLayoutSubviews {
 
+    if (self.firstScrollCollectionView == false) {
+        [self.imageCollectionView scrollToItemAtIndexPath: [NSIndexPath indexPathForItem:50 inSection:0]
+                                     atScrollPosition:UICollectionViewScrollPositionCenteredVertically animated:false];
+        
+        self.firstScrollCollectionView = true;
+    }
+    
+}
 
 -(void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
     //reset autolayout constraints when screen is rotated
@@ -175,9 +188,19 @@
 -(void)setupAutolayoutConstraintsForScrollView {
     [self.scrollView removeConstraints:[self.scrollView constraints]];
     [self.scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[addressLabel]-[address]-[cityStateZip]-25-[buildLabel]-[buildDate]-[completionLabel]-[completionDate]-25-[crossNSLabel]-[crossNS]-[crossEWLabel]-[crossEW]-25-[infoLabel]-[buildingInfo]-25-[imageFlow(300)]-50-|"
-                                                                            options:NSLayoutFormatAlignAllLeading metrics:nil views:self.views]];
-    [self.scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-8-[address]" options:0 metrics:nil views:self.views]];
-
+                                                                            options:0 metrics:nil views:self.views]];
+    [self.scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-8-[addressLabel]-8-|" options:0 metrics:nil views:self.views]];
+    [self.scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-8-[address]-8-|" options:0 metrics:nil views:self.views]];
+    [self.scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-8-[cityStateZip]-8-|" options:0 metrics:nil views:self.views]];
+    [self.scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-8-[buildLabel]-8-|" options:0 metrics:nil views:self.views]];
+    [self.scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-8-[buildDate]-8-|" options:0 metrics:nil views:self.views]];
+    [self.scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-8-[completionLabel]-8-|" options:0 metrics:nil views:self.views]];
+    [self.scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-8-[completionDate]-8-|" options:0 metrics:nil views:self.views]];
+    [self.scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-8-[crossNSLabel]-8-|" options:0 metrics:nil views:self.views]];
+    [self.scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-8-[crossNS]-8-|" options:0 metrics:nil views:self.views]];
+    [self.scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-8-[crossEWLabel]-8-|" options:0 metrics:nil views:self.views]];
+    [self.scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-8-[crossEW]-8-|" options:0 metrics:nil views:self.views]];
+    [self.scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-8-[infoLabel]-8-|" options:0 metrics:nil views:self.views]];
     
     [self.scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-8-[buildingInfo(width)]-|" options:0
                                                                             metrics: @{@"width": @(CGRectGetWidth([[UIScreen mainScreen] applicationFrame]) - 16) }
@@ -185,8 +208,6 @@
     [self.scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[imageFlow]|" options:0 metrics:nil views:self.views]];
 }
 
--(void)initBuildingLabels {
-}
 
 -(void)setBuildingLabelValues {
     self.addressLabel.text = @"Address";
@@ -214,16 +235,13 @@
     self.crossStreetEW.text = self.building.crossStreetEastWest;
     self.crossStreetNS.text = self.building.crossStreetNorthSouth;
     self.buildingInfo.text = @"Lorem ipsum dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nam liber te conscient to factor tum poen legum odioque civiuda.";
+    [self.images addObject: [UIImage imageNamed:@"smithTowerOld"]];
+    [self.images addObject: [UIImage imageNamed:@"smithTowerNew"]];
+    [self.images addObject: [UIImage imageNamed:@"smithTowerOld"]];
+    [self.images addObject: [UIImage imageNamed:@"smithTowerNew"]];
     
-    [self.images addObject: [UIImage imageNamed:@"smithTowerOld"]];
-    [self.images addObject: [UIImage imageNamed:@"smithTowerNew"]];
-    [self.images addObject: [UIImage imageNamed:@"smithTowerOld"]];
-    [self.images addObject: [UIImage imageNamed:@"smithTowerNew"]];
 }
 
--(void)setupBuildingInformation:(id)object getBuildingInfo:(Building*)building {
-
-}
 
 -(void)setupObjectForAutoLayout:(id)object addToSubView:(UIView*)view addToDictionary:(NSString*)reference {
 
@@ -236,27 +254,19 @@
 #pragma mark - UICollectionViewFlowDelegate
 -(NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
     if ([self.images count] > 0) {
-        return [self.images count];
+//        return [self.images count];
+        return 100;
     }
     return 0;
 }
 
 -(UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
-    UICollectionViewCell *cell = (UICollectionViewCell*)[self.imageCollectionView dequeueReusableCellWithReuseIdentifier:@"IMAGE_CELL" forIndexPath:indexPath];
-    
-    UIImageView *cellImage = [[UIImageView alloc] init];
+    ImageCell *cell = (ImageCell*)[self.imageCollectionView dequeueReusableCellWithReuseIdentifier:@"IMAGE_CELL" forIndexPath:indexPath];
 
-    cellImage.image = self.images[indexPath.row];
-    cellImage.contentMode = UIViewContentModeScaleAspectFit;
+    int index = (int)(indexPath.row % [self.images count]);
+    cell.imageView.image = self.images[index];
     
-    [cellImage setTranslatesAutoresizingMaskIntoConstraints:false];
-    [cellImage removeFromSuperview];
-    [cell addSubview:cellImage];
-    
-    [cell addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[image]|" options:0 metrics:nil views:@{@"image":cellImage}]];
-    [cell addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[image]|" options:0 metrics:nil views:@{@"image":cellImage}]];
-    
-        
+    cell.imageView.contentMode = UIViewContentModeScaleAspectFit;
     return cell;
 }
 
