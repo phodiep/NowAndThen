@@ -2,81 +2,111 @@
 //  SkylineViewController.m
 //  NowAndThen
 //
-//  Created by Pho Diep on 2/21/15.
-//  Copyright (c) 2015 Pho Diep. All rights reserved.
+//  Created by Gru on 02/25/15.
+//  Copyright (c) 2015 GruTech. All rights reserved.
 //
-
 #import <Foundation/Foundation.h>
+#import "BuildingViewController.h"
+#import "MenuViewController.h"
+#import "Building.h"
+#import "ImageCell.h"
 #import "SkylineViewController.h"
 
 @interface SkylineViewController ()
 
-    @property (strong, nonatomic) UIButton *building52Button;       // Columbia Tower
-    @property (strong, nonatomic) UITapGestureRecognizer *tapedId;
+@property (strong, nonatomic) NSMutableDictionary *views;
+@property (strong, nonatomic) UIView *rootView;
+@property (strong, nonatomic) UIScrollView *scrollView;
+@property (strong, nonatomic) UILabel *skylineTitle;
+
+-(void)building164;
 
 @end
 
 @implementation SkylineViewController
 
+- (IBAction)building164 {
+    NSLog(@"building164");
+}
 - (void)loadView {
-    UIView *rootView = [[UIView alloc] init];
-    
-    rootView.frame = [[UIScreen mainScreen] bounds];
-    UIImage *menuImage = [UIImage imageNamed:@"skyline01.jpeg"];
-    [self.building52Button setImage:menuImage forState:UIControlStateNormal];
-    [self.building52Button addTarget:self action:@selector(menuButtonPressed) forControlEvents:UIControlEventTouchUpInside];
+    self.skylineTitle.numberOfLines = 0;
+    self.skylineTitle.lineBreakMode = NSLineBreakByWordWrapping;
 
-    UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
-    [button setImage:[UIImage imageNamed:@"clear_button.png"] forState:UIControlStateNormal];
-    [button setFrame:CGRectMake(0.0f, 0.0f, 15.0f, 15.0f)]; // Required for iOS7
-//    theTextField.rightView = button;
-//    theTextField.rightViewMode = UITextFieldViewModeWhileEditing;
+    [self applyTextFormat:self.skylineTitle     setText:@"Kerry Park"];
 
-    self.view = rootView;
+    self.scrollView.frame = CGRectMake(0, 0, CGRectGetWidth([[UIScreen mainScreen] applicationFrame]), CGRectGetHeight([[UIScreen mainScreen] applicationFrame]));
+    self.scrollView.bounces = true;
+    self.scrollView.backgroundColor = [UIColor grayColor];
+
+    [self setupAutolayoutForRootView];
+    self.view = self.rootView;
 }
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view.
-    
-    self.title = @"Skyline";
-    self.view.backgroundColor = [UIColor grayColor];
-
+    // Do any additional setup after loading the view, typically from a nib.
+    NSLog(@"SkylineViewController::viewDidLoad");
 }
 
-#pragma updateBuildingName
-- (void)updateBuildingName:(NSNotification *)notification {
-
-    NSLog(@"updateBuildingName() %@", notification );
-//    self.buildingName = [notification userInfo][@"Building"];
-//    self.buildingLabel.text = [notification userInfo][@"Building"];
+- (void)didReceiveMemoryWarning {
+    [super didReceiveMemoryWarning];
+    // Dispose of any resources that can be recreated.
+    NSLog(@"SkylineViewController::didReceiveMemoryWarning");
 }
 
-#pragma mark - Button Actions
--(void)menuButtonPressed {
-
-    __weak SkylineViewController *weakSelf = self;
-    [UIView animateWithDuration:0.3 animations:^{
-        weakSelf.view.center = CGPointMake(weakSelf.view.center.x + 250, weakSelf.view.center.y);
-    } completion:^(BOOL finished) {
-        [weakSelf.building52Button removeTarget:weakSelf action:@selector(menuButtonPressed) forControlEvents:UIControlEventTouchUpInside];
-        [weakSelf.building52Button addTarget:weakSelf action:@selector(closePanel) forControlEvents:UIControlEventTouchUpInside];
-        [weakSelf.view addGestureRecognizer:weakSelf.tapedId];
-
-    }];
+#pragma mark - Autolayout methods
+-(void)prepObjectForAutoLayout:(id)object addToSubView:(UIView*)view addToDictionary:(NSString*)reference {
+    [object setTranslatesAutoresizingMaskIntoConstraints:false];
+    [view addSubview:object];
+    [self.views setObject:object forKey:reference];
 }
 
-- (void)modifyClearButtonWithImage:(UIImage *)image;{
-    UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
-    [button setImage:[UIImage imageNamed:@"clear-button"] forState:UIControlStateNormal];
-    [button setFrame:CGRectMake(0.0f, 0.0f, 15.0f, 15.0f)];
-    [button addTarget:self action:@selector(clear:) forControlEvents:UIControlEventTouchUpInside];
-//    self.rightView = button;
-//    self.rightViewMode = UITextFieldViewModeWhileEditing;
+
+-(void)prepareScrollViewForAutolayout {
+    [self prepObjectForAutoLayout: self.skylineTitle        addToSubView:self.scrollView  addToDictionary:@"skylineTitle"];
 }
 
--(IBAction)clear:(id)sender{
-//    self.text = @"";
+-(void)applyTextFormat:(UILabel*)label setText:(NSString*)text {
+    label.text = text;
+    label.font = [UIFont fontWithName:@"HelveticaNeue" size:16.0f];
 }
 
+-(void)applyAutolayoutConstraintsToScrollView {
+    NSDictionary *metrics = @{@"width": @(CGRectGetWidth([[UIScreen mainScreen] applicationFrame]) - 16)};
+    [self.scrollView removeConstraints:[self.scrollView constraints]];
+
+    [self.scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[addressLabel]-[address]-[cityStateZip]-25-[buildLabel]-[buildDate]-[completionLabel]-[completionDate]-25-[crossNSLabel]-[crossNS]-[crossEWLabel]-[crossEW]-25-[infoLabel]-[skylineTitle]-25-[imageFlow(300)]-50-|" options:0 metrics:nil views:self.views]];
+    [self.scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-8-[skylineTitle(width)]-|" options:0 metrics:metrics views:self.views]];
+}
+
+-(void)setupAutolayoutForRootView {
+    [self prepObjectForAutoLayout: self.scrollView     addToSubView:self.rootView  addToDictionary:@"scrollView"];
+//    [self prepObjectForAutoLayout: self.buildingLabel  addToSubView:self.rootView  addToDictionary:@"buildingLabel"];
+//    [self prepObjectForAutoLayout: self.menuButton     addToSubView:self.rootView  addToDictionary:@"menuButton"];
+
+    [self.rootView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[scrollView]|"                              options:0 metrics:nil views:self.views]];
+    [self.rootView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-8-[menuButton]-16-[buildingLabel]-(>=0)-|" options:NSLayoutFormatAlignAllCenterY metrics:nil views:self.views]];
+    [self.rootView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-25-[menuButton]-8-[scrollView]|"           options:0 metrics:nil views:self.views]];
+}
+
+-(UIView *)rootView {
+    if (_rootView == nil) {
+        _rootView = [[UIView alloc] initWithFrame:[UIScreen mainScreen].applicationFrame];
+    }
+    return _rootView;
+}
+
+-(UIScrollView *)scrollView {
+    if (_scrollView == nil) {
+        _scrollView = [[UIScrollView alloc] init];
+    }
+    return _scrollView;
+}
+
+-(UILabel *)skylineTitle {
+    if (_skylineTitle == nil) {
+        _skylineTitle = [[UILabel alloc] init];
+    }
+    return _skylineTitle;
+}
 @end

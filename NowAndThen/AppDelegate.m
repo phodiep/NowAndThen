@@ -49,7 +49,8 @@
     MapViewController *mapVC = [[MapViewController alloc] init];
     mapVC.tabBarItem.title = @"MapView";
     mapVC.tabBarItem.image = [UIImage imageNamed:@"map"];
-    
+
+    // Setup 'SkylineVC'
     SkylineViewController *skylineVC = [[SkylineViewController alloc] init];
     skylineVC.tabBarItem.title = @"Skyline";
     skylineVC.tabBarItem.image = [UIImage imageNamed:@"skyline"];
