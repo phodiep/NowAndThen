@@ -16,4 +16,6 @@
 
 -(void)centerOnBuilding:(Building*)building;
 
+-(void)centerOnBuilding:(Building*)building;
+
 @end
