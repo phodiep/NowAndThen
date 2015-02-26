@@ -5,19 +5,21 @@
 //  Created by Gru on 02/25/15.
 //  Copyright (c) 2015 GruTech. All rights reserved.
 //
+
 #import <Foundation/Foundation.h>
-#import "BuildingViewController.h"
-#import "MenuViewController.h"
-#import "Building.h"
-#import "ImageCell.h"
 #import "SkylineViewController.h"
 
 @interface SkylineViewController ()
 
 @property (strong, nonatomic) NSMutableDictionary *views;
-@property (strong, nonatomic) UIView *rootView;
+@property (strong, nonatomic) UIView *skylineView;
+@property (strong, nonatomic) UIImageView *imageView;
 @property (strong, nonatomic) UIScrollView *scrollView;
 @property (strong, nonatomic) UILabel *skylineTitle;
+
+@property (strong, nonatomic) NSMutableArray *images;
+
+@property (nonatomic) BOOL firstSkylineCollectionView;
 
 -(void)building164;
 
@@ -28,18 +30,33 @@
 - (IBAction)building164 {
     NSLog(@"building164");
 }
+
 - (void)loadView {
-    self.skylineTitle.numberOfLines = 0;
-    self.skylineTitle.lineBreakMode = NSLineBreakByWordWrapping;
 
-    [self applyTextFormat:self.skylineTitle     setText:@"Kerry Park"];
+    NSLog(@"SkylineViewController::loadView");
 
-    self.scrollView.frame = CGRectMake(0, 0, CGRectGetWidth([[UIScreen mainScreen] applicationFrame]), CGRectGetHeight([[UIScreen mainScreen] applicationFrame]));
-    self.scrollView.bounces = true;
-    self.scrollView.backgroundColor = [UIColor grayColor];
+    // Set up base view, '_skylineView'
+    _skylineView = [[UIView alloc] init];
+    _skylineView.bounds = CGRectMake( 0, 0, CGRectGetWidth( [[UIScreen mainScreen] applicationFrame]),
+                                            CGRectGetHeight([[UIScreen mainScreen] applicationFrame]));
+    _skylineView.backgroundColor = [UIColor grayColor];
 
-    [self setupAutolayoutForRootView];
-    self.view = self.rootView;
+    // Set up image view, '_imageView' and attach it to the '_skylineView'
+    _imageView = [[UIImageView alloc] init];
+    _imageView.bounds = CGRectMake( 0, 0, CGRectGetWidth( [[UIScreen mainScreen] applicationFrame]),
+                                   CGRectGetHeight([[UIScreen mainScreen] applicationFrame]));
+
+    // Attach the 'skylineImage' to the '_imageView'
+    UIImage *skylineImage = [UIImage imageNamed:@"skyline03.jpeg"];
+    _imageView.image = skylineImage;
+
+    [self setupAutolayoutForSkylineView];
+
+    self.view = self.skylineView ;
+}
+
+- (void)cellForItemAtIndexPath {
+    NSLog(@"SkylineViewController::cellForItemAtIndexPath");
 }
 
 - (void)viewDidLoad {
@@ -54,16 +71,26 @@
     NSLog(@"SkylineViewController::didReceiveMemoryWarning");
 }
 
+//-(UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
+//
+//    ImageCell *cell = (ImageCell*)[self.imageCollectionView dequeueReusableCellWithReuseIdentifier:@"IMAGE_CELL" forIndexPath:indexPath];
+//    int index = (int)(indexPath.row % [self.images count]);
+//    cell.imageView.image = self.images[index];
+//    cell.imageView.contentMode = UIViewContentModeScaleAspectFit;
+//    return cell;
+//}
+
 #pragma mark - Autolayout methods
 -(void)prepObjectForAutoLayout:(id)object addToSubView:(UIView*)view addToDictionary:(NSString*)reference {
+
     [object setTranslatesAutoresizingMaskIntoConstraints:false];
     [view addSubview:object];
     [self.views setObject:object forKey:reference];
 }
 
-
--(void)prepareScrollViewForAutolayout {
-    [self prepObjectForAutoLayout: self.skylineTitle        addToSubView:self.scrollView  addToDictionary:@"skylineTitle"];
+-(void)setupAutolayoutForSkylineView {
+    [self prepObjectForAutoLayout: self.skylineView addToSubView:self.skylineView  addToDictionary:@"skylineView"];
+    [self prepObjectForAutoLayout: self.imageView   addToSubView:self.skylineView  addToDictionary:@"imageView"];
 }
 
 -(void)applyTextFormat:(UILabel*)label setText:(NSString*)text {
@@ -71,42 +98,20 @@
     label.font = [UIFont fontWithName:@"HelveticaNeue" size:16.0f];
 }
 
--(void)applyAutolayoutConstraintsToScrollView {
-    NSDictionary *metrics = @{@"width": @(CGRectGetWidth([[UIScreen mainScreen] applicationFrame]) - 16)};
-    [self.scrollView removeConstraints:[self.scrollView constraints]];
-
-    [self.scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[addressLabel]-[address]-[cityStateZip]-25-[buildLabel]-[buildDate]-[completionLabel]-[completionDate]-25-[crossNSLabel]-[crossNS]-[crossEWLabel]-[crossEW]-25-[infoLabel]-[skylineTitle]-25-[imageFlow(300)]-50-|" options:0 metrics:nil views:self.views]];
-    [self.scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-8-[skylineTitle(width)]-|" options:0 metrics:metrics views:self.views]];
-}
-
--(void)setupAutolayoutForRootView {
-    [self prepObjectForAutoLayout: self.scrollView     addToSubView:self.rootView  addToDictionary:@"scrollView"];
-//    [self prepObjectForAutoLayout: self.buildingLabel  addToSubView:self.rootView  addToDictionary:@"buildingLabel"];
-//    [self prepObjectForAutoLayout: self.menuButton     addToSubView:self.rootView  addToDictionary:@"menuButton"];
-
-    [self.rootView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[scrollView]|"                              options:0 metrics:nil views:self.views]];
-    [self.rootView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-8-[menuButton]-16-[buildingLabel]-(>=0)-|" options:NSLayoutFormatAlignAllCenterY metrics:nil views:self.views]];
-    [self.rootView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-25-[menuButton]-8-[scrollView]|"           options:0 metrics:nil views:self.views]];
-}
-
--(UIView *)rootView {
-    if (_rootView == nil) {
-        _rootView = [[UIView alloc] initWithFrame:[UIScreen mainScreen].applicationFrame];
+#pragma mark - UICollectionViewFlowDelegate
+-(NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
+    if ([self.images count] > 0) {
+        //        return [self.images count];
+        return 100;
     }
-    return _rootView;
+    return 0;
 }
 
--(UIScrollView *)scrollView {
-    if (_scrollView == nil) {
-        _scrollView = [[UIScrollView alloc] init];
+-(UIView *)skylineView {
+    if (_skylineView == nil) {
+        _skylineView = [[UIView alloc] initWithFrame:[UIScreen mainScreen].applicationFrame];
     }
-    return _scrollView;
+    return _skylineView;
 }
 
--(UILabel *)skylineTitle {
-    if (_skylineTitle == nil) {
-        _skylineTitle = [[UILabel alloc] init];
-    }
-    return _skylineTitle;
-}
 @end
