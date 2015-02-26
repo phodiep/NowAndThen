@@ -14,4 +14,6 @@
 @property (weak, nonatomic) BuildingViewController *buildingVC;
 @property (strong, nonatomic) NSMutableArray *buildings;
 
+-(void)centerOnBuilding:(Building*)building;
+
 @end

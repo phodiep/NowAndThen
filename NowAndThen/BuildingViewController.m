@@ -12,6 +12,7 @@
 #import "Building.h"
 #import "ImageCell.h"
 #import "WebViewController.h"
+#import "MapViewController.h"
 
 #pragma mark - Interface
 @interface BuildingViewController () <UICollectionViewDataSource, UICollectionViewDelegateFlowLayout>
@@ -365,12 +366,14 @@
     UITabBarController *tabBarController = self.tabBarController;
     UIView *fromView = tabBarController.selectedViewController.view;
     UIView *toView = [[tabBarController.viewControllers objectAtIndex:tabIndex] view];
+    MapViewController *toVC = [tabBarController.viewControllers objectAtIndex:tabIndex];
     
     [UIView transitionFromView:fromView toView:toView duration:0.5
                        options:(tabIndex > tabBarController.selectedIndex ? UIViewAnimationOptionTransitionFlipFromTop : UIViewAnimationOptionTransitionCrossDissolve)
                     completion:^(BOOL finished) {
                         if (finished) {
                             tabBarController.selectedIndex = tabIndex;
+                            [toVC centerOnBuilding:self.building];
                         }
                     }];
 }

@@ -18,8 +18,8 @@
 -(instancetype)initFakeBuilding {
     self = [super init];
     if (self) {
-        self.longitude = @"-73.88";
-        self.latitude = @"40.78";
+        self.longitude = @"-122.3487383";
+        self.latitude = @"47.6206537";
         
         self.name = @"Fake Building";
         self.address = @"2001 W. Garfield Street";
