@@ -11,10 +11,11 @@
 @interface SkyViewController ()
 
 @property (strong, nonatomic) UIAlertController *buildingIdentity;
-- (IBAction)building52:(UIButton *)sender;
 
+- (IBAction)keyArena:(UIButton *)sender;
+
+- (IBAction)building52:(UIButton *)sender;
 - (IBAction)spaceNeedle:(UIButton *)sender;
-//- (IBAction)building52:(UIButton *)sender;
 - (IBAction)building164:(UIButton *)sender;
 @property (strong, nonatomic) IBOutlet UIImageView *skylineA;
 @property (strong, nonatomic) IBOutlet UITextField *buildingInformation;
@@ -28,6 +29,14 @@
     // Do any additional setup after loading the view.
 }
 
+
+- (IBAction)keyArena:(UIButton *)sender {
+    NSLog(@"keyArena(NickName: Key Arena)");
+    sender.adjustsImageWhenHighlighted = true;
+    // Columbia Center
+    _buildingInformation.text = @"Key Arena, Seattle Center";
+    _buildingInformation.textColor = UIColor.blackColor;
+}
 
 - (IBAction)building52:(UIButton *)sender {
         NSLog(@"building52(NickName: Columbia Center)");
