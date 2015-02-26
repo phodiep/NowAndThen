@@ -334,8 +334,8 @@
     
     [self.mapView setRegion:buildingRegion animated:true];
 
+    [self.mapView removeAnnotations:[self.mapView annotations]];
     [self.mapView addAnnotation:building];
-    [self.mapView showAnnotations:self.mapView.annotations animated:true];
 }
 
 #pragma mark - create Annotations
