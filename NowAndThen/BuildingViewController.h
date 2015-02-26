@@ -17,5 +17,6 @@
 
 -(void)closePanel;
 -(void)scrollToTopOfView;
+-(void)setBuildingLabelValues;
 
 @end

@@ -10,6 +10,7 @@
 
 @interface MenuViewController : UIViewController
 
+@property (strong, nonatomic) NSArray *results;
 -(void)dismissSearchBarKeyboard;
 
 @end
