@@ -19,4 +19,6 @@
 
 -(void)fetchBuildingImage:(NSString *)imageURL withCompletionHandler:(void (^)(UIImage *image))completionHandler;
 
+-(void)fetchFlickrImagesForBuilding:(NSString *)building withCompletionHandler:(void (^)(NSArray *images))completionHandler;
+
 @end

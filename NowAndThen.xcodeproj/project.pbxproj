@@ -23,8 +23,8 @@
 		1D6266C71A9AEA4100882D81 /* MenuViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D6266C61A9AEA4100882D81 /* MenuViewController.m */; };
 		1D6266CA1A9BAC3E00882D81 /* InfoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D6266C91A9BAC3E00882D81 /* InfoViewController.m */; };
 		1D6266D61A9D550800882D81 /* ImageCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D6266D51A9D550800882D81 /* ImageCell.m */; };
-		4347CAC01A9E868200B94C3E /* Building+Annotation.m in Sources */ = {isa = PBXBuildFile; fileRef = 4347CABF1A9E868200B94C3E /* Building+Annotation.m */; };
 		1D6266DE1A9E933300882D81 /* WebViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D6266DD1A9E933300882D81 /* WebViewController.m */; };
+		4347CAC01A9E868200B94C3E /* Building+Annotation.m in Sources */ = {isa = PBXBuildFile; fileRef = 4347CABF1A9E868200B94C3E /* Building+Annotation.m */; };
 		740A93151A9A94E200ACBA12 /* Building.m in Sources */ = {isa = PBXBuildFile; fileRef = 740A93141A9A94E200ACBA12 /* Building.m */; };
 		745CDA541A9BBB62000846EA /* singleBuildingData.json in Sources */ = {isa = PBXBuildFile; fileRef = 745CDA531A9BBB62000846EA /* singleBuildingData.json */; };
 		745CDA571A9BE11E000846EA /* singleBuildingData.dictionary in Resources */ = {isa = PBXBuildFile; fileRef = 745CDA561A9BE11E000846EA /* singleBuildingData.dictionary */; };
@@ -72,10 +72,10 @@
 		1D6266C91A9BAC3E00882D81 /* InfoViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InfoViewController.m; sourceTree = "<group>"; };
 		1D6266D41A9D550800882D81 /* ImageCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageCell.h; sourceTree = "<group>"; };
 		1D6266D51A9D550800882D81 /* ImageCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImageCell.m; sourceTree = "<group>"; };
-		4347CABE1A9E868200B94C3E /* Building+Annotation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Building+Annotation.h"; sourceTree = "<group>"; };
-		4347CABF1A9E868200B94C3E /* Building+Annotation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "Building+Annotation.m"; sourceTree = "<group>"; };
 		1D6266DC1A9E933300882D81 /* WebViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WebViewController.h; sourceTree = "<group>"; };
 		1D6266DD1A9E933300882D81 /* WebViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WebViewController.m; sourceTree = "<group>"; };
+		4347CABE1A9E868200B94C3E /* Building+Annotation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Building+Annotation.h"; sourceTree = "<group>"; };
+		4347CABF1A9E868200B94C3E /* Building+Annotation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "Building+Annotation.m"; sourceTree = "<group>"; };
 		740A93131A9A94E200ACBA12 /* Building.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Building.h; sourceTree = "<group>"; };
 		740A93141A9A94E200ACBA12 /* Building.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Building.m; sourceTree = "<group>"; };
 		745CDA531A9BBB62000846EA /* singleBuildingData.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = singleBuildingData.json; sourceTree = "<group>"; };

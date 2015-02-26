@@ -333,9 +333,7 @@
     MKCoordinateRegion buildingRegion = MKCoordinateRegionMakeWithDistance(buildingLocation, 750, 750);
     
     [self.mapView setRegion:buildingRegion animated:true];
-
     [self.mapView addAnnotation:building];
-    [self.mapView showAnnotations:self.mapView.annotations animated:true];
 }
 
 #pragma mark - create Annotations
@@ -363,7 +361,6 @@
                  animated:true];
   
   MKMapRect mapRect = self.mapView.visibleMapRect;
-  //[self getCenterOfScreen:mapRect];
   [self getBoundingBox:mapRect];
 }
 
@@ -382,7 +379,6 @@
       [self.buildingsOnMap setObject:buildingsFound[i] forKey:buildingToAdd.name];
       [self.mapView addAnnotation:buildingToAdd];
     }
-    [self.mapView showAnnotations:self.mapView.annotations animated:true];
   }];
 }
 
@@ -426,6 +422,11 @@
   static NSString *reuseID = @"NowAndThenAnnotations";
   
   MKAnnotationView *view = [self.mapView dequeueReusableAnnotationViewWithIdentifier:reuseID];
+  
+  if (annotation == self.mapView.userLocation)
+  {
+    return nil;
+  }
   
   if (!view)
   {

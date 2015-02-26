@@ -9,7 +9,9 @@
 #import "NetworkController.h"
 
 @implementation NetworkController
+// flickr api key df08b7ebda37296e4e09406516dedec3
 
+//flickr client sercret c5e6171a087297c2
 + (id)sharedService
 {
   static NetworkController *netController;
@@ -47,7 +49,8 @@
   
   NSURLSession *session = [NSURLSession sharedSession];
   
-  NSURLSessionTask *dataTask = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+  NSURLSessionTask *dataTask = [session dataTaskWithRequest:request
+                                          completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
     if (error)
     {
       NSLog(@"%@",error);
@@ -82,6 +85,48 @@
         {
           NSLog(@"default case reached");
           break;
+        }
+      }
+    }
+  }];
+  [dataTask resume];
+}
+
+-(void)fetchFlickrImagesForBuilding:(NSString *)building withCompletionHandler:(void (^)(NSArray *))completionHandler
+{
+  NSString *fetchURL = @"https://api.flickr.com/services/rest/?method=flickr.test.echo&name=value";
+  
+  NSURL *url = [NSURL URLWithString:fetchURL];
+  
+  NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
+  request.HTTPMethod = @"GET";
+  
+  NSURLSession *session = [NSURLSession sharedSession];
+  
+  NSURLSessionTask *dataTask = [session dataTaskWithRequest:request
+                                          completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+    if (error)
+    {
+      NSLog(@"error in fetchFlickr: %@",error);
+    } else {
+      NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
+      NSInteger statusCode = httpResponse.statusCode;
+      
+      switch (statusCode)
+      {
+        case 200 ... 299:
+        {
+          NSLog(@"%ld", (long)statusCode);
+          break;
+        }
+        case 300 ... 599:
+        {
+          NSLog(@"%ld", (long)statusCode);
+          break;
+        }
+        default:
+        {
+          NSLog(@"%ld", (long)statusCode);
         }
       }
     }
