@@ -13,6 +13,7 @@
 #import "ImageCell.h"
 #import "WebViewController.h"
 #import "MapViewController.h"
+#import "NetworkController.h"
 
 #pragma mark - Interface
 @interface BuildingViewController () <UICollectionViewDataSource, UICollectionViewDelegateFlowLayout>
@@ -130,11 +131,11 @@
 }
 
 -(void)viewDidLayoutSubviews {
-    if (self.firstScrollCollectionView == false) {
-        [self.imageCollectionView scrollToItemAtIndexPath: [NSIndexPath indexPathForItem:5 inSection:0]
-                                     atScrollPosition:UICollectionViewScrollPositionCenteredVertically animated:false];
-        self.firstScrollCollectionView = true;
-    }
+//    if (self.firstScrollCollectionView == false) {
+//        [self.imageCollectionView scrollToItemAtIndexPath: [NSIndexPath indexPathForItem:5 inSection:0]
+//                                     atScrollPosition:UICollectionViewScrollPositionCenteredVertically animated:false];
+//        self.firstScrollCollectionView = true;
+//    }
 }
 
 -(void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(id<UIViewControllerTransitionCoordinator>)coordinator {
@@ -163,6 +164,11 @@
 }
 
 -(void)setBuildingLabelValues {
+
+    self.googleButton.hidden = [self.building.googleURL isEqual:@""];
+    self.yahooButton.hidden = [self.building.yahooURL isEqual:@""];
+    self.wikipediaButton.hidden = [self.building.wikipediaURL isEqual:@""];
+    
     [self applyLabelFormat:self.addressLabel    setText:@"Address"];
     [self applyLabelFormat:self.buildLabel      setText:@"Build Date"];
     [self applyLabelFormat:self.completionLabel setText:@"Completion Date"];
@@ -179,9 +185,37 @@
     [self applyTextFormat:self.crossStreetNS    setText:self.building.crossStreetNorthSouth];
     [self applyTextFormat:self.buildingInfo     setText:@"Lorem ipsum dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nam liber te conscient to factor tum poen legum odioque civiuda."];
     
-    //TODO: update placeholder images with real images from building object
-    [self.images addObject: [UIImage imageNamed:@"smithTowerOld"]];
-    [self.images addObject: [UIImage imageNamed:@"smithTowerNew"]];
+    self.images = nil;
+    
+    if (![self.building.oldImageURL isEqual: @""]) {
+        if (self.building.oldImage == nil) {
+            [[NetworkController sharedService] fetchBuildingImage:self.building.oldImageURL withCompletionHandler:^(UIImage *image) {
+                if (image != nil) {
+                    self.building.oldImage = image;
+                    [self.images addObject: self.building.oldImage];
+                    [self.imageCollectionView reloadData];
+                }
+            }];
+        } else {
+            [self.images addObject: self.building.oldImage];
+        }
+    }
+    
+    if (![self.building.modernImageURL isEqual: @""]) {
+        if (self.building.modernImage == nil) {
+            [[NetworkController sharedService] fetchBuildingImage:self.building.modernImageURL withCompletionHandler:^(UIImage *image) {
+                if (image != nil) {
+                    self.building.modernImage = image;
+                    [self.images addObject: self.building.modernImage];
+                    [self.imageCollectionView reloadData];
+                }
+            }];
+        } else {
+            [self.images addObject: self.building.modernImage];
+        }
+    }
+    [self.imageCollectionView reloadData];
+    
     
     self.buildingLabel.font = [UIFont fontWithName:@"HelveticaNeue-Bold" size:20.0f];
 }
@@ -281,8 +315,8 @@
 #pragma mark - UICollectionViewFlowDelegate
 -(NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
     if ([self.images count] > 0) {
-//        return [self.images count];
-        return 10;
+        return [self.images count];
+//        return 10;
     }
     return 0;
 }
@@ -385,19 +419,25 @@
 }
 
 -(void)googleButtonPressed {
-    [self presentWebViewWithUrl:self.building.googleURL];
+    if (![self.building.googleURL isEqual:@""]) {
+        [self presentWebViewWithUrl:self.building.googleURL];
+    }
 }
 
 -(void)yahooButtonPressed {
-    [self presentWebViewWithUrl:self.building.yahooURL];
+    if (![self.building.yahooURL isEqual:@""]) {
+        [self presentWebViewWithUrl:self.building.yahooURL];
+    }
 }
 
 -(void)wikipediaButtonPressed {
-    [self presentWebViewWithUrl:self.building.wikipediaURL];
+    if (![self.building.wikipediaURL isEqual:@""]) {
+        [self presentWebViewWithUrl:self.building.wikipediaURL];
+    }
 }
 
 
-#pragma updateBuildingName
+#pragma mark - updateBuildingName
 - (void)updateBuildingName:(NSNotification *)notification {
   self.buildingName = [notification userInfo][@"Building"];
   self.buildingLabel.text = [notification userInfo][@"Building"];

@@ -30,6 +30,8 @@
 
 @property (strong, nonatomic) NSString *oldImageURL;
 @property (strong, nonatomic) NSString *modernImageURL;
+@property (strong, nonatomic) UIImage *oldImage;
+@property (strong, nonatomic) UIImage *modernImage;
 
 -(instancetype)initWithJson:(NSDictionary*) jsonDictionary;
 -(instancetype)initFakeBuilding;
