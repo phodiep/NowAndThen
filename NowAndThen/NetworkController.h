@@ -7,7 +7,16 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "Building.h"
 
 @interface NetworkController : NSObject
+
++ (id)sharedService;
+
+-(void)fetchBuildingsForRect:(NSArray *)rect
+           withBuildingLimit:(NSInteger)limit
+                    andBlock:(void (^)(NSArray *buildingsFound))completionHandler;
+
+-(void)fetchBuildingImage:(NSString *)imageURL withCompletionHandler:(void (^)(UIImage *image))completionHandler;
 
 @end

@@ -12,5 +12,6 @@
 @interface MapViewController : UIViewController
 
 @property (weak, nonatomic) BuildingViewController *buildingVC;
+@property (strong, nonatomic) NSMutableArray *buildings;
 
 @end
