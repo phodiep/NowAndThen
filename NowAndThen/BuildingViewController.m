@@ -164,6 +164,11 @@
 }
 
 -(void)setBuildingLabelValues {
+
+    self.googleButton.hidden = [self.building.googleURL isEqual:@""];
+    self.yahooButton.hidden = [self.building.yahooURL isEqual:@""];
+    self.wikipediaButton.hidden = [self.building.wikipediaURL isEqual:@""];
+    
     [self applyLabelFormat:self.addressLabel    setText:@"Address"];
     [self applyLabelFormat:self.buildLabel      setText:@"Build Date"];
     [self applyLabelFormat:self.completionLabel setText:@"Completion Date"];
@@ -414,19 +419,25 @@
 }
 
 -(void)googleButtonPressed {
-    [self presentWebViewWithUrl:self.building.googleURL];
+    if (![self.building.googleURL isEqual:@""]) {
+        [self presentWebViewWithUrl:self.building.googleURL];
+    }
 }
 
 -(void)yahooButtonPressed {
-    [self presentWebViewWithUrl:self.building.yahooURL];
+    if (![self.building.yahooURL isEqual:@""]) {
+        [self presentWebViewWithUrl:self.building.yahooURL];
+    }
 }
 
 -(void)wikipediaButtonPressed {
-    [self presentWebViewWithUrl:self.building.wikipediaURL];
+    if (![self.building.wikipediaURL isEqual:@""]) {
+        [self presentWebViewWithUrl:self.building.wikipediaURL];
+    }
 }
 
 
-#pragma updateBuildingName
+#pragma mark - updateBuildingName
 - (void)updateBuildingName:(NSNotification *)notification {
   self.buildingName = [notification userInfo][@"Building"];
   self.buildingLabel.text = [notification userInfo][@"Building"];

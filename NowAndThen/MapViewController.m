@@ -334,7 +334,6 @@
     
     [self.mapView setRegion:buildingRegion animated:true];
 
-    [self.mapView removeAnnotations:[self.mapView annotations]];
     [self.mapView addAnnotation:building];
 }
 

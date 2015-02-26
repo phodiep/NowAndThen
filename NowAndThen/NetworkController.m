@@ -21,7 +21,7 @@
 }
 
 
-#pragma fetchBuildingsForRect
+#pragma mark - fetchBuildingsForRect
 - (void)fetchBuildingsForRect:(NSArray *)rect
            withBuildingLimit:(NSInteger)limit
                     andBlock:(void (^)(NSArray *buildingsFound))completionHandler
@@ -89,7 +89,7 @@
   [dataTask resume];
 }
 
-#pragma fetchBuildingImage
+#pragma mark - fetchBuildingImage
 -(void)fetchBuildingImage:(NSString *)imageURL withCompletionHandler:(void (^)(UIImage *))completionHandler
 {
   NSLog(@"url of image: %@",imageURL);
@@ -104,6 +104,60 @@
       completionHandler(image);
     });
   });
+}
+
+-(void)fetchBuildingBySearchTerms:(NSString*)searchTerms withCompletionHandler:(void (^)(NSArray* results))completionHandler {
+    if (![searchTerms isEqualToString:@""]) {
+        NSString *endPoint = [NSString stringWithFormat:@"http://then-and-now.herokuapp.com/api/v1/building?gettype=searchtags&tag=%@", searchTerms];
+        
+        NSURL *url = [NSURL URLWithString:endPoint];
+        NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:url];
+        request.HTTPMethod = @"GET";
+        
+        NSURLSession *session = [NSURLSession sharedSession];
+        
+        NSURLSessionTask *dataTask = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+            if (error)
+            {
+                NSLog(@"%@",error);
+                completionHandler(nil);
+            } else {
+                NSHTTPURLResponse *taskResponse = (NSHTTPURLResponse *)response;
+                NSInteger statusCode = taskResponse.statusCode;
+                
+                switch (statusCode)
+                {
+                    case 200 ... 299:
+                    {
+                        NSLog(@"%ld",(long)statusCode);
+                        NSArray *results = [Building fetchBuildingsFromJsonData:data];
+                        
+                        dispatch_async(dispatch_get_main_queue(), ^{
+                            if (results)
+                            {
+                                completionHandler(results);
+                            } else {
+                                completionHandler(nil);
+                            }
+                        });
+                        break;
+                    }
+                    case 300 ... 599:
+                    {
+                        NSLog(@"%ld",(long)statusCode);
+                        break;
+                    }
+                    default:
+                    {
+                        NSLog(@"default case reached");
+                        break;
+                    }
+                }
+            }
+        }];
+        [dataTask resume];
+
+    }
 }
 
 
