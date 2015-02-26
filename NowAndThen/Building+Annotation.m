@@ -8,6 +8,12 @@
 
 #import "Building+Annotation.h"
 
+//@interface Building ()
+//
+//@property (nonatomic) MKPinAnnotationColor pinColor;
+//
+//@end
+
 @implementation Building (Annotation)
 
 -(CLLocationCoordinate2D)coordinate
@@ -25,6 +31,5 @@
   
   return title;
 }
-
 
 @end

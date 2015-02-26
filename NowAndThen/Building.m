@@ -18,8 +18,8 @@
 -(instancetype)initFakeBuilding {
     self = [super init];
     if (self) {
-        self.longitude = @"-73.88";
-        self.latitude = @"40.78";
+        self.longitude = @"-122.3487383";
+        self.latitude = @"47.6206537";
         
         self.name = @"Fake Building";
         self.address = @"2001 W. Garfield Street";
@@ -30,7 +30,13 @@
         self.buildCompletion = @"1944";
         self.crossStreetEastWest = @"W. Garfield Street";
         self.crossStreetNorthSouth = @"15th Ave W";
-        self.infosites = @[@"http://www.seattle.gov/neighborhoods/preservation/documents/DesRptAdmiralsHouse.pdf"];
+        
+//        self.infosites = @[@"http://www.seattle.gov/neighborhoods/preservation/documents/DesRptAdmiralsHouse.pdf"];
+        
+        self.googleURL = @"http://www.google.com";
+        self.yahooURL = @"http://www.yahoo.com";
+        self.wikipediaURL = @"http://en.wikipedia.org/wiki/Main_Page";
+
         self.modernImageURL = @"http://seamlessmoves.com/blog/wp-content/uploads/2012/12/Admirals-House.jpg";
         self.oldImageURL = @"http://seamlessmoves.com/blog/wp-content/uploads/2012/12/Admirals-House.jpg";
     }
@@ -43,7 +49,8 @@
         NSDictionary *location = jsonDictionary[@"loc"];
         NSArray *coordinates = location[@"coordinates"];
         NSDictionary *imageURLs = jsonDictionary[@"images"];
-      
+        NSDictionary *sites = jsonDictionary[@"infosites"];
+        
         self.longitude = coordinates[0];
         self.latitude = coordinates[1];
 
@@ -56,7 +63,12 @@
         self.buildCompletion = jsonDictionary[@"buildCompletion"];
         self.crossStreetEastWest = jsonDictionary[@"crossStreetEastWest"];
         self.crossStreetNorthSouth = jsonDictionary[@"crossStreetNorthSouth"];
-        self.infosites = jsonDictionary[@"infosites"];
+//        self.infosites = jsonDictionary[@"infosites"];
+        
+        self.googleURL = sites[@"googleURL"];
+        self.yahooURL = sites[@"yahooURL"];
+        self.wikipediaURL = sites[@"wikipediaURL"];
+
         self.modernImageURL = imageURLs[@"url2010"];
         self.oldImageURL = imageURLs[@"url1900"];
     }

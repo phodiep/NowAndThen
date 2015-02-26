@@ -162,13 +162,12 @@
   CLLocationCoordinate2D southEast  = [self getSECoordinate:mapRect];
   CLLocationCoordinate2D northWest  = [self getNWCoordinate:mapRect];
   
-  NSArray *temp =  @[[NSNumber numberWithDouble:northWest.longitude],
-                     [NSNumber numberWithDouble:northWest.latitude],
-                     [NSNumber numberWithDouble:southEast.longitude],
-                     [NSNumber numberWithDouble:southEast.latitude]];
+  return @[[NSNumber numberWithDouble:northWest.longitude],
+           [NSNumber numberWithDouble:northWest.latitude],
+           [NSNumber numberWithDouble:southEast.longitude],
+           [NSNumber numberWithDouble:southEast.latitude]];
   
-  NSLog(@"%@",temp);
-  return temp;
+
 }
 
 -(NSArray *)getCenterOfScreen:(MKMapRect)mapRect
@@ -299,16 +298,18 @@
   return _buildingSnapShot;
 }
 
--(NSMutableArray *)buildings
+
+-(NSMutableDictionary *)buildingsOnMap
 {
-  if (!_buildings) {
-    _buildings = [[NSMutableArray alloc] init];
+  if (!_buildingsOnMap)
+  {
+    _buildingsOnMap = [[NSMutableDictionary alloc] init];
   }
-  return _buildings;
+  return _buildingsOnMap;
 }
 
 
-#pragma toolBar button actions
+#pragma mark - toolBar button actions
 -(IBAction)centerOnUser:(id)sender
 {
   CLLocationCoordinate2D userLocation;
@@ -325,7 +326,26 @@
   [self getBoundingBox:mapRect];
 }
 
-#pragma create Annotations
+#pragma mark - centerOnBuilding
+-(void)centerOnBuilding:(Building*)building {
+    NSLog(@"long: %@ ... lat: %@", building.longitude, building.latitude);
+    CLLocationCoordinate2D buildingLocation;
+    buildingLocation.latitude = [building.latitude doubleValue];
+    buildingLocation.longitude = [building.longitude doubleValue];
+    
+    MKCoordinateRegion buildingRegion = MKCoordinateRegionMakeWithDistance(buildingLocation, 750, 750);
+    
+    [self.mapView setRegion:buildingRegion animated:true];
+    
+    MKMapRect mapRect = self.mapView.visibleMapRect;
+    //[self getCenterOfScreen:mapRect];
+    [self getBoundingBox:mapRect];
+
+    //TODO: add annotation?
+    
+}
+
+#pragma mark - create Annotations
 -(IBAction)findPortals:(id)sender
 {
   [self.mapView removeAnnotations:self.mapView.annotations];
@@ -341,7 +361,7 @@
   [self.mapView addAnnotation:kerryPark];
   
   CLLocationCoordinate2D coord;
-  coord.latitude = kerryPark.coordinate.latitude;
+  coord.latitude  = kerryPark.coordinate.latitude;
   coord.longitude = kerryPark.coordinate.longitude;
   
   MKCoordinateRegion region = MKCoordinateRegionMakeWithDistance(coord, 750, 750);
@@ -358,42 +378,18 @@
 -(IBAction)findBuildings:(id)sender
 {
   [self.mapView removeAnnotations:self.mapView.annotations];
-  //***** DEMO INFO *****
-//  MKPointAnnotation *point0 = [[MKPointAnnotation alloc] init];
-//  MKPointAnnotation *point1 = [[MKPointAnnotation alloc] init];
-//  MKPointAnnotation *point2 = [[MKPointAnnotation alloc] init];
-//
-//  NSArray *tempBuildings = @[@"Smith Tower", @"Columbia Tower", @"Dexter Horton Building"];
-//    
-//  point0.coordinate = [self createBuildingLocation: 47.6021
-//                                     withLongitude: -122.3318
-//                                    withIdentifier: tempBuildings[0]];
-//  point0.title = tempBuildings[0];
-//    
-//  point1.coordinate = [self createBuildingLocation: 47.604633
-//                                     withLongitude: -122.330698
-//                                    withIdentifier: tempBuildings[1]];
-//  point1.title = tempBuildings[1];
-//    
-//  point2.coordinate = [self createBuildingLocation: 47.6034693
-//                                     withLongitude: -122.3328106
-//                                    withIdentifier: tempBuildings[2]];
-//  point2.title = tempBuildings[2];
-//  
-//  [self.mapView addAnnotation:point0];
-//  [self.mapView addAnnotation:point1];
-//  [self.mapView addAnnotation:point2];
-  
-  
-  // * 1 * get center location of map
+
   MKMapRect mapRect = self.mapView.visibleMapRect;
-  //[self getCenterOfScreen:mapRect];
-  //[self getBoundingBox:mapRect];
   
   [[NetworkController sharedService] fetchBuildingsForRect:[self getBoundingBox:mapRect] withBuildingLimit:10 andBlock:^(NSArray *buildingsFound) {
-    self.buildings = [[NSMutableArray alloc] initWithArray:buildingsFound];
-    [self.mapView addAnnotations:self.buildings];
-    [self.mapView showAnnotations:self.buildings animated:true];
+    
+    for (int i = 0; i < buildingsFound.count; i++)
+    {
+      Building *buildingToAdd = (Building *)buildingsFound[i];
+      [self.buildingsOnMap setObject:buildingsFound[i] forKey:buildingToAdd.name];
+      [self.mapView addAnnotation:buildingToAdd];
+    }
+    [self.mapView showAnnotations:self.mapView.annotations animated:true];
   }];
 }
 
@@ -422,7 +418,6 @@
     }
     if (building)
     {
-      //fetch
       [[NetworkController sharedService] fetchBuildingImage:building.oldImageURL withCompletionHandler:^(UIImage *image) {
         imageView.image = image;
         annotationView.leftCalloutAccessoryView =imageView;
@@ -443,13 +438,12 @@
   {
     view = [[MKPinAnnotationView alloc] initWithAnnotation:annotation
                                            reuseIdentifier:reuseID];
-    
+
     view.canShowCallout = true;
-    UIImageView *leftCalloutImage = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 46, 46)];
-    view.leftCalloutAccessoryView = leftCalloutImage;
-    view.rightCalloutAccessoryView =[UIButton buttonWithType:UIButtonTypeDetailDisclosure];
+    UIImageView *leftCalloutImage  = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 46, 46)];
+    view.leftCalloutAccessoryView  = leftCalloutImage;
+    view.rightCalloutAccessoryView = [UIButton buttonWithType:UIButtonTypeDetailDisclosure];
   }
-  
   return view;
 }
 
@@ -457,19 +451,18 @@
 -(void)mapView:(MKMapView *)mapView annotationView:(MKAnnotationView *)view
                      calloutAccessoryControlTapped:(UIControl *)control
 {
+  //TODO: remove the string and pass the building object
+  Building *building = self.buildingsOnMap[view.annotation.title];
+  //be sure to use updatebuilding in BuildingViewController
   [[NSNotificationCenter defaultCenter] postNotificationName:@"SelectedBuilding"
                                                       object:self
-                                                    userInfo:@{@"Building" : view.annotation.title}];
+                                                    userInfo:@{@"Building" : building}];
   [self transitionToBuildingDetail];
 }
 
 
--(void)updateMapViewAnnotations
-{
-  [self.mapView removeAnnotations:self.mapView.annotations];
-}
 
-#pragma createViews
+#pragma mark - createViews
 - (void)createViews
 {
   [self.toolBar setTranslatesAutoresizingMaskIntoConstraints:false];
@@ -483,7 +476,7 @@
 }
 
 
-#pragma createConstraints
+#pragma mark - createConstraints
 - (void)createConstraints
 {
   NSDictionary *views = @{@"toolBar" : self.toolBar, @"trackingBar" : self.trackingBar};
@@ -512,7 +505,7 @@
 }
 
 
-#pragma createBuildingLocation
+#pragma mark - createBuildingLocation
 -(CLLocationCoordinate2D)createBuildingLocation:(double)latitude
                                   withLongitude:(double)longitude
                                  withIdentifier:(NSString *)name
@@ -524,7 +517,7 @@
   return location;
 }
 
-#pragma transitionToBuildingDetail
+#pragma mark - transitionToBuildingDetail
 - (void)transitionToBuildingDetail
 {
   int tabIndex = 0;
