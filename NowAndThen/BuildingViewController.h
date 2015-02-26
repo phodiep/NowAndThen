@@ -16,5 +16,6 @@
 @property (strong, nonatomic) UILabel *buildingLabel;
 
 -(void)closePanel;
+-(void)scrollToTopOfView;
 
 @end

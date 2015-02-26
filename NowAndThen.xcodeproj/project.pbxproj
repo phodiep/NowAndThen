@@ -181,8 +181,8 @@
 			isa = PBXGroup;
 			children = (
 				1D6266971A99418700882D81 /* LaunchScreen.xib */,
-				1D6266951A99418700882D81 /* Images.xcassets */,
 				1D6266921A99418700882D81 /* Main.storyboard */,
+				1D6266951A99418700882D81 /* Images.xcassets */,
 				1D6266D41A9D550800882D81 /* ImageCell.h */,
 				1D6266D51A9D550800882D81 /* ImageCell.m */,
 			);
@@ -204,6 +204,8 @@
 				1D6266BD1A99452B00882D81 /* NetworkController.m */,
 				1D6266C81A9BAC3E00882D81 /* InfoViewController.h */,
 				1D6266C91A9BAC3E00882D81 /* InfoViewController.m */,
+				1D6266DC1A9E933300882D81 /* WebViewController.h */,
+				1D6266DD1A9E933300882D81 /* WebViewController.m */,
 			);
 			name = Controllers;
 			sourceTree = "<group>";
@@ -324,6 +326,7 @@
 				1D6266CA1A9BAC3E00882D81 /* InfoViewController.m in Sources */,
 				1D6266B81A9944B900882D81 /* MapViewController.m in Sources */,
 				745CDA541A9BBB62000846EA /* singleBuildingData.json in Sources */,
+				1D6266DE1A9E933300882D81 /* WebViewController.m in Sources */,
 				740A93151A9A94E200ACBA12 /* Building.m in Sources */,
 				1D6266C71A9AEA4100882D81 /* MenuViewController.m in Sources */,
 				1D62668E1A99418700882D81 /* NowAndThen.xcdatamodeld in Sources */,
