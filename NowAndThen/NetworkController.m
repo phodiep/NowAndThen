@@ -28,7 +28,6 @@
 {
   
   NSString *urlString = @"http://then-and-now.herokuapp.com/api/v1/building?gettype=invicinityrectangle&radius=.025&";
-  
 
   NSString *long1 = [NSString stringWithFormat:@"long1=%@", rect[0]];
   NSString *lat1  = [NSString stringWithFormat:@"&lat1=%@", rect[1]];
@@ -93,17 +92,15 @@
 #pragma fetchBuildingImage
 -(void)fetchBuildingImage:(NSString *)imageURL withCompletionHandler:(void (^)(UIImage *))completionHandler
 {
-  NSLog(@"%@",imageURL);
+  NSLog(@"url of image: %@",imageURL);
 
   dispatch_queue_t imageQueue = dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0);
   dispatch_async(imageQueue, ^{
     NSURL *url = [NSURL URLWithString:imageURL];
-    NSLog(@"%@",imageURL);
     NSData *imageData = [[NSData alloc] initWithContentsOfURL:url];
     UIImage *image = [UIImage imageWithData:imageData];
     
     dispatch_async(dispatch_get_main_queue(), ^{
-      NSLog(@"%@",imageURL);
       completionHandler(image);
     });
   });

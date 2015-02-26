@@ -162,13 +162,12 @@
   CLLocationCoordinate2D southEast  = [self getSECoordinate:mapRect];
   CLLocationCoordinate2D northWest  = [self getNWCoordinate:mapRect];
   
-  NSArray *temp =  @[[NSNumber numberWithDouble:northWest.longitude],
-                     [NSNumber numberWithDouble:northWest.latitude],
-                     [NSNumber numberWithDouble:southEast.longitude],
-                     [NSNumber numberWithDouble:southEast.latitude]];
+  return @[[NSNumber numberWithDouble:northWest.longitude],
+           [NSNumber numberWithDouble:northWest.latitude],
+           [NSNumber numberWithDouble:southEast.longitude],
+           [NSNumber numberWithDouble:southEast.latitude]];
   
-  NSLog(@"%@",temp);
-  return temp;
+
 }
 
 -(NSArray *)getCenterOfScreen:(MKMapRect)mapRect
@@ -299,16 +298,18 @@
   return _buildingSnapShot;
 }
 
--(NSMutableArray *)buildings
+
+-(NSMutableDictionary *)buildingsOnMap
 {
-  if (!_buildings) {
-    _buildings = [[NSMutableArray alloc] init];
+  if (!_buildingsOnMap)
+  {
+    _buildingsOnMap = [[NSMutableDictionary alloc] init];
   }
-  return _buildings;
+  return _buildingsOnMap;
 }
 
 
-#pragma toolBar button actions
+#pragma mark - toolBar button actions
 -(IBAction)centerOnUser:(id)sender
 {
   CLLocationCoordinate2D userLocation;
@@ -325,8 +326,26 @@
   [self getBoundingBox:mapRect];
 }
 
+#pragma mark - centerOnBuilding
+-(void)centerOnBuilding:(Building*)building {
+    NSLog(@"long: %@ ... lat: %@", building.longitude, building.latitude);
+    CLLocationCoordinate2D buildingLocation;
+    buildingLocation.latitude = [building.latitude doubleValue];
+    buildingLocation.longitude = [building.longitude doubleValue];
+    
+    MKCoordinateRegion buildingRegion = MKCoordinateRegionMakeWithDistance(buildingLocation, 750, 750);
+    
+    [self.mapView setRegion:buildingRegion animated:true];
+    
+    MKMapRect mapRect = self.mapView.visibleMapRect;
+    //[self getCenterOfScreen:mapRect];
+    [self getBoundingBox:mapRect];
 
-#pragma create Annotations
+    //TODO: add annotation?
+    
+}
+
+#pragma mark - create Annotations
 -(IBAction)findPortals:(id)sender
 {
   [self.mapView removeAnnotations:self.mapView.annotations];
@@ -363,9 +382,14 @@
   MKMapRect mapRect = self.mapView.visibleMapRect;
   
   [[NetworkController sharedService] fetchBuildingsForRect:[self getBoundingBox:mapRect] withBuildingLimit:10 andBlock:^(NSArray *buildingsFound) {
-    self.buildings = [[NSMutableArray alloc] init];
-    [self.mapView addAnnotations:self.buildings];
-    [self.mapView showAnnotations:self.buildings animated:true];
+    
+    for (int i = 0; i < buildingsFound.count; i++)
+    {
+      Building *buildingToAdd = (Building *)buildingsFound[i];
+      [self.buildingsOnMap setObject:buildingsFound[i] forKey:buildingToAdd.name];
+      [self.mapView addAnnotation:buildingToAdd];
+    }
+    [self.mapView showAnnotations:self.mapView.annotations animated:true];
   }];
 }
 
@@ -427,17 +451,18 @@
 -(void)mapView:(MKMapView *)mapView annotationView:(MKAnnotationView *)view
                      calloutAccessoryControlTapped:(UIControl *)control
 {
-  
+  //TODO: remove the string and pass the building object
+  Building *building = self.buildingsOnMap[view.annotation.title];
   //be sure to use updatebuilding in BuildingViewController
   [[NSNotificationCenter defaultCenter] postNotificationName:@"SelectedBuilding"
                                                       object:self
-                                                    userInfo:@{@"Building" : view.annotation.title}];
+                                                    userInfo:@{@"Building" : building}];
   [self transitionToBuildingDetail];
 }
 
 
 
-#pragma createViews
+#pragma mark - createViews
 - (void)createViews
 {
   [self.toolBar setTranslatesAutoresizingMaskIntoConstraints:false];
@@ -451,7 +476,7 @@
 }
 
 
-#pragma createConstraints
+#pragma mark - createConstraints
 - (void)createConstraints
 {
   NSDictionary *views = @{@"toolBar" : self.toolBar, @"trackingBar" : self.trackingBar};
@@ -480,7 +505,7 @@
 }
 
 
-#pragma createBuildingLocation
+#pragma mark - createBuildingLocation
 -(CLLocationCoordinate2D)createBuildingLocation:(double)latitude
                                   withLongitude:(double)longitude
                                  withIdentifier:(NSString *)name
@@ -492,7 +517,7 @@
   return location;
 }
 
-#pragma transitionToBuildingDetail
+#pragma mark - transitionToBuildingDetail
 - (void)transitionToBuildingDetail
 {
   int tabIndex = 0;
