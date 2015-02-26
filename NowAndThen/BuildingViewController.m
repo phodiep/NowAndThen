@@ -120,7 +120,7 @@
     //used to update which building is displayed
     NSNotificationCenter *notificationCenter = [NSNotificationCenter defaultCenter];
     [notificationCenter addObserver:self
-                           selector:@selector(updateBuildingName:)
+                           selector:@selector(updateBuilding:)
                                name:@"SelectedBuilding"
                              object:nil];
 }
