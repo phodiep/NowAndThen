@@ -384,7 +384,6 @@
     
     WebViewController *webVC = [[WebViewController alloc] init];
     webVC.link = @"http://www.google.com";
-    webVC.buildingVC = self;
     [self presentViewController:webVC animated:true completion:nil];
     
 }
@@ -393,7 +392,6 @@
     NSLog(@"Yahoo");
     WebViewController *webVC = [[WebViewController alloc] init];
     webVC.link = @"http://www.yahoo.com";
-    webVC.buildingVC = self;
     [self presentViewController:webVC animated:true completion:nil];
 
 }
@@ -402,7 +400,6 @@
     NSLog(@"Wikipedia");
     WebViewController *webVC = [[WebViewController alloc] init];
     webVC.link = @"http://en.wikipedia.org/wiki/Main_Page";
-    webVC.buildingVC = self;
     [self presentViewController:webVC animated:true completion:nil];
 
 }
