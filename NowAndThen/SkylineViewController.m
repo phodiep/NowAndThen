@@ -37,18 +37,21 @@
 
     // Set up base view, '_skylineView'
     _skylineView = [[UIView alloc] init];
-    _skylineView.bounds = CGRectMake( 0, 0, CGRectGetWidth( [[UIScreen mainScreen] applicationFrame]),
-                                            CGRectGetHeight([[UIScreen mainScreen] applicationFrame]));
+//    _skylineView.bounds = CGRectMake( 0, 0, CGRectGetWidth( [[UIScreen mainScreen] applicationFrame]),
+//                                            CGRectGetHeight([[UIScreen mainScreen] applicationFrame]));
     _skylineView.backgroundColor = [UIColor grayColor];
 
     // Set up image view, '_imageView' and attach it to the '_skylineView'
     _imageView = [[UIImageView alloc] init];
     _imageView.bounds = CGRectMake( 0, 0, CGRectGetWidth( [[UIScreen mainScreen] applicationFrame]),
                                    CGRectGetHeight([[UIScreen mainScreen] applicationFrame]));
+//    _imageView.bounds = CGRectMake( 0, 0, 600, 600 );
 
     // Attach the 'skylineImage' to the '_imageView'
     UIImage *skylineImage = [UIImage imageNamed:@"skyline03.jpeg"];
     _imageView.image = skylineImage;
+    _imageView.userInteractionEnabled = true;
+
 
     [self setupAutolayoutForSkylineView];
 
@@ -89,7 +92,7 @@
 }
 
 -(void)setupAutolayoutForSkylineView {
-    [self prepObjectForAutoLayout: self.skylineView addToSubView:self.skylineView  addToDictionary:@"skylineView"];
+//    [self prepObjectForAutoLayout: self.skylineView addToSubView:self.skylineView  addToDictionary:@"skylineView"];
     [self prepObjectForAutoLayout: self.imageView   addToSubView:self.skylineView  addToDictionary:@"imageView"];
 }
 

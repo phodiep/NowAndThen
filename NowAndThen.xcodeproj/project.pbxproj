@@ -22,6 +22,8 @@
 		1D6266C71A9AEA4100882D81 /* MenuViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D6266C61A9AEA4100882D81 /* MenuViewController.m */; };
 		1D6266CA1A9BAC3E00882D81 /* InfoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D6266C91A9BAC3E00882D81 /* InfoViewController.m */; };
 		1D6266D61A9D550800882D81 /* ImageCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D6266D51A9D550800882D81 /* ImageCell.m */; };
+		1D6266DE1A9E933300882D81 /* WebViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D6266DD1A9E933300882D81 /* WebViewController.m */; };
+		4347CAC01A9E868200B94C3E /* Building+Annotation.m in Sources */ = {isa = PBXBuildFile; fileRef = 4347CABF1A9E868200B94C3E /* Building+Annotation.m */; };
 		740A93151A9A94E200ACBA12 /* Building.m in Sources */ = {isa = PBXBuildFile; fileRef = 740A93141A9A94E200ACBA12 /* Building.m */; };
 		743787901A9D40CD00CBC55C /* images02.jpeg in Resources */ = {isa = PBXBuildFile; fileRef = 7437878F1A9D40CD00CBC55C /* images02.jpeg */; };
 		743787921A9D40E700CBC55C /* skline07.jpeg in Resources */ = {isa = PBXBuildFile; fileRef = 743787911A9D40E700CBC55C /* skline07.jpeg */; };
@@ -37,6 +39,7 @@
 		745CDA5D1A9C313D000846EA /* simpleBuilding.json in Resources */ = {isa = PBXBuildFile; fileRef = 745CDA5C1A9C313D000846EA /* simpleBuilding.json */; };
 		745CDA601A9CE60A000846EA /* simple01.json in Resources */ = {isa = PBXBuildFile; fileRef = 745CDA5F1A9CE60A000846EA /* simple01.json */; };
 		74D9CF5D1A9E747F00C8A2E3 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 74D9CF5C1A9E747F00C8A2E3 /* Main.storyboard */; };
+		74E6DC2F1A9FA66C00FA704D /* SkyViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 74E6DC2E1A9FA66C00FA704D /* SkyViewController.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -77,6 +80,10 @@
 		1D6266C91A9BAC3E00882D81 /* InfoViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = InfoViewController.m; sourceTree = "<group>"; };
 		1D6266D41A9D550800882D81 /* ImageCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageCell.h; sourceTree = "<group>"; };
 		1D6266D51A9D550800882D81 /* ImageCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ImageCell.m; sourceTree = "<group>"; };
+		1D6266DC1A9E933300882D81 /* WebViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WebViewController.h; sourceTree = "<group>"; };
+		1D6266DD1A9E933300882D81 /* WebViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = WebViewController.m; sourceTree = "<group>"; };
+		4347CABE1A9E868200B94C3E /* Building+Annotation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "Building+Annotation.h"; sourceTree = "<group>"; };
+		4347CABF1A9E868200B94C3E /* Building+Annotation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "Building+Annotation.m"; sourceTree = "<group>"; };
 		740A93131A9A94E200ACBA12 /* Building.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Building.h; sourceTree = "<group>"; };
 		740A93141A9A94E200ACBA12 /* Building.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Building.m; sourceTree = "<group>"; };
 		7437878F1A9D40CD00CBC55C /* images02.jpeg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = images02.jpeg; sourceTree = "<group>"; };
@@ -93,6 +100,8 @@
 		745CDA5C1A9C313D000846EA /* simpleBuilding.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = simpleBuilding.json; sourceTree = "<group>"; };
 		745CDA5F1A9CE60A000846EA /* simple01.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = simple01.json; sourceTree = "<group>"; };
 		74D9CF5C1A9E747F00C8A2E3 /* Main.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Main.storyboard; sourceTree = "<group>"; };
+		74E6DC2D1A9FA66C00FA704D /* SkyViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SkyViewController.h; sourceTree = "<group>"; };
+		74E6DC2E1A9FA66C00FA704D /* SkyViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SkyViewController.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -184,6 +193,8 @@
 			children = (
 				740A93131A9A94E200ACBA12 /* Building.h */,
 				740A93141A9A94E200ACBA12 /* Building.m */,
+				4347CABE1A9E868200B94C3E /* Building+Annotation.h */,
+				4347CABF1A9E868200B94C3E /* Building+Annotation.m */,
 				1D62668C1A99418700882D81 /* NowAndThen.xcdatamodeld */,
 			);
 			name = Models;
@@ -216,6 +227,10 @@
 				1D6266BD1A99452B00882D81 /* NetworkController.m */,
 				1D6266C81A9BAC3E00882D81 /* InfoViewController.h */,
 				1D6266C91A9BAC3E00882D81 /* InfoViewController.m */,
+				1D6266DC1A9E933300882D81 /* WebViewController.h */,
+				1D6266DD1A9E933300882D81 /* WebViewController.m */,
+				74E6DC2D1A9FA66C00FA704D /* SkyViewController.h */,
+				74E6DC2E1A9FA66C00FA704D /* SkyViewController.m */,
 			);
 			name = Controllers;
 			sourceTree = "<group>";
@@ -359,11 +374,14 @@
 				1D6266CA1A9BAC3E00882D81 /* InfoViewController.m in Sources */,
 				1D6266B81A9944B900882D81 /* MapViewController.m in Sources */,
 				745CDA541A9BBB62000846EA /* singleBuildingData.json in Sources */,
+				1D6266DE1A9E933300882D81 /* WebViewController.m in Sources */,
 				740A93151A9A94E200ACBA12 /* Building.m in Sources */,
 				1D6266C71A9AEA4100882D81 /* MenuViewController.m in Sources */,
+				74E6DC2F1A9FA66C00FA704D /* SkyViewController.m in Sources */,
 				1D62668E1A99418700882D81 /* NowAndThen.xcdatamodeld in Sources */,
 				1D6266BE1A99452B00882D81 /* NetworkController.m in Sources */,
 				1D6266BB1A9944CC00882D81 /* SkylineViewController.m in Sources */,
+				4347CAC01A9E868200B94C3E /* Building+Annotation.m in Sources */,
 				1D6266881A99418700882D81 /* main.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

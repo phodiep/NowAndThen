@@ -12,6 +12,7 @@
 #import "BuildingViewController.h"
 #import "MapViewController.h"
 #import "SkylineViewController.h"
+#import "SkyViewController.h"
 #import "MenuViewController.h"
 #import "InfoViewController.h"
 
@@ -51,7 +52,11 @@
     mapVC.tabBarItem.image = [UIImage imageNamed:@"map"];
 
     // Setup 'SkylineVC'
-    SkylineViewController *skylineVC = [[SkylineViewController alloc] init];
+//    SkylineViewController *skylineVC = [[SkylineViewController alloc] init];
+
+    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+    SkyViewController *skylineVC = [storyboard instantiateViewControllerWithIdentifier:@"SKYLINE_VIEW"];
+
     skylineVC.tabBarItem.title = @"Skyline";
     skylineVC.tabBarItem.image = [UIImage imageNamed:@"skyline"];
     

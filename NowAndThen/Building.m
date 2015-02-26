@@ -31,7 +31,8 @@
         self.crossStreetEastWest = @"W. Garfield Street";
         self.crossStreetNorthSouth = @"15th Ave W";
         self.infosites = @[@"http://www.seattle.gov/neighborhoods/preservation/documents/DesRptAdmiralsHouse.pdf"];
-        self.imageUrls = @[@"http://seamlessmoves.com/blog/wp-content/uploads/2012/12/Admirals-House.jpg"];
+        self.modernImageURL = @"http://seamlessmoves.com/blog/wp-content/uploads/2012/12/Admirals-House.jpg";
+        self.oldImageURL = @"http://seamlessmoves.com/blog/wp-content/uploads/2012/12/Admirals-House.jpg";
     }
     return self;
 }
@@ -41,6 +42,8 @@
     if (self) {
         NSDictionary *location = jsonDictionary[@"loc"];
         NSArray *coordinates = location[@"coordinates"];
+        NSDictionary *imageURLs = jsonDictionary[@"images"];
+      
         self.longitude = coordinates[0];
         self.latitude = coordinates[1];
 
@@ -54,23 +57,37 @@
         self.crossStreetEastWest = jsonDictionary[@"crossStreetEastWest"];
         self.crossStreetNorthSouth = jsonDictionary[@"crossStreetNorthSouth"];
         self.infosites = jsonDictionary[@"infosites"];
-        self.imageUrls = jsonDictionary[@"images"];
+        self.modernImageURL = imageURLs[@"url2010"];
+        self.oldImageURL = imageURLs[@"url1900"];
     }
     return self;
 }
 
-+(NSArray*)fetchBuildingsFromJsonData:(NSArray*)data {
++(NSArray*)fetchBuildingsFromJsonData:(NSData *)data {
+ 
+  NSError *error;
+  NSDictionary *jsonDictionary = [NSJSONSerialization JSONObjectWithData:data
+                                                                 options:0
+                                                                   error:&error];
+  if (error)
+  {
+    NSLog(@"%@", error);
+  } else {
+   
     NSMutableArray *buildings = [[NSMutableArray alloc] init];
     
-    for ( NSDictionary *item in data ) {
-        Building *building = [[Building alloc] initWithJson:item];
-        [buildings addObject:building];
+    for ( NSDictionary *item in jsonDictionary )
+    {
+      Building *building = [[Building alloc] initWithJson:item];
+      [buildings addObject:building];
     }
+    NSArray *convertedArray = [[NSArray alloc] initWithArray:buildings];
     
-    return buildings;
+    return convertedArray;
+    //return buildings;
+  }
+  return nil;
 }
-
-
 
 
 -(id) init {
@@ -126,5 +143,6 @@
 
     return arrayOfBuildings;
 }
+
 
 @end
