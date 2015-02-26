@@ -308,7 +308,7 @@
 }
 
 
-#pragma toolBar button actions
+#pragma mark - toolBar button actions
 -(IBAction)centerOnUser:(id)sender
 {
   CLLocationCoordinate2D userLocation;
@@ -325,7 +325,26 @@
   [self getBoundingBox:mapRect];
 }
 
-#pragma create Annotations
+#pragma mark - centerOnBuilding
+-(void)centerOnBuilding:(Building*)building {
+    NSLog(@"long: %@ ... lat: %@", building.longitude, building.latitude);
+    CLLocationCoordinate2D buildingLocation;
+    buildingLocation.latitude = [building.latitude doubleValue];
+    buildingLocation.longitude = [building.longitude doubleValue];
+    
+    MKCoordinateRegion buildingRegion = MKCoordinateRegionMakeWithDistance(buildingLocation, 750, 750);
+    
+    [self.mapView setRegion:buildingRegion animated:true];
+    
+    MKMapRect mapRect = self.mapView.visibleMapRect;
+    //[self getCenterOfScreen:mapRect];
+    [self getBoundingBox:mapRect];
+
+    //TODO: add annotation?
+    
+}
+
+#pragma mark - create Annotations
 -(IBAction)findPortals:(id)sender
 {
   [self.mapView removeAnnotations:self.mapView.annotations];
@@ -469,7 +488,7 @@
   [self.mapView removeAnnotations:self.mapView.annotations];
 }
 
-#pragma createViews
+#pragma mark - createViews
 - (void)createViews
 {
   [self.toolBar setTranslatesAutoresizingMaskIntoConstraints:false];
@@ -483,7 +502,7 @@
 }
 
 
-#pragma createConstraints
+#pragma mark - createConstraints
 - (void)createConstraints
 {
   NSDictionary *views = @{@"toolBar" : self.toolBar, @"trackingBar" : self.trackingBar};
@@ -512,7 +531,7 @@
 }
 
 
-#pragma createBuildingLocation
+#pragma mark - createBuildingLocation
 -(CLLocationCoordinate2D)createBuildingLocation:(double)latitude
                                   withLongitude:(double)longitude
                                  withIdentifier:(NSString *)name
@@ -524,7 +543,7 @@
   return location;
 }
 
-#pragma transitionToBuildingDetail
+#pragma mark - transitionToBuildingDetail
 - (void)transitionToBuildingDetail
 {
   int tabIndex = 0;
