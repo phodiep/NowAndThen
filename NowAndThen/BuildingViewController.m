@@ -31,6 +31,7 @@
 
 @property (strong, nonatomic) UIButton *moreButton;
 @property (nonatomic) BOOL moreMenuShowing;
+@property (strong, nonatomic) UITapGestureRecognizer *tapOffMoreMenu;
 
 @property (strong, nonatomic) UIButton *mapButton;
 
@@ -113,6 +114,7 @@
     [self.imageCollectionView registerClass:ImageCell.class forCellWithReuseIdentifier:@"IMAGE_CELL"];
     
     self.tapToClose = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(closePanel)];
+    self.tapOffMoreMenu = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(hideMoreMenu)];
 
     //used to update which building is displayed
     NSNotificationCenter *notificationCenter = [NSNotificationCenter defaultCenter];
@@ -128,7 +130,7 @@
 
 -(void)viewDidLayoutSubviews {
     if (self.firstScrollCollectionView == false) {
-        [self.imageCollectionView scrollToItemAtIndexPath: [NSIndexPath indexPathForItem:50 inSection:0]
+        [self.imageCollectionView scrollToItemAtIndexPath: [NSIndexPath indexPathForItem:5 inSection:0]
                                      atScrollPosition:UICollectionViewScrollPositionCenteredVertically animated:false];
         self.firstScrollCollectionView = true;
     }
@@ -176,8 +178,7 @@
     [self applyTextFormat:self.crossStreetNS    setText:self.building.crossStreetNorthSouth];
     [self applyTextFormat:self.buildingInfo     setText:@"Lorem ipsum dolor sit er elit lamet, consectetaur cillium adipisicing pecu, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Nam liber te conscient to factor tum poen legum odioque civiuda."];
     
-    [self.images addObject: [UIImage imageNamed:@"smithTowerOld"]];
-    [self.images addObject: [UIImage imageNamed:@"smithTowerNew"]];
+    //TODO: update placeholder images with real images from building object
     [self.images addObject: [UIImage imageNamed:@"smithTowerOld"]];
     [self.images addObject: [UIImage imageNamed:@"smithTowerNew"]];
     
@@ -234,8 +235,6 @@
 
     [self.rootView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:[moreView]-(-50)-|"               options:0 metrics:nil     views:self.views]];
     [self.rootView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-60-[moreView]"               options:0 metrics:nil     views:self.views]];
-
-    
 }
 
 -(void)prepareScrollViewForAutolayout {
@@ -282,7 +281,7 @@
 -(NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
     if ([self.images count] > 0) {
 //        return [self.images count];
-        return 100;
+        return 10;
     }
     return 0;
 }
@@ -322,10 +321,8 @@
 
 -(void)moreButtonPressed {
     if (self.moreMenuShowing) {
-        //is showing
         [self hideMoreMenu];
     } else {
-        //is hidden
         [self showMoreMenu];
     }
 }
@@ -336,7 +333,8 @@
         [UIView animateWithDuration:0.3 animations:^{
             weakSelf.moreMenuView.center = CGPointMake(weakSelf.moreMenuView.center.x - 50, weakSelf.moreMenuView.center.y);
         } completion:^(BOOL finished) {
-            self.moreMenuShowing = YES;
+            weakSelf.moreMenuShowing = YES;
+            [weakSelf.view addGestureRecognizer:weakSelf.tapOffMoreMenu];
         }];
     }
 }
@@ -347,7 +345,8 @@
         [UIView animateWithDuration:0.3 animations:^{
             weakSelf.moreMenuView.center = CGPointMake(weakSelf.moreMenuView.center.x + 50, weakSelf.moreMenuView.center.y);
         } completion:^(BOOL finished) {
-            self.moreMenuShowing = NO;
+            weakSelf.moreMenuShowing = NO;
+            [weakSelf.view removeGestureRecognizer:weakSelf.tapOffMoreMenu];
         }];
     }
 }
@@ -357,8 +356,6 @@
 }
 
 -(void)mapButtonPressed {
-    NSLog(@"lat: %@ ... long: %@", self.building.latitude, self.building.longitude);
-    
     [self transitionToMapViewController];
 }
 
@@ -376,38 +373,37 @@
                             tabBarController.selectedIndex = tabIndex;
                         }
                     }];
-    
+}
+
+-(void)presentWebViewWithUrl:(NSString*)url {
+    WebViewController *webVC = [[WebViewController alloc] init];
+    webVC.link = url;
+    [self presentViewController:webVC animated:true completion:nil];
 }
 
 -(void)googleButtonPressed {
-    NSLog(@"Google");
-    
-    WebViewController *webVC = [[WebViewController alloc] init];
-    webVC.link = @"http://www.google.com";
-    [self presentViewController:webVC animated:true completion:nil];
-    
+    [self presentWebViewWithUrl:self.building.googleURL];
 }
 
 -(void)yahooButtonPressed {
-    NSLog(@"Yahoo");
-    WebViewController *webVC = [[WebViewController alloc] init];
-    webVC.link = @"http://www.yahoo.com";
-    [self presentViewController:webVC animated:true completion:nil];
-
+    [self presentWebViewWithUrl:self.building.yahooURL];
 }
 
 -(void)wikipediaButtonPressed {
-    NSLog(@"Wikipedia");
-    WebViewController *webVC = [[WebViewController alloc] init];
-    webVC.link = @"http://en.wikipedia.org/wiki/Main_Page";
-    [self presentViewController:webVC animated:true completion:nil];
-
+    [self presentWebViewWithUrl:self.building.wikipediaURL];
 }
+
 
 #pragma updateBuildingName
 - (void)updateBuildingName:(NSNotification *)notification {
   self.buildingName = [notification userInfo][@"Building"];
   self.buildingLabel.text = [notification userInfo][@"Building"];
+}
+
+#pragma mark - transition from Map -> Building... update Building object
+-(void)updateBuilding:(NSNotification *)notification {
+    self.building = [notification userInfo][@"Building"];
+    [self setBuildingLabelValues];
 }
 
 

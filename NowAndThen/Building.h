@@ -23,6 +23,11 @@
 @property (strong, nonatomic) NSString *crossStreetEastWest;
 @property (strong, nonatomic) NSString *crossStreetNorthSouth;
 @property (strong, nonatomic) NSArray *infosites;
+
+@property (strong, nonatomic) NSString *googleURL;
+@property (strong, nonatomic) NSString *wikipediaURL;
+@property (strong, nonatomic) NSString *yahooURL;
+
 @property (strong, nonatomic) NSString *oldImageURL;
 @property (strong, nonatomic) NSString *modernImageURL;
 
