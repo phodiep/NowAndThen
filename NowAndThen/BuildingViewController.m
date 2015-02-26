@@ -11,6 +11,7 @@
 #import "MenuViewController.h"
 #import "Building.h"
 #import "ImageCell.h"
+#import "WebViewController.h"
 
 #pragma mark - Interface
 @interface BuildingViewController () <UICollectionViewDataSource, UICollectionViewDelegateFlowLayout>
@@ -380,14 +381,27 @@
 
 -(void)googleButtonPressed {
     NSLog(@"Google");
+    
+    WebViewController *webVC = [[WebViewController alloc] init];
+    webVC.link = @"http://www.google.com";
+    [self presentViewController:webVC animated:true completion:nil];
+    
 }
 
 -(void)yahooButtonPressed {
     NSLog(@"Yahoo");
+    WebViewController *webVC = [[WebViewController alloc] init];
+    webVC.link = @"http://www.yahoo.com";
+    [self presentViewController:webVC animated:true completion:nil];
+
 }
 
 -(void)wikipediaButtonPressed {
     NSLog(@"Wikipedia");
+    WebViewController *webVC = [[WebViewController alloc] init];
+    webVC.link = @"http://en.wikipedia.org/wiki/Main_Page";
+    [self presentViewController:webVC animated:true completion:nil];
+
 }
 
 #pragma updateBuildingName
