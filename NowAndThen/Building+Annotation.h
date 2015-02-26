@@ -11,6 +11,4 @@
 
 @interface Building (Annotation) <MKAnnotation>
 
-
-
 @end

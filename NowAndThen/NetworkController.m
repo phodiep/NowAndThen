@@ -26,15 +26,14 @@
            withBuildingLimit:(NSInteger)limit
                     andBlock:(void (^)(NSArray *buildingsFound))completionHandler
 {
-  //NSString *urlString = @"http://localhost:3000/api/v1/building?gettype=invicinityrectangle&radius=.025&long1=-123.0&lat1=48&long2=-122.0&lat2=47";
   
-  NSString *urlString = @"http://localhost:3000/api/v1/building?gettype=invicinityrectangle&radius=.025&";
+  NSString *urlString = @"http://then-and-now.herokuapp.com/api/v1/building?gettype=invicinityrectangle&radius=.025&";
   
 
   NSString *long1 = [NSString stringWithFormat:@"long1=%@", rect[0]];
-  NSString *lat1 = [NSString stringWithFormat:@"&lat1=%@", rect[1]];
+  NSString *lat1  = [NSString stringWithFormat:@"&lat1=%@", rect[1]];
   NSString *long2 = [NSString stringWithFormat:@"&long2=%@", rect[2]];
-  NSString *lat2 = [NSString stringWithFormat:@"&lat2=%@", rect[3]];
+  NSString *lat2  = [NSString stringWithFormat:@"&lat2=%@", rect[3]];
 
   urlString = [urlString stringByAppendingString:long1];
   urlString = [urlString stringByAppendingString:lat1];

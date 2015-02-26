@@ -325,6 +325,7 @@
   [self getBoundingBox:mapRect];
 }
 
+
 #pragma create Annotations
 -(IBAction)findPortals:(id)sender
 {
@@ -341,7 +342,7 @@
   [self.mapView addAnnotation:kerryPark];
   
   CLLocationCoordinate2D coord;
-  coord.latitude = kerryPark.coordinate.latitude;
+  coord.latitude  = kerryPark.coordinate.latitude;
   coord.longitude = kerryPark.coordinate.longitude;
   
   MKCoordinateRegion region = MKCoordinateRegionMakeWithDistance(coord, 750, 750);
@@ -358,40 +359,11 @@
 -(IBAction)findBuildings:(id)sender
 {
   [self.mapView removeAnnotations:self.mapView.annotations];
-  //***** DEMO INFO *****
-//  MKPointAnnotation *point0 = [[MKPointAnnotation alloc] init];
-//  MKPointAnnotation *point1 = [[MKPointAnnotation alloc] init];
-//  MKPointAnnotation *point2 = [[MKPointAnnotation alloc] init];
-//
-//  NSArray *tempBuildings = @[@"Smith Tower", @"Columbia Tower", @"Dexter Horton Building"];
-//    
-//  point0.coordinate = [self createBuildingLocation: 47.6021
-//                                     withLongitude: -122.3318
-//                                    withIdentifier: tempBuildings[0]];
-//  point0.title = tempBuildings[0];
-//    
-//  point1.coordinate = [self createBuildingLocation: 47.604633
-//                                     withLongitude: -122.330698
-//                                    withIdentifier: tempBuildings[1]];
-//  point1.title = tempBuildings[1];
-//    
-//  point2.coordinate = [self createBuildingLocation: 47.6034693
-//                                     withLongitude: -122.3328106
-//                                    withIdentifier: tempBuildings[2]];
-//  point2.title = tempBuildings[2];
-//  
-//  [self.mapView addAnnotation:point0];
-//  [self.mapView addAnnotation:point1];
-//  [self.mapView addAnnotation:point2];
-  
-  
-  // * 1 * get center location of map
+
   MKMapRect mapRect = self.mapView.visibleMapRect;
-  //[self getCenterOfScreen:mapRect];
-  //[self getBoundingBox:mapRect];
   
   [[NetworkController sharedService] fetchBuildingsForRect:[self getBoundingBox:mapRect] withBuildingLimit:10 andBlock:^(NSArray *buildingsFound) {
-    self.buildings = [[NSMutableArray alloc] initWithArray:buildingsFound];
+    self.buildings = [[NSMutableArray alloc] init];
     [self.mapView addAnnotations:self.buildings];
     [self.mapView showAnnotations:self.buildings animated:true];
   }];
@@ -422,7 +394,6 @@
     }
     if (building)
     {
-      //fetch
       [[NetworkController sharedService] fetchBuildingImage:building.oldImageURL withCompletionHandler:^(UIImage *image) {
         imageView.image = image;
         annotationView.leftCalloutAccessoryView =imageView;
@@ -443,13 +414,12 @@
   {
     view = [[MKPinAnnotationView alloc] initWithAnnotation:annotation
                                            reuseIdentifier:reuseID];
-    
+
     view.canShowCallout = true;
-    UIImageView *leftCalloutImage = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 46, 46)];
-    view.leftCalloutAccessoryView = leftCalloutImage;
-    view.rightCalloutAccessoryView =[UIButton buttonWithType:UIButtonTypeDetailDisclosure];
+    UIImageView *leftCalloutImage  = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 46, 46)];
+    view.leftCalloutAccessoryView  = leftCalloutImage;
+    view.rightCalloutAccessoryView = [UIButton buttonWithType:UIButtonTypeDetailDisclosure];
   }
-  
   return view;
 }
 
@@ -457,6 +427,8 @@
 -(void)mapView:(MKMapView *)mapView annotationView:(MKAnnotationView *)view
                      calloutAccessoryControlTapped:(UIControl *)control
 {
+  
+  //be sure to use updatebuilding in BuildingViewController
   [[NSNotificationCenter defaultCenter] postNotificationName:@"SelectedBuilding"
                                                       object:self
                                                     userInfo:@{@"Building" : view.annotation.title}];
@@ -464,10 +436,6 @@
 }
 
 
--(void)updateMapViewAnnotations
-{
-  [self.mapView removeAnnotations:self.mapView.annotations];
-}
 
 #pragma createViews
 - (void)createViews
