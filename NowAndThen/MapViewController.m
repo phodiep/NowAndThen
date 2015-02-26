@@ -117,7 +117,6 @@
 {
   if (!self.didLoadUserLocation)
   {
-    NSLog(@"mapviewDelegate");
     CLLocationCoordinate2D location;
     location.latitude = self.mapView.userLocation.coordinate.latitude;
     location.longitude = self.mapView.userLocation.coordinate.longitude;
@@ -228,8 +227,6 @@
   if (!_trackUser)
   {
     _trackUser = [[MKUserTrackingBarButtonItem alloc] initWithMapView:self.mapView];
-    //[_trackUser setTarget:self];
-    //[_trackUser setAction:@selector(track:)];
   }
   return _trackUser;
 }
@@ -336,13 +333,8 @@
     MKCoordinateRegion buildingRegion = MKCoordinateRegionMakeWithDistance(buildingLocation, 750, 750);
     
     [self.mapView setRegion:buildingRegion animated:true];
-    
-    MKMapRect mapRect = self.mapView.visibleMapRect;
-    //[self getCenterOfScreen:mapRect];
-    [self getBoundingBox:mapRect];
 
-    //TODO: add annotation?
-    
+    [self.mapView addAnnotation:building];
 }
 
 #pragma mark - create Annotations

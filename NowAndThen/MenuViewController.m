@@ -9,12 +9,13 @@
 #import "MenuViewController.h"
 #import "BuildingViewController.h"
 #import "Building.h"
+#import "NetworkController.h"
 
 @interface MenuViewController () <UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate>
 
 @property (strong, nonatomic) UIView *rootView;
 @property (strong, nonatomic) NSDictionary *views;
-@property (strong, nonatomic) NSArray *results;
+
 @property (strong, nonatomic) UITableView *tableView;
 @property (strong, nonatomic) UISearchBar *searchBar;
 @property (strong, nonatomic) BuildingViewController *buildingVC;
@@ -60,7 +61,6 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.results = @[@"Smith Tower", @"Columbia Tower", @"Dexter Horton Building"];
     self.tableView.dataSource = self;
     self.tableView.delegate = self;
     self.searchBar.delegate = self;
@@ -90,7 +90,7 @@
 
 -(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     UITableViewCell *cell = (UITableViewCell*)[self.tableView dequeueReusableCellWithIdentifier:@"MENU_CELL" forIndexPath:indexPath];
-    cell.textLabel.text = self.results[indexPath.row];
+    cell.textLabel.text = [self.results[indexPath.row] name];
     return cell;
 }
 
@@ -98,9 +98,9 @@
 -(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     [self dismissSearchBarKeyboard];
     
-    self.buildingVC.buildingLabel.text = self.results[indexPath.row];
-    self.buildingVC.buildingName = self.results[indexPath.row];
-    //TODO - pass over new building
+    self.buildingVC.building = self.results[indexPath.row];
+    [self.buildingVC setBuildingLabelValues];
+    
     [self.buildingVC closePanel];
     [self.buildingVC scrollToTopOfView];
 }
@@ -114,6 +114,16 @@
     return true;
 }
 
+-(void)searchBarSearchButtonClicked:(UISearchBar *)searchBar {
+    [[NetworkController sharedService] fetchBuildingBySearchTerms:searchBar.text withCompletionHandler:^(NSArray *searchResults) {
+        if (searchResults != nil) {
+            self.results = nil;
+            self.results = searchResults;
+            [self.tableView reloadData];
+            [self dismissSearchBarKeyboard];
+        }
+    }];
+}
 
 -(void)searchBarCancelButtonClicked:(UISearchBar *)searchBar {
     [self dismissSearchBarKeyboard];
@@ -128,6 +138,13 @@
 }
 
 #pragma mark - Lazy Loading Getters
+-(NSArray *)results {
+    if (_results == nil) {
+        _results = [[NSArray alloc] init];
+    }
+    return _results;
+}
+
 -(UITableView *)tableView {
     if (_tableView == nil) {
         _tableView = [[UITableView alloc] init];
