@@ -7,7 +7,10 @@
 //
 
 #import "Building.h"
+#import <MapKit/MapKit.h>
 
-@interface Building (Annotation)
+@interface Building (Annotation) <MKAnnotation>
+
+
 
 @end

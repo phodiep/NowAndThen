@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
 @interface Building : NSObject
 
@@ -22,11 +23,12 @@
 @property (strong, nonatomic) NSString *crossStreetEastWest;
 @property (strong, nonatomic) NSString *crossStreetNorthSouth;
 @property (strong, nonatomic) NSArray *infosites;
-@property (strong, nonatomic) NSArray *imageUrls;
+@property (strong, nonatomic) NSString *oldImageURL;
+@property (strong, nonatomic) NSString *modernImageURL;
 
 -(instancetype)initWithJson:(NSDictionary*) jsonDictionary;
 -(instancetype)initFakeBuilding;
-+(NSArray*)fetchBuildingsFromJsonData:(NSArray*)data;
++(NSArray*)fetchBuildingsFromJsonData:(NSData *)data;
 
 +(NSArray*)fetchBuildingDataFromFile;
 -(void) print;

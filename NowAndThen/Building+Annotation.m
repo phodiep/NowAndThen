@@ -10,4 +10,21 @@
 
 @implementation Building (Annotation)
 
+-(CLLocationCoordinate2D)coordinate
+{
+  CLLocationCoordinate2D coordinate;
+  coordinate.latitude = [self.latitude doubleValue];
+  coordinate.longitude = [self.longitude doubleValue];
+  
+  return coordinate;
+}
+
+-(NSString *)title
+{
+  NSString *title = self.name;
+  
+  return title;
+}
+
+
 @end

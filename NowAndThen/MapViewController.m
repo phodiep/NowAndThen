@@ -9,6 +9,9 @@
 #import "MapViewController.h"
 #import <MapKit/MapKit.h>
 #import <CoreLocation/CoreLocation.h>
+#import "Building.h"
+#import "NetworkController.h"
+#import "Building+Annotation.h"
 
 @interface MapViewController () <MKMapViewDelegate, UIToolbarDelegate, UIPopoverPresentationControllerDelegate>
 
@@ -43,19 +46,20 @@
 -(void)transitionToBuildingDetail;
 
 ////methods for getting the current screen region
-//-(CLLocationCoordinate2D)getCoordFromMapRectPoint:(double)X andY:(double)Y;
-////-(CLLocationCoordinate2D)getNECoordinate:(MKMapRect)mapRect;
-////-(CLLocationCoordinate2D)getSWCoordinate:(MKMapRect)mapRect;
-//
-//-(NSArray *)getBoundingBox:(MKMapRect)mapRect;
-//
-////custom method for setting locations
-//-(CLLocationCoordinate2D)createBuildingLocation:(double)latitude
-//                                  withLongitude:(double)longitude
-//                                 withIdentifier:(NSString *)name;
+-(CLLocationCoordinate2D)getCoordFromMapRectPoint:(double)X andY:(double)Y;
+-(CLLocationCoordinate2D)getNWCoordinate:(MKMapRect)mapRect;
+-(CLLocationCoordinate2D)getSECoordinate:(MKMapRect)mapRect;
 
--(NSArray *)getCenterOfScreen:(MKMapRect)mapRect;
+-(NSArray *)getBoundingBox:(MKMapRect)mapRect;
 
+//custom method for setting locations
+-(CLLocationCoordinate2D)createBuildingLocation:(double)latitude
+                                  withLongitude:(double)longitude
+                                 withIdentifier:(NSString *)name;
+
+//-(NSArray *)getCenterOfScreen:(MKMapRect)mapRect;
+
+-(void)updateCalloutAccessoryImage:(MKAnnotationView *)annotationView;
 
 @end
 
@@ -135,37 +139,37 @@
 
 
 #pragma methods for generating a bounding box -> to be used in geoJSON fetch
-//-(CLLocationCoordinate2D)getNECoordinate:(MKMapRect)mapRect
-//{
-//  return [self getCoordFromMapRectPoint:MKMapRectGetMaxX(mapRect)
-//                                   andY:mapRect.origin.y];
-//}
-//
-//-(CLLocationCoordinate2D)getSWCoordinate:(MKMapRect)mapRect
-//{
-//  return [self getCoordFromMapRectPoint:mapRect.origin.x
-//                                   andY:MKMapRectGetMaxY(mapRect)];
-//}
-//
-//-(CLLocationCoordinate2D)getCoordFromMapRectPoint:(double)X andY:(double)Y
-//{
-//  MKMapPoint swMapPoint = MKMapPointMake(X, Y);
-//  return MKCoordinateForMapPoint(swMapPoint);
-//}
-//
-//-(NSArray *)getBoundingBox:(MKMapRect)mapRect
-//{
-//  CLLocationCoordinate2D bottomLeft  = [self getSWCoordinate:mapRect];
-//  CLLocationCoordinate2D topRight    = [self getNECoordinate:mapRect];
-//  
-//  NSArray *temp =  @[[NSNumber numberWithDouble:bottomLeft.latitude],
-//                     [NSNumber numberWithDouble:bottomLeft.longitude],
-//                     [NSNumber numberWithDouble:topRight.latitude],
-//                     [NSNumber numberWithDouble:topRight.longitude]];
-//  
-//  NSLog(@"%@",temp);
-//  return temp;
-//}
+-(CLLocationCoordinate2D)getNWCoordinate:(MKMapRect)mapRect
+{
+  return [self getCoordFromMapRectPoint:mapRect.origin.x
+                                   andY:mapRect.origin.y];
+}
+
+-(CLLocationCoordinate2D)getSECoordinate:(MKMapRect)mapRect
+{
+  return [self getCoordFromMapRectPoint:MKMapRectGetMaxX(mapRect)
+                                   andY:MKMapRectGetMaxY(mapRect)];
+}
+
+-(CLLocationCoordinate2D)getCoordFromMapRectPoint:(double)X andY:(double)Y
+{
+  MKMapPoint swMapPoint = MKMapPointMake(X, Y);
+  return MKCoordinateForMapPoint(swMapPoint);
+}
+
+-(NSArray *)getBoundingBox:(MKMapRect)mapRect
+{
+  CLLocationCoordinate2D southEast  = [self getSECoordinate:mapRect];
+  CLLocationCoordinate2D northWest  = [self getNWCoordinate:mapRect];
+  
+  NSArray *temp =  @[[NSNumber numberWithDouble:northWest.longitude],
+                     [NSNumber numberWithDouble:northWest.latitude],
+                     [NSNumber numberWithDouble:southEast.longitude],
+                     [NSNumber numberWithDouble:southEast.latitude]];
+  
+  NSLog(@"%@",temp);
+  return temp;
+}
 
 -(NSArray *)getCenterOfScreen:(MKMapRect)mapRect
 {
@@ -295,6 +299,14 @@
   return _buildingSnapShot;
 }
 
+-(NSMutableArray *)buildings
+{
+  if (!_buildings) {
+    _buildings = [[NSMutableArray alloc] init];
+  }
+  return _buildings;
+}
+
 
 #pragma toolBar button actions
 -(IBAction)centerOnUser:(id)sender
@@ -309,8 +321,8 @@
                  animated:true];
   
   MKMapRect mapRect = self.mapView.visibleMapRect;
-  [self getCenterOfScreen:mapRect];
-  //[self getBoundingBox:mapRect];
+  //[self getCenterOfScreen:mapRect];
+  [self getBoundingBox:mapRect];
 }
 
 #pragma create Annotations
@@ -338,86 +350,119 @@
                  animated:true];
   
   MKMapRect mapRect = self.mapView.visibleMapRect;
-  [self getCenterOfScreen:mapRect];
-  //[self getBoundingBox:mapRect];
-  
+  //[self getCenterOfScreen:mapRect];
+  [self getBoundingBox:mapRect];
 }
 
 //         findBuildings
 -(IBAction)findBuildings:(id)sender
 {
   [self.mapView removeAnnotations:self.mapView.annotations];
+  //***** DEMO INFO *****
+//  MKPointAnnotation *point0 = [[MKPointAnnotation alloc] init];
+//  MKPointAnnotation *point1 = [[MKPointAnnotation alloc] init];
+//  MKPointAnnotation *point2 = [[MKPointAnnotation alloc] init];
+//
+//  NSArray *tempBuildings = @[@"Smith Tower", @"Columbia Tower", @"Dexter Horton Building"];
+//    
+//  point0.coordinate = [self createBuildingLocation: 47.6021
+//                                     withLongitude: -122.3318
+//                                    withIdentifier: tempBuildings[0]];
+//  point0.title = tempBuildings[0];
+//    
+//  point1.coordinate = [self createBuildingLocation: 47.604633
+//                                     withLongitude: -122.330698
+//                                    withIdentifier: tempBuildings[1]];
+//  point1.title = tempBuildings[1];
+//    
+//  point2.coordinate = [self createBuildingLocation: 47.6034693
+//                                     withLongitude: -122.3328106
+//                                    withIdentifier: tempBuildings[2]];
+//  point2.title = tempBuildings[2];
+//  
+//  [self.mapView addAnnotation:point0];
+//  [self.mapView addAnnotation:point1];
+//  [self.mapView addAnnotation:point2];
   
-  MKPointAnnotation *point0 = [[MKPointAnnotation alloc] init];
-  MKPointAnnotation *point1 = [[MKPointAnnotation alloc] init];
-  MKPointAnnotation *point2 = [[MKPointAnnotation alloc] init];
-
-  NSArray *tempBuildings = @[@"Smith Tower", @"Columbia Tower", @"Dexter Horton Building"];
-    
-  point0.coordinate = [self createBuildingLocation: 47.6021
-                                     withLongitude: -122.3318
-                                    withIdentifier: tempBuildings[0]];
-  point0.title = tempBuildings[0];
-    
-  point1.coordinate = [self createBuildingLocation: 47.604633
-                                     withLongitude: -122.330698
-                                    withIdentifier: tempBuildings[1]];
-  point1.title = tempBuildings[1];
-    
-  point2.coordinate = [self createBuildingLocation: 47.6034693
-                                     withLongitude: -122.3328106
-                                    withIdentifier: tempBuildings[2]];
-  point2.title = tempBuildings[2];
   
-  [self.mapView addAnnotation:point0];
-  [self.mapView addAnnotation:point1];
-  [self.mapView addAnnotation:point2];
-  
+  // * 1 * get center location of map
   MKMapRect mapRect = self.mapView.visibleMapRect;
-  [self getCenterOfScreen:mapRect];
+  //[self getCenterOfScreen:mapRect];
   //[self getBoundingBox:mapRect];
+  
+  [[NetworkController sharedService] fetchBuildingsForRect:[self getBoundingBox:mapRect] withBuildingLimit:10 andBlock:^(NSArray *buildingsFound) {
+    self.buildings = [[NSMutableArray alloc] initWithArray:buildingsFound];
+    [self.mapView addAnnotations:self.buildings];
+    [self.mapView showAnnotations:self.buildings animated:true];
+  }];
+}
+
+
+//pin selected
+-(void)mapView:(MKMapView *)mapView didSelectAnnotationView:(MKAnnotationView *)view
+{
+  [self updateCalloutAccessoryImage:view];
+}
+
+
+-(void)updateCalloutAccessoryImage:(MKAnnotationView *)annotationView
+{
+  UIImageView *imageView = nil;
+  
+  if ([annotationView.leftCalloutAccessoryView isKindOfClass:[UIImageView class]])
+  {
+    imageView = (UIImageView *)annotationView.leftCalloutAccessoryView;
+  }
+  if (imageView)
+  {
+    Building *building = nil;
+    if ([annotationView.annotation isKindOfClass:[Building class]])
+    {
+      building = (Building *)annotationView.annotation;
+    }
+    if (building)
+    {
+      //fetch
+      [[NetworkController sharedService] fetchBuildingImage:building.oldImageURL withCompletionHandler:^(UIImage *image) {
+        imageView.image = image;
+        annotationView.leftCalloutAccessoryView =imageView;
+        [annotationView reloadInputViews];
+      }];
+    }
+  }
 }
 
 
 -(MKAnnotationView *)mapView:(MKMapView *)mapView viewForAnnotation:(id<MKAnnotation>)annotation
 {
   static NSString *reuseID = @"NowAndThenAnnotations";
-//  
-//  MKAnnotationView *annotationView = [mapView dequeueReusableAnnotationViewWithIdentifier:reuseID];
   
-  if ([annotation isEqual:self.mapView.userLocation])
+  MKAnnotationView *view = [self.mapView dequeueReusableAnnotationViewWithIdentifier:reuseID];
+  
+  if (!view)
   {
-    return nil;
+    view = [[MKPinAnnotationView alloc] initWithAnnotation:annotation
+                                           reuseIdentifier:reuseID];
+    
+    view.canShowCallout = true;
+    UIImageView *leftCalloutImage = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 46, 46)];
+    view.leftCalloutAccessoryView = leftCalloutImage;
+    view.rightCalloutAccessoryView =[UIButton buttonWithType:UIButtonTypeDetailDisclosure];
   }
   
-  
-  MKPinAnnotationView *annotationView = [[MKPinAnnotationView alloc] initWithAnnotation:annotation
-                                                                        reuseIdentifier:reuseID];
-  annotationView.pinColor       = MKPinAnnotationColorPurple;
-  annotationView.animatesDrop   = true;
-  annotationView.canShowCallout = true;
-  
-  annotationView.rightCalloutAccessoryView = [UIButton buttonWithType:UIButtonTypeDetailDisclosure];
-  
-  UIImageView *leftCalloutAccessoryImage = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"smithTowerNew"]];
-  leftCalloutAccessoryImage.frame = CGRectMake(0, 0, 46, 46); //TODO: magic numbers :0 !
-  
-  annotationView.leftCalloutAccessoryView = leftCalloutAccessoryImage;
-  
-  return annotationView;
+  return view;
 }
 
 
 -(void)mapView:(MKMapView *)mapView annotationView:(MKAnnotationView *)view
                      calloutAccessoryControlTapped:(UIControl *)control
 {
-  MKPointAnnotation *annotation = view.annotation;
-  annotation.title = view.annotation.title;
   [[NSNotificationCenter defaultCenter] postNotificationName:@"SelectedBuilding"
                                                       object:self
                                                     userInfo:@{@"Building" : view.annotation.title}];
   [self transitionToBuildingDetail];
 }
+
 
 -(void)updateMapViewAnnotations
 {
