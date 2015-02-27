@@ -22,8 +22,10 @@
 
 @property (strong, nonatomic) NSString *tag;
 
-@property (strong, nonatomic) NSString *imageURL;
-@property (strong, nonatomic) UIImage *image;
+@property (strong, nonatomic) NSString *thumbImageURL;
+@property (strong, nonatomic) UIImage *thumbImage;
+
+@property (strong, nonatomic) NSString *fullSizeImageURL;
 
 @property (strong, nonatomic) NSString *latitude;
 @property (strong, nonatomic) NSString *longitude;

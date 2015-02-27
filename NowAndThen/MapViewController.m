@@ -125,7 +125,7 @@
     location.latitude = self.mapView.userLocation.coordinate.latitude;
     location.longitude = self.mapView.userLocation.coordinate.longitude;
   
-    MKCoordinateRegion mapRegion = MKCoordinateRegionMakeWithDistance(location, 1000, 1000);
+    MKCoordinateRegion mapRegion = MKCoordinateRegionMakeWithDistance(location, 5000, 5000);
 
     
     [self.mapView setRegion:mapRegion
@@ -360,18 +360,22 @@
 -(IBAction)findPortals:(id)sender
 {
   MKMapRect mapRect = self.mapView.visibleMapRect;
-  
+ 
+  self.mapView.alpha = 0.4;
   [[NetworkController sharedService] fetchFlickrImagesForBuilding:self.buildingForSearch
                                                   withBoundingBox:[self getBoundingBoxForImages:mapRect]
                                              andCompletionHandler:^(NSArray *images)
    {
      [self.mapView removeAnnotations:self.mapView.annotations];
-     
      for (int i = 0; i < images.count; i++)
      {
        Photos *photoToAdd = (Photos *)images[i];
        [self.mapView addAnnotation:photoToAdd];
      }
+     [UIView animateWithDuration:1.0 animations:^{
+       self.mapView.alpha = 1.0;
+     }];
+      
      //[self.mapView showAnnotations:self.mapView.annotations animated:true];
   }];
 }
@@ -382,7 +386,7 @@
   [self.mapView removeAnnotations:self.mapView.annotations];
 
   MKMapRect mapRect = self.mapView.visibleMapRect;
-  
+  self.mapView.alpha = 0.4;
   [[NetworkController sharedService] fetchBuildingsForRect:[self getBoundingBox:mapRect] withBuildingLimit:10 andBlock:^(NSArray *buildingsFound) {
     
     for (int i = 0; i < buildingsFound.count; i++)
@@ -391,7 +395,9 @@
       [self.buildingsOnMap setObject:buildingsFound[i] forKey:buildingToAdd.name];
       [self.mapView addAnnotation:buildingToAdd];
     }
+    self.mapView.alpha = 1.0;
   }];
+  
 }
 
 
@@ -427,20 +433,21 @@
     } else if ([annotationView.annotation isKindOfClass:[Photos class]])
     {
       Photos *photo = nil;
-      photo = (Photos *)annotationView.annotation;
-      
-      [[NetworkController sharedService] fetchBuildingImage:photo.imageURL withCompletionHandler:^(UIImage *image) {
+      self.mapView.alpha = 0.3;
+      [[NetworkController sharedService] fetchBuildingImage:photo.fullSizeImageURL withCompletionHandler:^(UIImage *image) {
         imageView.image = image;
         annotationView.leftCalloutAccessoryView = imageView;
         [annotationView reloadInputViews];
-        NSLog(@"image should load");
+        Building *building = (Building *)self.buildingsOnMap[self.buildingForSearch];
+        [building.imageCollection addObject:imageView.image];
+        NSLog(@"fullsizeImageLoaded: %lu",(unsigned long)building.imageCollection.count);
       }];
     }
     if (building)
     {
       [[NetworkController sharedService] fetchBuildingImage:building.oldImageURL withCompletionHandler:^(UIImage *image) {
         imageView.image = image;
-        annotationView.leftCalloutAccessoryView =imageView;
+        annotationView.leftCalloutAccessoryView = imageView;
         [annotationView reloadInputViews];
       }];
     }
@@ -476,9 +483,7 @@
 -(void)mapView:(MKMapView *)mapView annotationView:(MKAnnotationView *)view
                      calloutAccessoryControlTapped:(UIControl *)control
 {
-  //TODO: remove the string and pass the building object
   Building *building = self.buildingsOnMap[view.annotation.title];
-  //be sure to use updatebuilding in BuildingViewController
   [[NSNotificationCenter defaultCenter] postNotificationName:@"SelectedBuilding"
                                                       object:self
                                                     userInfo:@{@"Building" : building}];

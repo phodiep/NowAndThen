@@ -28,9 +28,10 @@
       Photos *newPhoto = [[Photos alloc] initWithJSON:item];
       newPhoto.tag = tag;
       
-      NSString *url = [NSString stringWithFormat:@"https://farm%@.staticflickr.com/%@/%@_%@_s.jpg",item[@"farm"], item[@"server"], item[@"id"], item[@"secret"]];
-
-      newPhoto.imageURL = url;
+      NSString *thumbnailUrl = [NSString stringWithFormat:@"https://farm%@.staticflickr.com/%@/%@_%@_s.jpg",item[@"farm"], item[@"server"], item[@"id"], item[@"secret"]];
+      NSString *fullsizeUrl  = [NSString stringWithFormat:@"https://farm%@.staticflickr.com/%@/%@_%@_z.jpg",item[@"farm"], item[@"server"], item[@"id"], item[@"secret"]];
+      newPhoto.thumbImageURL = thumbnailUrl;
+      newPhoto.fullSizeImageURL = fullsizeUrl;
       [photos addObject:newPhoto];
     }
     NSArray *photoAlbum = [[NSArray alloc] initWithArray:photos];

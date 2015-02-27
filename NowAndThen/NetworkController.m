@@ -173,8 +173,6 @@
 #pragma fetchBuildingImage
 -(void)fetchBuildingImage:(NSString *)imageURL withCompletionHandler:(void (^)(UIImage *))completionHandler
 {
-  NSLog(@"url of image: %@",imageURL);
-
   dispatch_queue_t imageQueue = dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0);
   dispatch_async(imageQueue, ^{
     NSURL *url = [NSURL URLWithString:imageURL];
