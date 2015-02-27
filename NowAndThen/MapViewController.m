@@ -443,13 +443,16 @@
 -(void)mapView:(MKMapView *)mapView annotationView:(MKAnnotationView *)view
                      calloutAccessoryControlTapped:(UIControl *)control
 {
-  //TODO: remove the string and pass the building object
+    //TODO: make portals didn't annotation type... so will not call buildingView
+    if (![view.annotation.title isEqualToString:@"Kerry Park"]) {
+    
   Building *building = self.buildingsOnMap[view.annotation.title];
   //be sure to use updatebuilding in BuildingViewController
   [[NSNotificationCenter defaultCenter] postNotificationName:@"SelectedBuilding"
                                                       object:self
                                                     userInfo:@{@"Building" : building}];
   [self transitionToBuildingDetail];
+    }
 }
 
 

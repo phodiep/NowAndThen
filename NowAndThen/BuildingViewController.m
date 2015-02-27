@@ -315,8 +315,8 @@
 #pragma mark - UICollectionViewFlowDelegate
 -(NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
     if ([self.images count] > 0) {
-        return [self.images count];
-//        return 10;
+//        return [self.images count];
+        return 10;
     }
     return 0;
 }
