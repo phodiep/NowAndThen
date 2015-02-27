@@ -160,5 +160,11 @@
     return arrayOfBuildings;
 }
 
+-(NSMutableArray *)imageCollection {
+    if (_imageCollection == nil) {
+        _imageCollection = [[NSMutableArray alloc]init];
+    }
+    return _imageCollection;
+}
 
 @end
