@@ -8,7 +8,13 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
-
+/* 
+ farm-id: 1
+ server-id: 2
+ photo-id: 1418878
+ secret: 1e92283336
+ size: m
+ */
 @interface Photos : NSObject
 
 @property (strong, nonatomic) NSString *photo_id;
@@ -26,7 +32,5 @@
 -(instancetype)initWithJSON:(NSDictionary *)JSONdata;
 
 +(NSArray *)buildObjectsFromData:(NSData *)data andTag:(NSString *)tag;
-
-//-(NSArray *)setProperCoordinatesWithJSONdata:(NSDictionary *)jsonData;
 
 @end

@@ -424,6 +424,10 @@
 //pin selected
 -(void)mapView:(MKMapView *)mapView didSelectAnnotationView:(MKAnnotationView *)view
 {
+  if ([view.annotation isKindOfClass:[Photos class]])
+  {
+    NSLog(@"photo annotation selected");
+  }
   [self updateCalloutAccessoryImage:view];
 }
 
@@ -442,6 +446,17 @@
     if ([annotationView.annotation isKindOfClass:[Building class]])
     {
       building = (Building *)annotationView.annotation;
+    } else if ([annotationView.annotation isKindOfClass:[Photos class]])
+    {
+      Photos *photo = nil;
+      photo = (Photos *)annotationView.annotation;
+      
+      [[NetworkController sharedService] fetchBuildingImage:photo.imageURL withCompletionHandler:^(UIImage *image) {
+        imageView.image = image;
+        annotationView.leftCalloutAccessoryView = imageView;
+        [annotationView reloadInputViews];
+        NSLog(@"image should load");
+      }];
     }
     if (building)
     {

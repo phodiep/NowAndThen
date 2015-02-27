@@ -20,12 +20,17 @@
   {
     NSLog(@"error encountered with json parse: %@", error);
   } else {
+    NSDictionary *JSON = jsonDictionary[@"photos"];
+    
     NSMutableArray *photos = [[NSMutableArray alloc] init];
-    for (NSDictionary *item in jsonDictionary[@"photos"][@"photo"])
+    for (NSDictionary *item in JSON[@"photo"])
     {
       Photos *newPhoto = [[Photos alloc] initWithJSON:item];
       newPhoto.tag = tag;
-      NSLog(@"%@",item);
+      
+      NSString *url = [NSString stringWithFormat:@"https://farm%@.staticflickr.com/%@/%@_%@_s.jpg",item[@"farm"], item[@"server"], item[@"id"], item[@"secret"]];
+
+      newPhoto.imageURL = url;
       [photos addObject:newPhoto];
     }
     NSArray *photoAlbum = [[NSArray alloc] initWithArray:photos];
@@ -44,6 +49,26 @@
   }
   return self;
 }
+
+//-(UIImage *)fetchThumbnailforPhoto
+//{
+//  NSString *farm =
+//}
+
+/*
+ 
+ https://%@.staticflickr.com/%@/%@_%@_s.jpg
+ 
+ https://farm1.staticflickr.com/2/1418878_1e92283336_m.jpg
+
+ farm-id: 1
+ server-id: 2
+ photo-id: 1418878
+ secret: 1e92283336
+ size: m
+ */
+
+
 
 //-(NSArray *)setProperCoordinatesWithJSONdata:(NSDictionary *)jsonData
 //{
