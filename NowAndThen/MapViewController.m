@@ -488,6 +488,7 @@
                                                       object:self
                                                     userInfo:@{@"Building" : building}];
   [self transitionToBuildingDetail];
+    }
 }
 
 
