@@ -8,8 +8,11 @@
 
 #import "NetworkController.h"
 
-@implementation NetworkController
 
+@implementation NetworkController
+// flickr api key df08b7ebda37296e4e09406516dedec3
+
+//flickr client sercret c5e6171a087297c2
 + (id)sharedService
 {
   static NetworkController *netController;
@@ -47,7 +50,8 @@
   
   NSURLSession *session = [NSURLSession sharedSession];
   
-  NSURLSessionTask *dataTask = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+  NSURLSessionTask *dataTask = [session dataTaskWithRequest:request
+                                          completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
     if (error)
     {
       NSLog(@"%@",error);
@@ -89,11 +93,86 @@
   [dataTask resume];
 }
 
-#pragma mark - fetchBuildingImage
+
+-(void)fetchFlickrImagesForBuilding:(NSString *)building
+                    withBoundingBox:(NSArray *)box
+               andCompletionHandler:(void (^)(NSArray *))completionHandler
+{
+  NSString *key = @"df08b7ebda37296e4e09406516dedec3";
+ // NSString *clientSecret = @"c5e6171a087297c2";
+  
+  
+  NSString *compressedBuildingString = [building stringByReplacingOccurrencesOfString:@" "
+                                                                           withString:@""];
+  
+  NSLog(@"%@",compressedBuildingString);
+  
+  NSString *fetchURL = [NSString stringWithFormat:@"https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=%@&text=%@&bbox=%@,%@,%@,%@,&content_type=1&per_page=10&format=json&nojsoncallback=1",key, compressedBuildingString, box[0], box[1], box[2], box[3]];
+  
+  NSURL *url = [NSURL URLWithString:fetchURL];
+  
+  NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
+  request.HTTPMethod = @"GET";
+  
+  NSURLSession *session = [NSURLSession sharedSession];
+  
+  NSURLSessionTask *dataTask = [session dataTaskWithRequest:request
+                                          completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+    if (error)
+    {
+      NSLog(@"error in fetchFlickr: %@",error);
+    } else {
+      NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
+      NSInteger statusCode = httpResponse.statusCode;
+      
+      NSArray *photoAlbum;
+      
+      switch (statusCode)
+      {
+        case 200 ... 299:
+        {
+          NSLog(@"%ld", (long)statusCode);
+          
+          photoAlbum = [Photos buildObjectsFromData:data andTag:building];
+          
+          for (int i = 0; i < photoAlbum.count; i++)
+          {
+            Photos *photo = (Photos *)photoAlbum[i];
+            [self fetchFlickrImageLocation:photo.photo_id withCompletionHandler:^(NSArray *coordinates) {
+              photo.latitude = coordinates[0];
+              photo.longitude = coordinates[1];
+            }];
+          }
+          
+          dispatch_async(dispatch_get_main_queue(), ^{
+            if (photoAlbum)
+            {
+              completionHandler(photoAlbum);
+            } else {
+              NSLog(@"photoAlbum returns: %@", photoAlbum);
+              completionHandler(photoAlbum);
+            }
+          });
+          break;
+        }
+        case 300 ... 599:
+        {
+          NSLog(@"%ld", (long)statusCode);
+          break;
+        }
+        default:
+        {
+          NSLog(@"%ld", (long)statusCode);
+        }
+      }
+    }
+  }];
+  [dataTask resume];
+}
+
+#pragma fetchBuildingImage
 -(void)fetchBuildingImage:(NSString *)imageURL withCompletionHandler:(void (^)(UIImage *))completionHandler
 {
-  NSLog(@"url of image: %@",imageURL);
-
   dispatch_queue_t imageQueue = dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0);
   dispatch_async(imageQueue, ^{
     NSURL *url = [NSURL URLWithString:imageURL];
@@ -105,6 +184,64 @@
     });
   });
 }
+
+
+-(void)fetchFlickrImageLocation:(NSString *)photoID withCompletionHandler:(void (^)(NSArray *coordinates))completionHandler
+{
+  NSString *fetchURL = [NSString stringWithFormat:@"https://api.flickr.com/services/rest/?method=flickr.photos.geo.getLocation&api_key=df08b7ebda37296e4e09406516dedec3&photo_id=%@&format=json&nojsoncallback=1", photoID];
+  NSURL *url = [NSURL URLWithString:fetchURL];
+  NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:url];
+  request.HTTPMethod = @"GET";
+  
+  NSURLSession *session = [NSURLSession sharedSession];
+  NSURLSessionTask *dataTask = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+    if (error)
+    {
+      NSLog(@"error with request: %@",error);
+    } else {
+      NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
+      NSInteger statusCode = httpResponse.statusCode;
+      
+      switch (statusCode)
+      {
+        case 200 ... 299:
+        {
+          NSLog(@"%ld",(long)statusCode);
+          NSError *error;
+          NSDictionary *jsonDictionary = [NSJSONSerialization JSONObjectWithData:data options:0 error:&error];
+          NSMutableArray *myCoords = [[NSMutableArray alloc] init];
+          [myCoords addObject:jsonDictionary[@"photo"][@"location"][@"latitude"]];
+          [myCoords addObject:jsonDictionary[@"photo"][@"location"][@"longitude"]];
+          
+          NSArray *coords = [[NSArray alloc] initWithArray:myCoords];
+          
+          dispatch_async(dispatch_get_main_queue(), ^{
+            if (coords)
+            {
+              completionHandler(coords);
+            } else {
+              NSLog(@"photoAlbum returns: %@", coords);
+              completionHandler(coords);
+            }
+          });
+          break;
+        }
+        case 300 ... 599:
+        {
+          NSLog(@"%ld",(long)statusCode);
+          break;
+        }
+        default:
+        {
+          NSLog(@"default case reached");
+          break;
+        }
+      }
+    }
+  }];
+  [dataTask resume];
+}
+
 
 -(void)fetchBuildingBySearchTerms:(NSString*)searchTerms withCompletionHandler:(void (^)(NSArray* results))completionHandler {
     if (![searchTerms isEqualToString:@""]) {
@@ -156,7 +293,6 @@
             }
         }];
         [dataTask resume];
-
     }
 }
 

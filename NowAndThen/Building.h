@@ -33,6 +33,8 @@
 @property (strong, nonatomic) UIImage *oldImage;
 @property (strong, nonatomic) UIImage *modernImage;
 
+@property (strong, nonatomic) NSMutableArray *imageCollection;
+
 -(instancetype)initWithJson:(NSDictionary*) jsonDictionary;
 -(instancetype)initFakeBuilding;
 +(NSArray*)fetchBuildingsFromJsonData:(NSData *)data;

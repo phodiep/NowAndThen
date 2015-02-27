@@ -214,7 +214,18 @@
             [self.images addObject: self.building.modernImage];
         }
     }
+    //this will load all images retrieved form fickr that have been picked by the user
+    if (self.building.imageCollection.count != 0) {
+      NSLog(@"%lu",(unsigned long)self.building.imageCollection.count);
+      for (UIImage *image in self.building.imageCollection)
+      {
+        [self.images addObject:image];
+        [self.imageCollectionView reloadData];
+      }
+    }
     [self.imageCollectionView reloadData];
+  
+  
     
     
     self.buildingLabel.font = [UIFont fontWithName:@"HelveticaNeue-Bold" size:20.0f];
