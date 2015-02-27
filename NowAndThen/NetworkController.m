@@ -8,6 +8,7 @@
 
 #import "NetworkController.h"
 
+
 @implementation NetworkController
 // flickr api key df08b7ebda37296e4e09406516dedec3
 
@@ -92,15 +93,20 @@
   [dataTask resume];
 }
 
--(void)fetchFlickrImagesForBuilding:(NSString *)building withCompletionHandler:(void (^)(NSArray *))completionHandler
-{
 
+-(void)fetchFlickrImagesForBuilding:(NSString *)building
+                    withBoundingBox:(NSArray *)box
+               andCompletionHandler:(void (^)(NSArray *))completionHandler
+{
   NSString *key = @"df08b7ebda37296e4e09406516dedec3";
  // NSString *clientSecret = @"c5e6171a087297c2";
   
   //select * from flickr.photos.search where has_geo="true" and text="london,UK" and api_key="92bd0de55a63046155c09f1a06876875";
 // NSString *fetchURL = [NSString stringWithFormat:@"https://api.flickr.com/services/rest/?method=flickr.photos.geo.getLocation&api_key=df08b7ebda37296e4e09406516dedec3&photo_id=16469414830&format=json&nojsoncallback=1"];
-  NSString *fetchURL = [NSString stringWithFormat:@"https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=%@&text=%@&per_page=25&format=json&nojsoncallback=1",key, building];
+  
+  NSString *fetchURL = [NSString stringWithFormat:@"https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=%@&text=%@&bbox=%@,%@,%@,%@,&content_type=1&per_page=5&format=json&nojsoncallback=1",key, building, box[0], box[1], box[2], box[3]];
+  
+  NSLog(@"%@",fetchURL);
   
   NSURL *url = [NSURL URLWithString:fetchURL];
   
@@ -118,15 +124,34 @@
       NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
       NSInteger statusCode = httpResponse.statusCode;
       
+      NSArray *photoAlbum;
+      
       switch (statusCode)
       {
         case 200 ... 299:
         {
           NSLog(@"%ld", (long)statusCode);
-          NSError *error;
-          NSDictionary *jsonDictionary = [NSJSONSerialization JSONObjectWithData:data options:0 error:&error];
-          NSLog(@"%@",jsonDictionary);
           
+          photoAlbum = [Photos buildObjectsFromData:data andTag:building];
+          
+          for (int i = 0; i < photoAlbum.count; i++)
+          {
+            Photos *photo = (Photos *)photoAlbum[i];
+            [self fetchFlickrImageLocation:photo.photo_id withCompletionHandler:^(NSArray *coordinates) {
+              photo.latitude = coordinates[0];
+              photo.longitude = coordinates[1];
+            }];
+          }
+          
+          dispatch_async(dispatch_get_main_queue(), ^{
+            if (photoAlbum)
+            {
+              completionHandler(photoAlbum);
+            } else {
+              NSLog(@"photoAlbum returns: %@", photoAlbum);
+              completionHandler(photoAlbum);
+            }
+          });
           break;
         }
         case 300 ... 599:
@@ -160,6 +185,64 @@
     });
   });
 }
+
+
+-(void)fetchFlickrImageLocation:(NSString *)photoID withCompletionHandler:(void (^)(NSArray *coordinates))completionHandler
+{
+  NSString *fetchURL = [NSString stringWithFormat:@"https://api.flickr.com/services/rest/?method=flickr.photos.geo.getLocation&api_key=df08b7ebda37296e4e09406516dedec3&photo_id=%@&format=json&nojsoncallback=1", photoID];
+  NSURL *url = [NSURL URLWithString:fetchURL];
+  NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:url];
+  request.HTTPMethod = @"GET";
+  
+  NSURLSession *session = [NSURLSession sharedSession];
+  NSURLSessionTask *dataTask = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+    if (error)
+    {
+      NSLog(@"error with request: %@",error);
+    } else {
+      NSHTTPURLResponse *httpResponse = (NSHTTPURLResponse *)response;
+      NSInteger statusCode = httpResponse.statusCode;
+      
+      switch (statusCode)
+      {
+        case 200 ... 299:
+        {
+          NSLog(@"%ld",(long)statusCode);
+          NSError *error;
+          NSDictionary *jsonDictionary = [NSJSONSerialization JSONObjectWithData:data options:0 error:&error];
+          NSMutableArray *myCoords = [[NSMutableArray alloc] init];
+          [myCoords addObject:jsonDictionary[@"photo"][@"location"][@"latitude"]];
+          [myCoords addObject:jsonDictionary[@"photo"][@"location"][@"longitude"]];
+          
+          NSArray *coords = [[NSArray alloc] initWithArray:myCoords];
+          
+          dispatch_async(dispatch_get_main_queue(), ^{
+            if (coords)
+            {
+              completionHandler(coords);
+            } else {
+              NSLog(@"photoAlbum returns: %@", coords);
+              completionHandler(coords);
+            }
+          });
+          break;
+        }
+        case 300 ... 599:
+        {
+          NSLog(@"%ld",(long)statusCode);
+          break;
+        }
+        default:
+        {
+          NSLog(@"default case reached");
+          break;
+        }
+      }
+    }
+  }];
+  [dataTask resume];
+}
+
 
 -(void)fetchBuildingBySearchTerms:(NSString*)searchTerms withCompletionHandler:(void (^)(NSArray* results))completionHandler {
     if (![searchTerms isEqualToString:@""]) {
@@ -211,7 +294,6 @@
             }
         }];
         [dataTask resume];
-
     }
 }
 

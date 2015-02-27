@@ -7,6 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "Photos.h"
 #import "Building.h"
 
 @interface NetworkController : NSObject
@@ -18,8 +19,14 @@
                     andBlock:(void (^)(NSArray *buildingsFound))completionHandler;
 
 -(void)fetchBuildingImage:(NSString *)imageURL withCompletionHandler:(void (^)(UIImage *image))completionHandler;
+
 -(void)fetchBuildingBySearchTerms:(NSString*)searchTerms withCompletionHandler:(void (^)(NSArray* results))completionHandler;
 
--(void)fetchFlickrImagesForBuilding:(NSString *)building withCompletionHandler:(void (^)(NSArray *images))completionHandler;
+-(void)fetchFlickrImagesForBuilding:(NSString *)building
+                    withBoundingBox:(NSArray *)box
+               andCompletionHandler:(void (^)(NSArray *images))completionHandler;
+
+
+-(void)fetchFlickrImageLocation:(NSString *)photoID withCompletionHandler:(void (^)(NSArray *coordinates))completionHandler;
 
 @end

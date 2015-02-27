@@ -12,6 +12,7 @@
 #import "Building.h"
 #import "NetworkController.h"
 #import "Building+Annotation.h"
+#import "Photos+Annotation.h"
 
 @interface MapViewController () <MKMapViewDelegate, UIToolbarDelegate, UIPopoverPresentationControllerDelegate>
 
@@ -49,8 +50,11 @@
 -(CLLocationCoordinate2D)getCoordFromMapRectPoint:(double)X andY:(double)Y;
 -(CLLocationCoordinate2D)getNWCoordinate:(MKMapRect)mapRect;
 -(CLLocationCoordinate2D)getSECoordinate:(MKMapRect)mapRect;
+-(CLLocationCoordinate2D)getNECoordinate:(MKMapRect)mapRect;
+-(CLLocationCoordinate2D)getSWCoordinate:(MKMapRect)mapRect;
 
 -(NSArray *)getBoundingBox:(MKMapRect)mapRect;
+-(NSArray *)getBoundingBoxForImages:(MKMapRect)mapRect;
 
 //custom method for setting locations
 -(CLLocationCoordinate2D)createBuildingLocation:(double)latitude
@@ -149,6 +153,16 @@
   return [self getCoordFromMapRectPoint:MKMapRectGetMaxX(mapRect)
                                    andY:MKMapRectGetMaxY(mapRect)];
 }
+-(CLLocationCoordinate2D)getNECoordinate:(MKMapRect)mapRect
+{
+  return [self getCoordFromMapRectPoint:MKMapRectGetMaxX(mapRect)
+                                   andY:mapRect.origin.y];
+}
+-(CLLocationCoordinate2D)getSWCoordinate:(MKMapRect)mapRect
+{
+  return [self getCoordFromMapRectPoint:mapRect.origin.x
+                                   andY:MKMapRectGetMaxY(mapRect)];
+}
 
 -(CLLocationCoordinate2D)getCoordFromMapRectPoint:(double)X andY:(double)Y
 {
@@ -165,8 +179,18 @@
            [NSNumber numberWithDouble:northWest.latitude],
            [NSNumber numberWithDouble:southEast.longitude],
            [NSNumber numberWithDouble:southEast.latitude]];
-  
+}
 
+// this method returns a bounding box for Flickr fetch
+-(NSArray *)getBoundingBoxForImages:(MKMapRect)mapRect
+{
+  CLLocationCoordinate2D northEast = [self getNECoordinate:mapRect];
+  CLLocationCoordinate2D southWest = [self getSWCoordinate:mapRect];
+  
+  return @[[NSNumber numberWithDouble:southWest.longitude],
+           [NSNumber numberWithDouble:southWest.latitude],
+           [NSNumber numberWithDouble:northEast.longitude],
+           [NSNumber numberWithDouble:northEast.latitude]];
 }
 
 -(NSArray *)getCenterOfScreen:(MKMapRect)mapRect
@@ -321,9 +345,19 @@
   MKMapRect mapRect = self.mapView.visibleMapRect;
   [self getBoundingBox:mapRect];
   
-  [[NetworkController sharedService] fetchFlickrImagesForBuilding:@"SpaceNeedle" withCompletionHandler:^(NSArray *images)
+  
+  
+  [[NetworkController sharedService] fetchFlickrImagesForBuilding:@"SpaceNeedle"
+                                                  withBoundingBox:[self getBoundingBoxForImages:mapRect]
+                                             andCompletionHandler:^(NSArray *images)
   {
-    NSLog(@"completion handler");
+    [self.mapView removeAnnotations:self.mapView.annotations];
+
+    for (int i = 0; i < images.count; i++)
+    {
+      Photos *photoToAdd = (Photos *)images[i];
+      [self.mapView addAnnotation:photoToAdd];
+    }
   }];
 }
 

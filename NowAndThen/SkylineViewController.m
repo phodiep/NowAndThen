@@ -53,7 +53,7 @@
     _imageView.userInteractionEnabled = true;
 
 
-    [self setupAutolayoutForSkylineView];
+//    [self setupAutolayoutForSkylineView];
 
     self.view = self.skylineView ;
 }
