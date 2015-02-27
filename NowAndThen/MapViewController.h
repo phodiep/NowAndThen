@@ -13,7 +13,7 @@
 
 @property (weak, nonatomic) BuildingViewController *buildingVC;
 @property (strong, nonatomic) NSMutableDictionary *buildingsOnMap;
-
+@property (strong, nonatomic) NSString *buildingForSearch;
 -(void)centerOnBuilding:(Building*)building;
 
 @end

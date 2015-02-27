@@ -341,24 +341,6 @@
   
   [self.mapView setRegion:userRegion
                  animated:true];
-  
-  MKMapRect mapRect = self.mapView.visibleMapRect;
-  [self getBoundingBox:mapRect];
-  
-  
-  
-  [[NetworkController sharedService] fetchFlickrImagesForBuilding:@"SpaceNeedle"
-                                                  withBoundingBox:[self getBoundingBoxForImages:mapRect]
-                                             andCompletionHandler:^(NSArray *images)
-  {
-    [self.mapView removeAnnotations:self.mapView.annotations];
-
-    for (int i = 0; i < images.count; i++)
-    {
-      Photos *photoToAdd = (Photos *)images[i];
-      [self.mapView addAnnotation:photoToAdd];
-    }
-  }];
 }
 
 #pragma mark - centerOnBuilding
@@ -377,29 +359,21 @@
 #pragma mark - create Annotations
 -(IBAction)findPortals:(id)sender
 {
-  [self.mapView removeAnnotations:self.mapView.annotations];
-  
-  MKPointAnnotation *kerryPark = [[MKPointAnnotation alloc] init];
-  
-  kerryPark.coordinate = [self createBuildingLocation: 47.629547
-                                        withLongitude: -122.360137
-                                       withIdentifier:@"kerryPark"];
-  kerryPark.title = @"Kerry Park";
-  
-  
-  [self.mapView addAnnotation:kerryPark];
-  
-  CLLocationCoordinate2D coord;
-  coord.latitude  = kerryPark.coordinate.latitude;
-  coord.longitude = kerryPark.coordinate.longitude;
-  
-  MKCoordinateRegion region = MKCoordinateRegionMakeWithDistance(coord, 750, 750);
-  
-  [self.mapView setRegion:region
-                 animated:true];
-  
   MKMapRect mapRect = self.mapView.visibleMapRect;
-  [self getBoundingBox:mapRect];
+  
+  [[NetworkController sharedService] fetchFlickrImagesForBuilding:self.buildingForSearch
+                                                  withBoundingBox:[self getBoundingBoxForImages:mapRect]
+                                             andCompletionHandler:^(NSArray *images)
+   {
+     [self.mapView removeAnnotations:self.mapView.annotations];
+     
+     for (int i = 0; i < images.count; i++)
+     {
+       Photos *photoToAdd = (Photos *)images[i];
+       [self.mapView addAnnotation:photoToAdd];
+     }
+     //[self.mapView showAnnotations:self.mapView.annotations animated:true];
+  }];
 }
 
 //         findBuildings
@@ -426,9 +400,13 @@
 {
   if ([view.annotation isKindOfClass:[Photos class]])
   {
-    NSLog(@"photo annotation selected");
+    //Photos *photo = (Photos *)view.annotation;
+    [self updateCalloutAccessoryImage:view];
+  } else {
+    Building *building = (Building *)view.annotation;
+    self.buildingForSearch = building.name;
+    [self updateCalloutAccessoryImage:view];
   }
-  [self updateCalloutAccessoryImage:view];
 }
 
 

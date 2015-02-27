@@ -101,12 +101,13 @@
   NSString *key = @"df08b7ebda37296e4e09406516dedec3";
  // NSString *clientSecret = @"c5e6171a087297c2";
   
-  //select * from flickr.photos.search where has_geo="true" and text="london,UK" and api_key="92bd0de55a63046155c09f1a06876875";
-// NSString *fetchURL = [NSString stringWithFormat:@"https://api.flickr.com/services/rest/?method=flickr.photos.geo.getLocation&api_key=df08b7ebda37296e4e09406516dedec3&photo_id=16469414830&format=json&nojsoncallback=1"];
   
-  NSString *fetchURL = [NSString stringWithFormat:@"https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=%@&text=%@&bbox=%@,%@,%@,%@,&content_type=1&per_page=5&format=json&nojsoncallback=1",key, building, box[0], box[1], box[2], box[3]];
+  NSString *compressedBuildingString = [building stringByReplacingOccurrencesOfString:@" "
+                                                                           withString:@""];
   
-  NSLog(@"%@",fetchURL);
+  NSLog(@"%@",compressedBuildingString);
+  
+  NSString *fetchURL = [NSString stringWithFormat:@"https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=%@&text=%@&bbox=%@,%@,%@,%@,&content_type=1&per_page=10&format=json&nojsoncallback=1",key, compressedBuildingString, box[0], box[1], box[2], box[3]];
   
   NSURL *url = [NSURL URLWithString:fetchURL];
   
