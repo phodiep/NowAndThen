@@ -94,7 +94,13 @@
 
 -(void)fetchFlickrImagesForBuilding:(NSString *)building withCompletionHandler:(void (^)(NSArray *))completionHandler
 {
-  NSString *fetchURL = @"https://api.flickr.com/services/rest/?method=flickr.test.echo&name=value";
+
+  NSString *key = @"df08b7ebda37296e4e09406516dedec3";
+ // NSString *clientSecret = @"c5e6171a087297c2";
+  
+  //select * from flickr.photos.search where has_geo="true" and text="london,UK" and api_key="92bd0de55a63046155c09f1a06876875";
+// NSString *fetchURL = [NSString stringWithFormat:@"https://api.flickr.com/services/rest/?method=flickr.photos.geo.getLocation&api_key=df08b7ebda37296e4e09406516dedec3&photo_id=16469414830&format=json&nojsoncallback=1"];
+  NSString *fetchURL = [NSString stringWithFormat:@"https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=%@&text=%@&per_page=25&format=json&nojsoncallback=1",key, building];
   
   NSURL *url = [NSURL URLWithString:fetchURL];
   
@@ -117,6 +123,10 @@
         case 200 ... 299:
         {
           NSLog(@"%ld", (long)statusCode);
+          NSError *error;
+          NSDictionary *jsonDictionary = [NSJSONSerialization JSONObjectWithData:data options:0 error:&error];
+          NSLog(@"%@",jsonDictionary);
+          
           break;
         }
         case 300 ... 599:

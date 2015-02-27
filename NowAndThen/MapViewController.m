@@ -319,8 +319,12 @@
                  animated:true];
   
   MKMapRect mapRect = self.mapView.visibleMapRect;
-  //[self getCenterOfScreen:mapRect];
   [self getBoundingBox:mapRect];
+  
+  [[NetworkController sharedService] fetchFlickrImagesForBuilding:@"SpaceNeedle" withCompletionHandler:^(NSArray *images)
+  {
+    NSLog(@"completion handler");
+  }];
 }
 
 #pragma mark - centerOnBuilding
