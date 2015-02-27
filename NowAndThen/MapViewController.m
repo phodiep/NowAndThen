@@ -12,6 +12,7 @@
 #import "Building.h"
 #import "NetworkController.h"
 #import "Building+Annotation.h"
+#import "Photos+Annotation.h"
 
 @interface MapViewController () <MKMapViewDelegate, UIToolbarDelegate, UIPopoverPresentationControllerDelegate>
 
@@ -49,8 +50,11 @@
 -(CLLocationCoordinate2D)getCoordFromMapRectPoint:(double)X andY:(double)Y;
 -(CLLocationCoordinate2D)getNWCoordinate:(MKMapRect)mapRect;
 -(CLLocationCoordinate2D)getSECoordinate:(MKMapRect)mapRect;
+-(CLLocationCoordinate2D)getNECoordinate:(MKMapRect)mapRect;
+-(CLLocationCoordinate2D)getSWCoordinate:(MKMapRect)mapRect;
 
 -(NSArray *)getBoundingBox:(MKMapRect)mapRect;
+-(NSArray *)getBoundingBoxForImages:(MKMapRect)mapRect;
 
 //custom method for setting locations
 -(CLLocationCoordinate2D)createBuildingLocation:(double)latitude
@@ -121,7 +125,7 @@
     location.latitude = self.mapView.userLocation.coordinate.latitude;
     location.longitude = self.mapView.userLocation.coordinate.longitude;
   
-    MKCoordinateRegion mapRegion = MKCoordinateRegionMakeWithDistance(location, 1000, 1000);
+    MKCoordinateRegion mapRegion = MKCoordinateRegionMakeWithDistance(location, 5000, 5000);
 
     
     [self.mapView setRegion:mapRegion
@@ -149,6 +153,16 @@
   return [self getCoordFromMapRectPoint:MKMapRectGetMaxX(mapRect)
                                    andY:MKMapRectGetMaxY(mapRect)];
 }
+-(CLLocationCoordinate2D)getNECoordinate:(MKMapRect)mapRect
+{
+  return [self getCoordFromMapRectPoint:MKMapRectGetMaxX(mapRect)
+                                   andY:mapRect.origin.y];
+}
+-(CLLocationCoordinate2D)getSWCoordinate:(MKMapRect)mapRect
+{
+  return [self getCoordFromMapRectPoint:mapRect.origin.x
+                                   andY:MKMapRectGetMaxY(mapRect)];
+}
 
 -(CLLocationCoordinate2D)getCoordFromMapRectPoint:(double)X andY:(double)Y
 {
@@ -165,8 +179,18 @@
            [NSNumber numberWithDouble:northWest.latitude],
            [NSNumber numberWithDouble:southEast.longitude],
            [NSNumber numberWithDouble:southEast.latitude]];
-  
+}
 
+// this method returns a bounding box for Flickr fetch
+-(NSArray *)getBoundingBoxForImages:(MKMapRect)mapRect
+{
+  CLLocationCoordinate2D northEast = [self getNECoordinate:mapRect];
+  CLLocationCoordinate2D southWest = [self getSWCoordinate:mapRect];
+  
+  return @[[NSNumber numberWithDouble:southWest.longitude],
+           [NSNumber numberWithDouble:southWest.latitude],
+           [NSNumber numberWithDouble:northEast.longitude],
+           [NSNumber numberWithDouble:northEast.latitude]];
 }
 
 -(NSArray *)getCenterOfScreen:(MKMapRect)mapRect
@@ -317,10 +341,6 @@
   
   [self.mapView setRegion:userRegion
                  animated:true];
-  
-  MKMapRect mapRect = self.mapView.visibleMapRect;
-  //[self getCenterOfScreen:mapRect];
-  [self getBoundingBox:mapRect];
 }
 
 #pragma mark - centerOnBuilding
@@ -333,37 +353,31 @@
     MKCoordinateRegion buildingRegion = MKCoordinateRegionMakeWithDistance(buildingLocation, 750, 750);
     
     [self.mapView setRegion:buildingRegion animated:true];
-
     [self.mapView addAnnotation:building];
 }
 
 #pragma mark - create Annotations
 -(IBAction)findPortals:(id)sender
 {
-  [self.mapView removeAnnotations:self.mapView.annotations];
-  
-  MKPointAnnotation *kerryPark = [[MKPointAnnotation alloc] init];
-  
-  kerryPark.coordinate = [self createBuildingLocation: 47.629547
-                                        withLongitude: -122.360137
-                                       withIdentifier:@"kerryPark"];
-  kerryPark.title = @"Kerry Park";
-  
-  
-  [self.mapView addAnnotation:kerryPark];
-  
-  CLLocationCoordinate2D coord;
-  coord.latitude  = kerryPark.coordinate.latitude;
-  coord.longitude = kerryPark.coordinate.longitude;
-  
-  MKCoordinateRegion region = MKCoordinateRegionMakeWithDistance(coord, 750, 750);
-  
-  [self.mapView setRegion:region
-                 animated:true];
-  
   MKMapRect mapRect = self.mapView.visibleMapRect;
-  //[self getCenterOfScreen:mapRect];
-  [self getBoundingBox:mapRect];
+ 
+  self.mapView.alpha = 0.4;
+  [[NetworkController sharedService] fetchFlickrImagesForBuilding:self.buildingForSearch
+                                                  withBoundingBox:[self getBoundingBoxForImages:mapRect]
+                                             andCompletionHandler:^(NSArray *images)
+   {
+     [self.mapView removeAnnotations:self.mapView.annotations];
+     for (int i = 0; i < images.count; i++)
+     {
+       Photos *photoToAdd = (Photos *)images[i];
+       [self.mapView addAnnotation:photoToAdd];
+     }
+     [UIView animateWithDuration:1.0 animations:^{
+       self.mapView.alpha = 1.0;
+     }];
+      
+     //[self.mapView showAnnotations:self.mapView.annotations animated:true];
+  }];
 }
 
 //         findBuildings
@@ -372,7 +386,7 @@
   [self.mapView removeAnnotations:self.mapView.annotations];
 
   MKMapRect mapRect = self.mapView.visibleMapRect;
-  
+  self.mapView.alpha = 0.4;
   [[NetworkController sharedService] fetchBuildingsForRect:[self getBoundingBox:mapRect] withBuildingLimit:10 andBlock:^(NSArray *buildingsFound) {
     
     for (int i = 0; i < buildingsFound.count; i++)
@@ -381,15 +395,24 @@
       [self.buildingsOnMap setObject:buildingsFound[i] forKey:buildingToAdd.name];
       [self.mapView addAnnotation:buildingToAdd];
     }
-    [self.mapView showAnnotations:self.mapView.annotations animated:true];
+    self.mapView.alpha = 1.0;
   }];
+  
 }
 
 
 //pin selected
 -(void)mapView:(MKMapView *)mapView didSelectAnnotationView:(MKAnnotationView *)view
 {
-  [self updateCalloutAccessoryImage:view];
+  if ([view.annotation isKindOfClass:[Photos class]])
+  {
+    //Photos *photo = (Photos *)view.annotation;
+    [self updateCalloutAccessoryImage:view];
+  } else {
+    Building *building = (Building *)view.annotation;
+    self.buildingForSearch = building.name;
+    [self updateCalloutAccessoryImage:view];
+  }
 }
 
 
@@ -407,12 +430,24 @@
     if ([annotationView.annotation isKindOfClass:[Building class]])
     {
       building = (Building *)annotationView.annotation;
+    } else if ([annotationView.annotation isKindOfClass:[Photos class]])
+    {
+      Photos *photo = nil;
+      self.mapView.alpha = 0.3;
+      [[NetworkController sharedService] fetchBuildingImage:photo.fullSizeImageURL withCompletionHandler:^(UIImage *image) {
+        imageView.image = image;
+        annotationView.leftCalloutAccessoryView = imageView;
+        [annotationView reloadInputViews];
+        Building *building = (Building *)self.buildingsOnMap[self.buildingForSearch];
+        [building.imageCollection addObject:imageView.image];
+        NSLog(@"fullsizeImageLoaded: %lu",(unsigned long)building.imageCollection.count);
+      }];
     }
     if (building)
     {
       [[NetworkController sharedService] fetchBuildingImage:building.oldImageURL withCompletionHandler:^(UIImage *image) {
         imageView.image = image;
-        annotationView.leftCalloutAccessoryView =imageView;
+        annotationView.leftCalloutAccessoryView = imageView;
         [annotationView reloadInputViews];
       }];
     }
@@ -425,6 +460,11 @@
   static NSString *reuseID = @"NowAndThenAnnotations";
   
   MKAnnotationView *view = [self.mapView dequeueReusableAnnotationViewWithIdentifier:reuseID];
+  
+  if (annotation == self.mapView.userLocation)
+  {
+    return nil;
+  }
   
   if (!view)
   {
@@ -443,13 +483,12 @@
 -(void)mapView:(MKMapView *)mapView annotationView:(MKAnnotationView *)view
                      calloutAccessoryControlTapped:(UIControl *)control
 {
-  //TODO: remove the string and pass the building object
   Building *building = self.buildingsOnMap[view.annotation.title];
-  //be sure to use updatebuilding in BuildingViewController
   [[NSNotificationCenter defaultCenter] postNotificationName:@"SelectedBuilding"
                                                       object:self
                                                     userInfo:@{@"Building" : building}];
   [self transitionToBuildingDetail];
+    }
 }
 
 

@@ -53,7 +53,7 @@
     _imageView.userInteractionEnabled = true;
 
 
-    [self setupAutolayoutForSkylineView];
+//    [self setupAutolayoutForSkylineView];
 
     self.view = self.skylineView ;
 }
@@ -82,39 +82,5 @@
 //    cell.imageView.contentMode = UIViewContentModeScaleAspectFit;
 //    return cell;
 //}
-
-#pragma mark - Autolayout methods
--(void)prepObjectForAutoLayout:(id)object addToSubView:(UIView*)view addToDictionary:(NSString*)reference {
-
-    [object setTranslatesAutoresizingMaskIntoConstraints:false];
-    [view addSubview:object];
-    [self.views setObject:object forKey:reference];
-}
-
--(void)setupAutolayoutForSkylineView {
-//    [self prepObjectForAutoLayout: self.skylineView addToSubView:self.skylineView  addToDictionary:@"skylineView"];
-    [self prepObjectForAutoLayout: self.imageView   addToSubView:self.skylineView  addToDictionary:@"imageView"];
-}
-
--(void)applyTextFormat:(UILabel*)label setText:(NSString*)text {
-    label.text = text;
-    label.font = [UIFont fontWithName:@"HelveticaNeue" size:16.0f];
-}
-
-#pragma mark - UICollectionViewFlowDelegate
--(NSInteger)collectionView:(UICollectionView *)collectionView numberOfItemsInSection:(NSInteger)section {
-    if ([self.images count] > 0) {
-        //        return [self.images count];
-        return 100;
-    }
-    return 0;
-}
-
--(UIView *)skylineView {
-    if (_skylineView == nil) {
-        _skylineView = [[UIView alloc] initWithFrame:[UIScreen mainScreen].applicationFrame];
-    }
-    return _skylineView;
-}
 
 @end
