@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6250" systemVersion="14C109" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6244"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
+    </dependencies>
+    <scenes>
+        <!--Sky View Controller-->
+        <scene sceneID="ufC-wZ-h7g">
+            <objects>
+                <viewController storyboardIdentifier="SKYLINE_VIEW" id="vXZ-lx-hvc" customClass="SkyViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="jyV-Pf-zRb"/>
+                        <viewControllerLayoutGuide type="bottom" id="2fi-mo-0CV"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="kh9-bI-dsS">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <subviews>
+                            <imageView contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="images02.jpeg" translatesAutoresizingMaskIntoConstraints="NO" id="tfx-Q2-eol">
+                                <rect key="frame" x="0.0" y="-20" width="609" height="600"/>
+                            </imageView>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" reversesTitleShadowWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="h05-dy-HAR">
+                                <rect key="frame" x="96" y="123" width="27" height="236"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="236" id="8U5-d5-0iM"/>
+                                    <constraint firstAttribute="width" constant="27" id="RM1-Wd-oUw"/>
+                                </constraints>
+                                <state key="normal" title="spaceNeedle">
+                                    <color key="titleColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="spaceNeedle:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="vdE-Ka-VFY"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" reversesTitleShadowWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="eTA-Kd-0oM">
+                                <rect key="frame" x="196" y="198" width="30" height="86"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="30" id="1gj-2U-A70"/>
+                                    <constraint firstAttribute="height" constant="86" id="yv5-Jy-hDA"/>
+                                </constraints>
+                                <state key="normal" title="building164">
+                                    <color key="titleColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="building164:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="NdU-Rz-6sX"/>
+                                </connections>
+                            </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" misplaced="YES" text="Building Info:" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="X8W-2y-ZO7">
+                                <rect key="frame" x="16" y="30" width="83" height="21"/>
+                                <fontDescription key="fontDescription" type="boldSystem" pointSize="12"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="Building Information" borderStyle="roundedRect" minimumFontSize="12" translatesAutoresizingMaskIntoConstraints="NO" id="PZE-3K-fOC" userLabel="BuildingInformation">
+                                <rect key="frame" x="99" y="25" width="477" height="30"/>
+                                <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                <textInputTraits key="textInputTraits"/>
+                            </textField>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" reversesTitleShadowWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="zIv-HX-jgc">
+                                <rect key="frame" x="128" y="162" width="14" height="112"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="112" id="6fI-ag-IDm"/>
+                                    <constraint firstAttribute="width" constant="14" id="NyE-pD-mTt"/>
+                                </constraints>
+                                <state key="normal" title="button52">
+                                    <color key="titleColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="building52:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="D8v-aw-1Ez"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" reversesTitleShadowWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="fvE-Ua-bAA" userLabel="keyArena">
+                                <rect key="frame" x="440" y="358" width="46" height="25"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="46" id="9mU-Bv-RmY"/>
+                                    <constraint firstAttribute="height" constant="25" id="fh9-Te-enm"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                <state key="normal" title="keyArena">
+                                    <color key="titleColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                    <color key="titleShadowColor" white="0.5" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="keyArena:" destination="vXZ-lx-hvc" eventType="touchUpInside" id="fAT-NF-5dU"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="PZE-3K-fOC" firstAttribute="leading" secondItem="X8W-2y-ZO7" secondAttribute="trailing" id="Bv6-Ra-Row"/>
+                            <constraint firstItem="h05-dy-HAR" firstAttribute="leading" secondItem="kh9-bI-dsS" secondAttribute="leadingMargin" constant="80" id="HAZ-wo-rTR"/>
+                            <constraint firstItem="zIv-HX-jgc" firstAttribute="top" secondItem="PZE-3K-fOC" secondAttribute="bottom" constant="107" id="IYB-dD-Dgb"/>
+                            <constraint firstItem="zIv-HX-jgc" firstAttribute="leading" secondItem="h05-dy-HAR" secondAttribute="trailing" constant="5" id="Soz-QP-b0C"/>
+                            <constraint firstItem="h05-dy-HAR" firstAttribute="top" secondItem="PZE-3K-fOC" secondAttribute="bottom" constant="68" id="V6H-iL-2xi"/>
+                            <constraint firstAttribute="trailingMargin" secondItem="PZE-3K-fOC" secondAttribute="trailing" constant="8" id="XXk-9n-hOk"/>
+                            <constraint firstItem="eTA-Kd-0oM" firstAttribute="leading" secondItem="zIv-HX-jgc" secondAttribute="trailing" constant="54" id="Yik-mE-Rmt"/>
+                            <constraint firstItem="fvE-Ua-bAA" firstAttribute="top" secondItem="PZE-3K-fOC" secondAttribute="bottom" constant="303" id="ce4-PQ-pO3"/>
+                            <constraint firstItem="PZE-3K-fOC" firstAttribute="top" secondItem="jyV-Pf-zRb" secondAttribute="bottom" constant="5" id="mep-kd-0Vp"/>
+                            <constraint firstItem="fvE-Ua-bAA" firstAttribute="leading" secondItem="kh9-bI-dsS" secondAttribute="leadingMargin" constant="424" id="qjV-ac-AUU"/>
+                            <constraint firstItem="eTA-Kd-0oM" firstAttribute="top" secondItem="PZE-3K-fOC" secondAttribute="bottom" constant="143" id="zdo-mR-FRi"/>
+                        </constraints>
+                    </view>
+                    <connections>
+                        <outlet property="buildingInformation" destination="PZE-3K-fOC" id="uNy-zO-Ni5"/>
+                        <outlet property="skylineA" destination="tfx-Q2-eol" id="SOr-rX-HmK"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="x5A-6p-PRh" sceneMemberID="firstResponder"/>
+            </objects>
+        </scene>
+    </scenes>
+    <resources>
+        <image name="images02.jpeg" width="275" height="183"/>
+    </resources>
+</document>

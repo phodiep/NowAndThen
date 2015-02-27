@@ -402,6 +402,10 @@
     UIView *toView = [[tabBarController.viewControllers objectAtIndex:tabIndex] view];
     MapViewController *toVC = [tabBarController.viewControllers objectAtIndex:tabIndex];
     
+    if (toVC.buildingsOnMap[self.building.name] == nil) {
+        [toVC.buildingsOnMap setObject:self.building forKey:self.building.name];
+    }
+    
     [UIView transitionFromView:fromView toView:toView duration:0.5
                        options:(tabIndex > tabBarController.selectedIndex ? UIViewAnimationOptionTransitionFlipFromTop : UIViewAnimationOptionTransitionCrossDissolve)
                     completion:^(BOOL finished) {
