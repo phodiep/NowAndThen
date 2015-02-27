@@ -60,14 +60,14 @@
     skylineVC.tabBarItem.title = @"Skyline";
     skylineVC.tabBarItem.image = [UIImage imageNamed:@"skyline"];
     
-    InfoViewController *infoVC = [[InfoViewController alloc] init];
-    infoVC.tabBarItem.title = @"Info";
-    infoVC.tabBarItem.image = [UIImage imageNamed:@"info"];
+//    InfoViewController *infoVC = [[InfoViewController alloc] init];
+//    infoVC.tabBarItem.title = @"Info";
+//    infoVC.tabBarItem.image = [UIImage imageNamed:@"info"];
 
     self.tabBar.viewControllers = @[menuVC,
                                     mapVC,
-                                    skylineVC,
-                                    infoVC];
+                                    skylineVC];
+                                    //infoVC];
     
     self.tabBar.view.autoresizingMask = UIViewAutoresizingFlexibleHeight;
     

@@ -70,7 +70,11 @@
         self.wikipediaURL = sites[@"wikipediaURL"];
 
         self.modernImageURL = imageURLs[@"url2010"];
-        self.oldImageURL = imageURLs[@"url1900"];
+        if (imageURLs[@"url1900"] == nil) {
+            self.oldImageURL = imageURLs[@"url1913"];
+        } else {
+            self.oldImageURL = imageURLs[@"url1900"];
+        }
     }
     return self;
 }
