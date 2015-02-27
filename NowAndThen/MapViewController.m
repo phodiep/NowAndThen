@@ -433,7 +433,8 @@
     } else if ([annotationView.annotation isKindOfClass:[Photos class]])
     {
       Photos *photo = nil;
-      self.mapView.alpha = 0.3;
+        photo = (Photos *) annotationView.annotation;
+//      self.mapView.alpha = 0.3;
       [[NetworkController sharedService] fetchBuildingImage:photo.fullSizeImageURL withCompletionHandler:^(UIImage *image) {
         imageView.image = image;
         annotationView.leftCalloutAccessoryView = imageView;
@@ -488,7 +489,7 @@
                                                       object:self
                                                     userInfo:@{@"Building" : building}];
   [self transitionToBuildingDetail];
-    }
+    
 }
 
 
