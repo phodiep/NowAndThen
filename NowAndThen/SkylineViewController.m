@@ -9,78 +9,97 @@
 #import <Foundation/Foundation.h>
 #import "SkylineViewController.h"
 
-@interface SkylineViewController ()
+@interface SkylineViewController () <UIScrollViewDelegate>
 
-@property (strong, nonatomic) NSMutableDictionary *views;
-@property (strong, nonatomic) UIView *skylineView;
-@property (strong, nonatomic) UIImageView *imageView;
 @property (strong, nonatomic) UIScrollView *scrollView;
-@property (strong, nonatomic) UILabel *skylineTitle;
 
-@property (strong, nonatomic) NSMutableArray *images;
+@property (strong, nonatomic) UIImageView *kerryPark;
 
-@property (nonatomic) BOOL firstSkylineCollectionView;
-
--(void)building164;
+@property (strong, nonatomic) UIButton *spaceNeedleButton;
 
 @end
 
 @implementation SkylineViewController
 
-- (IBAction)building164 {
-    NSLog(@"building164");
+-(void)loadView {
+    UIView *rootView = [[UIView alloc] init];
+    rootView.backgroundColor = [UIColor whiteColor];
+    
+    self.scrollView.backgroundColor = [UIColor whiteColor];
+    
+    UILabel *title = [[UILabel alloc] init];
+    title.text = @"Seattle Skyline From Kerry Park";
+    title.font = [UIFont fontWithName:@"HelveticaNeue-Bold" size:18.0f];
+    
+    [title setTranslatesAutoresizingMaskIntoConstraints:false];
+    [self.scrollView setTranslatesAutoresizingMaskIntoConstraints:false];
+
+    [rootView addSubview:title];
+    [rootView addSubview:self.scrollView];
+    
+    NSDictionary *rootViews = @{@"scrollView":self.scrollView, @"title":title};
+    
+    [rootView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-8-[title]-8-|" options:0 metrics:nil views:rootViews]];
+    [rootView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[scrollView]|" options:0 metrics:nil views:rootViews]];
+
+    [rootView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-40-[title]-8-[scrollView]|" options:0 metrics:nil views:rootViews]];
+    
+    
+    
+    //set scrollView -------------
+    self.kerryPark.image = [UIImage imageNamed:@"KerryPark1.jpeg"];
+    
+    self.spaceNeedleButton.backgroundColor = [UIColor redColor];
+    
+    
+    [self.kerryPark setTranslatesAutoresizingMaskIntoConstraints:false];
+    [self.spaceNeedleButton setTranslatesAutoresizingMaskIntoConstraints:false];
+    
+    [self.scrollView addSubview:self.kerryPark];
+//    [self.scrollView addSubview:self.spaceNeedleButton];
+    
+    NSDictionary *views = @{@"kerryPark":self.kerryPark, @"spaceNeedle":self.spaceNeedleButton};
+    
+    [self.scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[kerryPark]|" options:0 metrics:nil views:views]];
+    [self.scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-40-[kerryPark]|" options:0 metrics:nil views:views]];
+    
+//    [self.scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-390-[spaceNeedle(40)]" options:0 metrics:nil views:views]];
+//    [self.scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-180-[spaceNeedle(200)]" options:0 metrics:nil views:views]];
+    
+    
+    
+    self.view = rootView;
 }
 
-- (void)loadView {
 
-    NSLog(@"SkylineViewController::loadView");
-
-    // Set up base view, '_skylineView'
-    _skylineView = [[UIView alloc] init];
-//    _skylineView.bounds = CGRectMake( 0, 0, CGRectGetWidth( [[UIScreen mainScreen] applicationFrame]),
-//                                            CGRectGetHeight([[UIScreen mainScreen] applicationFrame]));
-    _skylineView.backgroundColor = [UIColor grayColor];
-
-    // Set up image view, '_imageView' and attach it to the '_skylineView'
-    _imageView = [[UIImageView alloc] init];
-    _imageView.bounds = CGRectMake( 0, 0, CGRectGetWidth( [[UIScreen mainScreen] applicationFrame]),
-                                   CGRectGetHeight([[UIScreen mainScreen] applicationFrame]));
-//    _imageView.bounds = CGRectMake( 0, 0, 600, 600 );
-
-    // Attach the 'skylineImage' to the '_imageView'
-    UIImage *skylineImage = [UIImage imageNamed:@"skyline03.jpeg"];
-    _imageView.image = skylineImage;
-    _imageView.userInteractionEnabled = true;
-
-
-//    [self setupAutolayoutForSkylineView];
-
-    self.view = self.skylineView ;
-}
-
-- (void)cellForItemAtIndexPath {
-    NSLog(@"SkylineViewController::cellForItemAtIndexPath");
-}
-
-- (void)viewDidLoad {
+-(void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view, typically from a nib.
-    NSLog(@"SkylineViewController::viewDidLoad");
+    self.scrollView.delegate = self;
+    
+    [self.scrollView setContentOffset:CGPointMake(300, 0) animated:true];
 }
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
-    NSLog(@"SkylineViewController::didReceiveMemoryWarning");
+
+#pragma mark - lazy loading Getters
+-(UIScrollView *)scrollView {
+    if (_scrollView == nil) {
+        _scrollView = [[UIScrollView alloc] init];
+    }
+    return _scrollView;
 }
 
-//-(UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
-//
-//    ImageCell *cell = (ImageCell*)[self.imageCollectionView dequeueReusableCellWithReuseIdentifier:@"IMAGE_CELL" forIndexPath:indexPath];
-//    int index = (int)(indexPath.row % [self.images count]);
-//    cell.imageView.image = self.images[index];
-//    cell.imageView.contentMode = UIViewContentModeScaleAspectFit;
-//    return cell;
-//}
+-(UIImageView *)kerryPark {
+    if (_kerryPark == nil) {
+        _kerryPark = [[UIImageView alloc] init];
+    }
+    return _kerryPark;
+}
+
+-(UIButton *)spaceNeedleButton {
+    if (_spaceNeedleButton == nil) {
+        _spaceNeedleButton = [[UIButton alloc] init];
+    }
+    return _spaceNeedleButton;
+}
 
 @end
