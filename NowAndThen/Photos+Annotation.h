@@ -12,4 +12,6 @@
 
 @interface Photos (Annotation) <MKAnnotation>
 
+-(MKAnnotationView *)annotationView;
+
 @end

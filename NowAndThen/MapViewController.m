@@ -375,8 +375,6 @@
      [UIView animateWithDuration:1.0 animations:^{
        self.mapView.alpha = 1.0;
      }];
-      
-     //[self.mapView showAnnotations:self.mapView.annotations animated:true];
   }];
 }
 
@@ -387,7 +385,9 @@
 
   MKMapRect mapRect = self.mapView.visibleMapRect;
   self.mapView.alpha = 0.4;
-  [[NetworkController sharedService] fetchBuildingsForRect:[self getBoundingBox:mapRect] withBuildingLimit:10 andBlock:^(NSArray *buildingsFound) {
+  [[NetworkController sharedService] fetchBuildingsForRect:[self getBoundingBox:mapRect]
+                                         withBuildingLimit:10
+                                                  andBlock:^(NSArray *buildingsFound) {
     
     for (int i = 0; i < buildingsFound.count; i++)
     {
@@ -434,14 +434,12 @@
     {
       Photos *photo = nil;
         photo = (Photos *) annotationView.annotation;
-//      self.mapView.alpha = 0.3;
       [[NetworkController sharedService] fetchBuildingImage:photo.fullSizeImageURL withCompletionHandler:^(UIImage *image) {
         imageView.image = image;
         annotationView.leftCalloutAccessoryView = imageView;
         [annotationView reloadInputViews];
         Building *building = (Building *)self.buildingsOnMap[self.buildingForSearch];
         [building.imageCollection addObject:imageView.image];
-        NSLog(@"fullsizeImageLoaded: %lu",(unsigned long)building.imageCollection.count);
       }];
     }
     if (building)
@@ -458,26 +456,20 @@
 
 -(MKAnnotationView *)mapView:(MKMapView *)mapView viewForAnnotation:(id<MKAnnotation>)annotation
 {
-  static NSString *reuseID = @"NowAndThenAnnotations";
-  
-  MKAnnotationView *view = [self.mapView dequeueReusableAnnotationViewWithIdentifier:reuseID];
-  
   if (annotation == self.mapView.userLocation)
   {
     return nil;
   }
-  
-  if (!view)
+  if ([annotation isKindOfClass:[Building class]])
   {
-    view = [[MKPinAnnotationView alloc] initWithAnnotation:annotation
-                                           reuseIdentifier:reuseID];
-
-    view.canShowCallout = true;
-    UIImageView *leftCalloutImage  = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 46, 46)];
-    view.leftCalloutAccessoryView  = leftCalloutImage;
-    view.rightCalloutAccessoryView = [UIButton buttonWithType:UIButtonTypeDetailDisclosure];
+    Building *customAnnotation = (Building *)annotation;
+    return customAnnotation.annotationView;
+  } else if ([annotation isKindOfClass:[Photos class]]) {
+  
+    Photos *customAnnotation = (Photos *)annotation;
+    return customAnnotation.annotationView;
   }
-  return view;
+  return nil;
 }
 
 
@@ -489,7 +481,6 @@
                                                       object:self
                                                     userInfo:@{@"Building" : building}];
   [self transitionToBuildingDetail];
-    
 }
 
 
