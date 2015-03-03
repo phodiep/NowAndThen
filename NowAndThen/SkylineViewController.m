@@ -9,13 +9,20 @@
 #import <Foundation/Foundation.h>
 #import "SkylineViewController.h"
 
-@interface SkylineViewController () <UIScrollViewDelegate>
+@interface SkylineViewController () <UIScrollViewDelegate, UIGestureRecognizerDelegate>
 
 @property (strong, nonatomic) UIScrollView *scrollView;
 
 @property (strong, nonatomic) UIImageView *kerryPark;
 
-@property (strong, nonatomic) UIButton *spaceNeedleButton;
+@property (strong, nonatomic) UIButton *twoUnionSquare;
+@property (strong, nonatomic) UIButton *spaceNeedle;
+@property (strong, nonatomic) UIButton *columbiaTower;
+@property (strong, nonatomic) UIButton *mtRainier;
+
+@property (strong, nonatomic) UIView *waMutualBuilding;
+@property (strong, nonatomic) UIView *portOfSeattle;
+@property (strong, nonatomic) UIView *keyArena;
 
 @end
 
@@ -44,29 +51,28 @@
 
     [rootView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-40-[title]-8-[scrollView]|" options:0 metrics:nil views:rootViews]];
     
-    
+    [self setBuildingBorders];
     
     //set scrollView -------------
     self.kerryPark.image = [UIImage imageNamed:@"KerryPark1.jpeg"];
     
-    self.spaceNeedleButton.backgroundColor = [UIColor redColor];
+    
+
     
     
     [self.kerryPark setTranslatesAutoresizingMaskIntoConstraints:false];
-    [self.spaceNeedleButton setTranslatesAutoresizingMaskIntoConstraints:false];
     
     [self.scrollView addSubview:self.kerryPark];
-//    [self.scrollView addSubview:self.spaceNeedleButton];
     
-    NSDictionary *views = @{@"kerryPark":self.kerryPark, @"spaceNeedle":self.spaceNeedleButton};
+    NSDictionary *views = @{@"kerryPark":self.kerryPark};
     
     [self.scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[kerryPark]|" options:0 metrics:nil views:views]];
     [self.scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-40-[kerryPark]|" options:0 metrics:nil views:views]];
     
-//    [self.scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-390-[spaceNeedle(40)]" options:0 metrics:nil views:views]];
-//    [self.scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-180-[spaceNeedle(200)]" options:0 metrics:nil views:views]];
-    
-    
+    [self.scrollView addSubview:self.twoUnionSquare];
+    [self.scrollView addSubview:self.spaceNeedle];
+    [self.scrollView addSubview:self.columbiaTower];
+    [self.scrollView addSubview:self.mtRainier];
     
     self.view = rootView;
 }
@@ -77,8 +83,74 @@
     self.scrollView.delegate = self;
     
     [self.scrollView setContentOffset:CGPointMake(300, 0) animated:true];
+    
 }
 
+
+#pragma mark - Button Actions
+-(void)pressedTwoUnionSquare {
+    NSLog(@"Two Union Square");
+    if (self.twoUnionSquare.backgroundColor == nil || self.twoUnionSquare.backgroundColor == [UIColor clearColor]) {
+        self.twoUnionSquare.backgroundColor = [UIColor redColor];
+    } else {
+        self.twoUnionSquare.backgroundColor = [UIColor clearColor];
+    }
+}
+
+-(void)pressedSpaceNeedle {
+    NSLog(@"Space Needle");
+    if (self.spaceNeedle.backgroundColor == nil || self.spaceNeedle.backgroundColor == [UIColor clearColor]) {
+        self.spaceNeedle.backgroundColor = [UIColor redColor];
+    } else {
+        self.spaceNeedle.backgroundColor = [UIColor clearColor];
+    }
+}
+
+-(void)pressedColumbiaTower {
+    NSLog(@"Columbia Tower");
+    if (self.columbiaTower.backgroundColor == nil || self.columbiaTower.backgroundColor == [UIColor clearColor]) {
+        self.columbiaTower.backgroundColor = [UIColor blueColor];
+    } else {
+        self.columbiaTower.backgroundColor = [UIColor clearColor];
+    }
+}
+
+-(void)pressedMtRainier {
+    NSLog(@"Mt Rainier");
+    if (self.mtRainier.backgroundColor == nil || self.mtRainier.backgroundColor == [UIColor clearColor]) {
+        self.mtRainier.backgroundColor = [UIColor redColor];
+    } else {
+        self.mtRainier.backgroundColor = [UIColor clearColor];
+    }
+
+}
+
+
+#pragma mark - building borders
+-(void)setBuildingBorders {
+    self.twoUnionSquare = [[UIButton alloc] initWithFrame:CGRectMake(228, 200, 35, 80)];
+    self.spaceNeedle = [[UIButton alloc] initWithFrame:CGRectMake(390, 160, 40, 170)];
+    self.columbiaTower = [[UIButton alloc] initWithFrame:CGRectMake(415, 190, 20, 100)];
+    self.mtRainier = [[UIButton alloc] initWithFrame:CGRectMake(650, 220, 120, 50)];
+    
+//    self.twoUnionSquare.backgroundColor = [UIColor redColor];
+//    self.spaceNeedle.backgroundColor = [UIColor redColor];
+//    self.columbiaTower.backgroundColor = [UIColor blueColor];
+//    self.mtRainier.backgroundColor = [UIColor redColor];
+
+    
+    self.twoUnionSquare.alpha = 0.3;
+    self.spaceNeedle.alpha = 0.3;
+    self.columbiaTower.alpha = 0.3;
+    self.mtRainier.alpha = 0.3;
+    
+    [self.spaceNeedle addTarget:self action:@selector(pressedSpaceNeedle) forControlEvents:UIControlEventTouchUpInside];
+    [self.twoUnionSquare addTarget:self action:@selector(pressedTwoUnionSquare) forControlEvents:UIControlEventTouchUpInside];
+    [self.columbiaTower addTarget:self action:@selector(pressedColumbiaTower) forControlEvents:UIControlEventTouchUpInside];
+    [self.mtRainier addTarget:self action:@selector(pressedMtRainier) forControlEvents:UIControlEventTouchUpInside];
+    
+    
+}
 
 #pragma mark - lazy loading Getters
 -(UIScrollView *)scrollView {
@@ -95,11 +167,5 @@
     return _kerryPark;
 }
 
--(UIButton *)spaceNeedleButton {
-    if (_spaceNeedleButton == nil) {
-        _spaceNeedleButton = [[UIButton alloc] init];
-    }
-    return _spaceNeedleButton;
-}
 
 @end
