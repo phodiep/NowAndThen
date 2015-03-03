@@ -27,5 +27,17 @@
   return title;
 }
 
+-(MKAnnotationView *)annotationView
+{
+  MKAnnotationView *view = [[MKAnnotationView alloc] initWithAnnotation:self reuseIdentifier:@"photo"];
+  
+  view.enabled = true;
+  view.rightCalloutAccessoryView = [UIButton buttonWithType:UIButtonTypeDetailDisclosure];
+  view.canShowCallout = true;
+  view.image = [UIImage imageNamed:@"location"];
+  
+  return view;
+}
+
 
 @end
