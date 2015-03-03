@@ -13,4 +13,6 @@
 
 //@property (strong, nonatomic) MKPinAnnotationView *buildingPin;
 
+-(MKAnnotationView *)annotationView;
+
 @end

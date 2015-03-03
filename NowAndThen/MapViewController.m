@@ -456,41 +456,20 @@
 
 -(MKAnnotationView *)mapView:(MKMapView *)mapView viewForAnnotation:(id<MKAnnotation>)annotation
 {
- // static NSString *reuseID = @"NowAndThenAnnotations";
-  
- // MKAnnotationView *view = [self.mapView dequeueReusableAnnotationViewWithIdentifier:reuseID];
-  MKAnnotationView *view = [[MKPinAnnotationView alloc] init];
-
   if (annotation == self.mapView.userLocation)
   {
     return nil;
   }
-  
-  if (!view)
+  if ([annotation isKindOfClass:[Building class]])
   {
-    if ([annotation isKindOfClass:[Photos class]])
-    {
-      Photos *customAnnotation = (Photos *)annotation;
-      
-      view = customAnnotation.annotationView;
-      UIImageView *leftCalloutImage = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 46, 46)];
-      view.leftCalloutAccessoryView = leftCalloutImage;
-      
-    } else {
-      
-      if ([annotation isKindOfClass:[Building class]])
-      {
-        
-      view.canShowCallout = true;
-      UIImageView *leftCalloutImage  = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 46, 46)];
-       
-        view.image = [UIImage imageNamed:@"location"];
-        view.leftCalloutAccessoryView  = leftCalloutImage;
-      view.rightCalloutAccessoryView = [UIButton buttonWithType:UIButtonTypeDetailDisclosure];
-      };
-    }
+    Building *customAnnotation = (Building *)annotation;
+    return customAnnotation.annotationView;
+  } else if ([annotation isKindOfClass:[Photos class]]) {
+  
+    Photos *customAnnotation = (Photos *)annotation;
+    return customAnnotation.annotationView;
   }
-  return view;
+  return nil;
 }
 
 
@@ -502,7 +481,6 @@
                                                       object:self
                                                     userInfo:@{@"Building" : building}];
   [self transitionToBuildingDetail];
-    
 }
 
 
