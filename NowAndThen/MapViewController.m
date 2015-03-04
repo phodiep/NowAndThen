@@ -9,7 +9,6 @@
 #import "MapViewController.h"
 #import <MapKit/MapKit.h>
 #import <CoreLocation/CoreLocation.h>
-#import "Building.h"
 #import "NetworkController.h"
 #import "Building+Annotation.h"
 #import "Photos+Annotation.h"
@@ -22,8 +21,8 @@
 @property (strong, nonatomic) IBOutlet UIBarButtonItem *centerOnUser;
 -(IBAction)centerOnUser:(id)sender;
 
-@property (strong, nonatomic) IBOutlet UIBarButtonItem *findPortals;
--(IBAction)findPortals:(id)sender;
+@property (strong, nonatomic) IBOutlet UIBarButtonItem *findFlickrPhotoLocations;
+-(IBAction)findFlickrPhotoLocations:(id)sender;
 
 @property (strong, nonatomic) IBOutlet UIBarButtonItem *findBuildings;
 -(IBAction)findBuildings:(id)sender;
@@ -56,21 +55,17 @@
 -(NSArray *)getBoundingBox:(MKMapRect)mapRect;
 -(NSArray *)getBoundingBoxForImages:(MKMapRect)mapRect;
 
-//custom method for setting locations
--(CLLocationCoordinate2D)createBuildingLocation:(double)latitude
-                                  withLongitude:(double)longitude
-                                 withIdentifier:(NSString *)name;
-
 //-(NSArray *)getCenterOfScreen:(MKMapRect)mapRect;
 
 -(void)updateCalloutAccessoryImage:(MKAnnotationView *)annotationView;
+
+-(void)didSelectImageInfo;
 
 @end
 
 @implementation MapViewController
 
 //when leaving the mapview - allow the user to chose to update the maps location if they move
-
 
 #pragma mark - UIViewController Lifecycle
 - (void)loadView
@@ -115,6 +110,7 @@
   }
 }
 
+
 //this will refresh the view to center over the user sporadically
 #pragma mark - MKMapViewDelegate
 -(void)mapView:(MKMapView *)mapView didUpdateUserLocation:(MKUserLocation *)userLocation
@@ -133,12 +129,6 @@
     self.didLoadUserLocation = true;
   }
 }
-
--(void)mapView:(MKMapView *)mapView regionDidChangeAnimated:(BOOL)animated
-{
-  //TODO: reenable search buttons, maybe....
-}
-
 
 
 #pragma methods for generating a bounding box -> to be used in geoJSON fetch
@@ -170,6 +160,7 @@
   return MKCoordinateForMapPoint(swMapPoint);
 }
 
+// returns a bounding box for the building fetch
 -(NSArray *)getBoundingBox:(MKMapRect)mapRect
 {
   CLLocationCoordinate2D southEast  = [self getSECoordinate:mapRect];
@@ -206,129 +197,6 @@
            [NSNumber numberWithDouble:location.longitude]];
 }
 
-#pragma mark - Lazy Loading Getters
--(MKMapView *)mapView
-{
-    if (_mapView == nil)
-    {
-      _mapView = [[MKMapView alloc] init];
-      _mapView.delegate = self;
-    }
-    return _mapView;
-}
-
--(CLLocationManager *)locationManager
-{
-    if (_locationManager == nil)
-    {
-        _locationManager = [[CLLocationManager alloc] init];
-    }
-    return _locationManager;
-}
-
--(UIToolbar *)toolBar
-{
-  if(!_toolBar)
-  {
-    _toolBar = [[UIToolbar alloc] init];
-    _toolBar.delegate = self;
-  }
-  return _toolBar;
-}
-
--(UIToolbar *)trackingBar
-{
-  if(!_trackingBar)
-  {
-    _trackingBar = [[UIToolbar alloc] init];
-    _trackingBar.delegate = self;
-  }
-  return _trackingBar;
-}
-
--(MKUserTrackingBarButtonItem *)trackUser
-{
-  if (!_trackUser)
-  {
-    _trackUser = [[MKUserTrackingBarButtonItem alloc] initWithMapView:self.mapView];
-  }
-  return _trackUser;
-}
-
--(NSArray *)toolBarItems
-{
-  if (!_toolBarItems)
-  {
-    UIBarButtonItem *spacer = [[UIBarButtonItem alloc] initWithBarButtonSystemItem: UIBarButtonSystemItemFlexibleSpace
-                                                                            target:nil
-                                                                            action:nil];
-    
-    _toolBarItems = @[self.centerOnUser, spacer, self.findPortals, spacer, self.findBuildings];
-  }
-  return _toolBarItems;
-}
-
--(NSArray *)userTrackingItem
-{
-  if (!_userTrackingItem)
-  {
-    _userTrackingItem = @[self.trackUser];
-  }
-  return _userTrackingItem;
-}
-
--(UIBarButtonItem *)centerOnUser
-{
-  if (!_centerOnUser)
-  {
-    _centerOnUser = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemTrash
-                                                                  target:self
-                                                                  action:@selector(centerOnUser:)];
-  }
-  return _centerOnUser;
-}
-
--(UIBarButtonItem *)findPortals
-{
-  if (!_findPortals)
-  {
-    _findPortals = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemOrganize
-                                                                 target:self
-                                                                 action:@selector(findPortals:)];
-  }
-  return _findPortals;
-}
-
--(UIBarButtonItem *)findBuildings
-{
-  if (!_findBuildings)
-  {
-    _findBuildings = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCompose
-                                                                   target:self
-                                                                   action:@selector(findBuildings:)];
-  }
-  return _findBuildings;
-}
-
--(UIAlertController *)buildingSnapShot
-{
-  if (_buildingSnapShot)
-  {
-    _buildingSnapShot = [[UIAlertController alloc] init];
-  }
-  return _buildingSnapShot;
-}
-
-
--(NSMutableDictionary *)buildingsOnMap
-{
-  if (!_buildingsOnMap)
-  {
-    _buildingsOnMap = [[NSMutableDictionary alloc] init];
-  }
-  return _buildingsOnMap;
-}
-
 
 #pragma mark - toolBar button actions
 -(IBAction)centerOnUser:(id)sender
@@ -357,7 +225,7 @@
 }
 
 #pragma mark - create Annotations
--(IBAction)findPortals:(id)sender
+-(IBAction)findFlickrPhotoLocations:(id)sender
 {
   MKMapRect mapRect = self.mapView.visibleMapRect;
  
@@ -397,18 +265,25 @@
     }
     self.mapView.alpha = 1.0;
   }];
-  
 }
 
 
-//pin selected
+//  didSelectAnnotationView
 -(void)mapView:(MKMapView *)mapView didSelectAnnotationView:(MKAnnotationView *)view
 {
   if ([view.annotation isKindOfClass:[Photos class]])
   {
-    //Photos *photo = (Photos *)view.annotation;
-    [self updateCalloutAccessoryImage:view];
-  } else {
+    Photos *photo = nil;
+    photo = (Photos *)view.annotation;
+    
+    [[NetworkController sharedService] fetchBuildingImage:photo.fullSizeImageURL withCompletionHandler:^(UIImage *image) {
+      
+      [self updateCalloutAccessoryImage:view];
+
+      Building *building = (Building *)self.buildingsOnMap[self.buildingForSearch];
+      [building.imageCollection addObject:image];
+    }];
+  } else if ([view.annotation isKindOfClass:[Building class]]) {
     Building *building = (Building *)view.annotation;
     self.buildingForSearch = building.name;
     [self updateCalloutAccessoryImage:view];
@@ -433,8 +308,9 @@
     } else if ([annotationView.annotation isKindOfClass:[Photos class]])
     {
       Photos *photo = nil;
-        photo = (Photos *) annotationView.annotation;
+      photo = (Photos *) annotationView.annotation;
       [[NetworkController sharedService] fetchBuildingImage:photo.fullSizeImageURL withCompletionHandler:^(UIImage *image) {
+        
         imageView.image = image;
         annotationView.leftCalloutAccessoryView = imageView;
         [annotationView reloadInputViews];
@@ -453,7 +329,7 @@
   }
 }
 
-
+#pragma viewForAnnotation
 -(MKAnnotationView *)mapView:(MKMapView *)mapView viewForAnnotation:(id<MKAnnotation>)annotation
 {
   if (annotation == self.mapView.userLocation)
@@ -528,17 +404,11 @@
 }
 
 
-#pragma mark - createBuildingLocation
--(CLLocationCoordinate2D)createBuildingLocation:(double)latitude
-                                  withLongitude:(double)longitude
-                                 withIdentifier:(NSString *)name
+-(void)didSelectImageInfo
 {
-  CLLocationCoordinate2D location;
-  location.latitude = latitude;
-  location.longitude = longitude;
-  
-  return location;
+  NSLog(@"hey you hit the button!");
 }
+
 
 #pragma mark - transitionToBuildingDetail
 - (void)transitionToBuildingDetail
@@ -559,6 +429,129 @@
       tabBarController.selectedIndex = tabIndex;
     }
   }];
+}
+
+
+#pragma mark - Lazy Loading Getters
+-(MKMapView *)mapView
+{
+  if (_mapView == nil)
+  {
+    _mapView = [[MKMapView alloc] init];
+    _mapView.delegate = self;
+  }
+  return _mapView;
+}
+
+-(CLLocationManager *)locationManager
+{
+  if (_locationManager == nil)
+  {
+    _locationManager = [[CLLocationManager alloc] init];
+  }
+  return _locationManager;
+}
+
+-(UIToolbar *)toolBar
+{
+  if(!_toolBar)
+  {
+    _toolBar = [[UIToolbar alloc] init];
+    _toolBar.delegate = self;
+  }
+  return _toolBar;
+}
+
+-(UIToolbar *)trackingBar
+{
+  if(!_trackingBar)
+  {
+    _trackingBar = [[UIToolbar alloc] init];
+    _trackingBar.delegate = self;
+  }
+  return _trackingBar;
+}
+
+-(MKUserTrackingBarButtonItem *)trackUser
+{
+  if (!_trackUser)
+  {
+    _trackUser = [[MKUserTrackingBarButtonItem alloc] initWithMapView:self.mapView];
+  }
+  return _trackUser;
+}
+
+-(NSArray *)toolBarItems
+{
+  if (!_toolBarItems)
+  {
+    UIBarButtonItem *spacer = [[UIBarButtonItem alloc] initWithBarButtonSystemItem: UIBarButtonSystemItemFlexibleSpace
+                                                                            target:nil
+                                                                            action:nil];
+    
+    _toolBarItems = @[self.centerOnUser, spacer, self.findFlickrPhotoLocations, spacer, self.findBuildings];
+  }
+  return _toolBarItems;
+}
+
+-(NSArray *)userTrackingItem
+{
+  if (!_userTrackingItem)
+  {
+    _userTrackingItem = @[self.trackUser];
+  }
+  return _userTrackingItem;
+}
+
+-(UIBarButtonItem *)centerOnUser
+{
+  if (!_centerOnUser)
+  {
+    _centerOnUser = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemTrash
+                                                                  target:self
+                                                                  action:@selector(centerOnUser:)];
+  }
+  return _centerOnUser;
+}
+
+-(UIBarButtonItem *)findFlickrPhotoLocations
+{
+  if (!_findFlickrPhotoLocations)
+  {
+    _findFlickrPhotoLocations = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemOrganize
+                                                                              target:self
+                                                                              action:@selector(findFlickrPhotoLocations:)];
+  }
+  return _findFlickrPhotoLocations;
+}
+
+-(UIBarButtonItem *)findBuildings
+{
+  if (!_findBuildings)
+  {
+    _findBuildings = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCompose
+                                                                   target:self
+                                                                   action:@selector(findBuildings:)];
+  }
+  return _findBuildings;
+}
+
+-(UIAlertController *)buildingSnapShot
+{
+  if (_buildingSnapShot)
+  {
+    _buildingSnapShot = [[UIAlertController alloc] init];
+  }
+  return _buildingSnapShot;
+}
+
+-(NSMutableDictionary *)buildingsOnMap
+{
+  if (!_buildingsOnMap)
+  {
+    _buildingsOnMap = [[NSMutableDictionary alloc] init];
+  }
+  return _buildingsOnMap;
 }
 
 @end
