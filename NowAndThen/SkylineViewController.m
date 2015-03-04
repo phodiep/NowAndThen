@@ -20,9 +20,9 @@
 @property (strong, nonatomic) UIButton *columbiaTower;
 @property (strong, nonatomic) UIButton *mtRainier;
 
-@property (strong, nonatomic) UIView *waMutualBuilding;
-@property (strong, nonatomic) UIView *portOfSeattle;
-@property (strong, nonatomic) UIView *keyArena;
+@property (strong, nonatomic) UIButton *waMutualBuilding;
+@property (strong, nonatomic) UIButton *portOfSeattle;
+@property (strong, nonatomic) UIButton *keyArena;
 
 @end
 
@@ -56,10 +56,6 @@
     //set scrollView -------------
     self.kerryPark.image = [UIImage imageNamed:@"KerryPark1.jpeg"];
     
-    
-
-    
-    
     [self.kerryPark setTranslatesAutoresizingMaskIntoConstraints:false];
     
     [self.scrollView addSubview:self.kerryPark];
@@ -73,6 +69,9 @@
     [self.scrollView addSubview:self.spaceNeedle];
     [self.scrollView addSubview:self.columbiaTower];
     [self.scrollView addSubview:self.mtRainier];
+    [self.scrollView addSubview:self.waMutualBuilding];
+    [self.scrollView addSubview:self.portOfSeattle];
+    [self.scrollView addSubview:self.keyArena];
     
     self.view = rootView;
 }
@@ -122,9 +121,34 @@
     } else {
         self.mtRainier.backgroundColor = [UIColor clearColor];
     }
-
 }
 
+-(void)pressedWaMuBuilding {
+    NSLog(@"WaMu Building");
+    if (self.waMutualBuilding.backgroundColor == nil || self.waMutualBuilding.backgroundColor == [UIColor clearColor]) {
+        self.waMutualBuilding.backgroundColor = [UIColor redColor];
+    } else {
+        self.waMutualBuilding.backgroundColor = [UIColor clearColor];
+    }
+}
+
+-(void)pressedPortOfSeattle {
+    NSLog(@"Port of Seattle");
+    if (self.portOfSeattle.backgroundColor == nil || self.portOfSeattle.backgroundColor == [UIColor clearColor]) {
+        self.portOfSeattle.backgroundColor = [UIColor redColor];
+    } else {
+        self.portOfSeattle.backgroundColor = [UIColor clearColor];
+    }
+}
+
+-(void)pressedKeyArena {
+    NSLog(@"Key Arena");
+    if (self.keyArena.backgroundColor == nil || self.keyArena.backgroundColor == [UIColor clearColor]) {
+        self.keyArena.backgroundColor = [UIColor redColor];
+    } else {
+        self.keyArena.backgroundColor = [UIColor clearColor];
+    }
+}
 
 #pragma mark - building borders
 -(void)setBuildingBorders {
@@ -132,23 +156,32 @@
     self.spaceNeedle = [[UIButton alloc] initWithFrame:CGRectMake(390, 160, 40, 170)];
     self.columbiaTower = [[UIButton alloc] initWithFrame:CGRectMake(415, 190, 20, 100)];
     self.mtRainier = [[UIButton alloc] initWithFrame:CGRectMake(650, 220, 120, 50)];
+    self.waMutualBuilding = [[UIButton alloc] initWithFrame:CGRectMake(475, 210, 25, 90)];
+    self.portOfSeattle = [[UIButton alloc] initWithFrame:CGRectMake(1080, 290, 150, 50)];
     
 //    self.twoUnionSquare.backgroundColor = [UIColor redColor];
 //    self.spaceNeedle.backgroundColor = [UIColor redColor];
 //    self.columbiaTower.backgroundColor = [UIColor blueColor];
 //    self.mtRainier.backgroundColor = [UIColor redColor];
-
+//    self.waMutualBuilding.backgroundColor = [UIColor redColor];
+//    self.portOfSeattle.backgroundColor = [UIColor redColor];
+//    self.keyArena.backgroundColor = [UIColor redColor];
     
     self.twoUnionSquare.alpha = 0.3;
     self.spaceNeedle.alpha = 0.3;
     self.columbiaTower.alpha = 0.3;
     self.mtRainier.alpha = 0.3;
+    self.waMutualBuilding.alpha = 0.3;
+    self.portOfSeattle.alpha = 0.3;
+    self.keyArena.alpha = 0.3;
     
     [self.spaceNeedle addTarget:self action:@selector(pressedSpaceNeedle) forControlEvents:UIControlEventTouchUpInside];
     [self.twoUnionSquare addTarget:self action:@selector(pressedTwoUnionSquare) forControlEvents:UIControlEventTouchUpInside];
     [self.columbiaTower addTarget:self action:@selector(pressedColumbiaTower) forControlEvents:UIControlEventTouchUpInside];
     [self.mtRainier addTarget:self action:@selector(pressedMtRainier) forControlEvents:UIControlEventTouchUpInside];
-    
+    [self.waMutualBuilding addTarget:self action:@selector(pressedWaMuBuilding) forControlEvents:UIControlEventTouchUpInside];
+    [self.portOfSeattle addTarget:self action:@selector(pressedPortOfSeattle) forControlEvents:UIControlEventTouchUpInside];
+    [self.keyArena addTarget:self action:@selector(pressedKeyArena) forControlEvents:UIControlEventTouchUpInside];
     
 }
 
