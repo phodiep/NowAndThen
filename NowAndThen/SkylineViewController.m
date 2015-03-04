@@ -158,6 +158,7 @@
     self.mtRainier = [[UIButton alloc] initWithFrame:CGRectMake(650, 220, 120, 50)];
     self.waMutualBuilding = [[UIButton alloc] initWithFrame:CGRectMake(475, 210, 25, 90)];
     self.portOfSeattle = [[UIButton alloc] initWithFrame:CGRectMake(1080, 290, 150, 50)];
+    self.keyArena = [[UIButton alloc] initWithFrame:CGRectMake(630, 350, 150, 50)];
     
 //    self.twoUnionSquare.backgroundColor = [UIColor redColor];
 //    self.spaceNeedle.backgroundColor = [UIColor redColor];
