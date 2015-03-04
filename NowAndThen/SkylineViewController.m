@@ -9,78 +9,197 @@
 #import <Foundation/Foundation.h>
 #import "SkylineViewController.h"
 
-@interface SkylineViewController ()
+@interface SkylineViewController () <UIScrollViewDelegate, UIGestureRecognizerDelegate>
 
-@property (strong, nonatomic) NSMutableDictionary *views;
-@property (strong, nonatomic) UIView *skylineView;
-@property (strong, nonatomic) UIImageView *imageView;
 @property (strong, nonatomic) UIScrollView *scrollView;
-@property (strong, nonatomic) UILabel *skylineTitle;
 
-@property (strong, nonatomic) NSMutableArray *images;
+@property (strong, nonatomic) UIImageView *kerryPark;
 
-@property (nonatomic) BOOL firstSkylineCollectionView;
+@property (strong, nonatomic) UIButton *twoUnionSquare;
+@property (strong, nonatomic) UIButton *spaceNeedle;
+@property (strong, nonatomic) UIButton *columbiaTower;
+@property (strong, nonatomic) UIButton *mtRainier;
 
--(void)building164;
+@property (strong, nonatomic) UIButton *waMutualBuilding;
+@property (strong, nonatomic) UIButton *portOfSeattle;
+@property (strong, nonatomic) UIButton *keyArena;
 
 @end
 
 @implementation SkylineViewController
 
-- (IBAction)building164 {
-    NSLog(@"building164");
+-(void)loadView {
+    UIView *rootView = [[UIView alloc] init];
+    rootView.backgroundColor = [UIColor whiteColor];
+    
+    self.scrollView.backgroundColor = [UIColor whiteColor];
+    
+    UILabel *title = [[UILabel alloc] init];
+    title.text = @"Seattle Skyline From Kerry Park";
+    title.font = [UIFont fontWithName:@"HelveticaNeue-Bold" size:18.0f];
+    
+    [title setTranslatesAutoresizingMaskIntoConstraints:false];
+    [self.scrollView setTranslatesAutoresizingMaskIntoConstraints:false];
+
+    [rootView addSubview:title];
+    [rootView addSubview:self.scrollView];
+    
+    NSDictionary *rootViews = @{@"scrollView":self.scrollView, @"title":title};
+    
+    [rootView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-8-[title]-8-|" options:0 metrics:nil views:rootViews]];
+    [rootView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[scrollView]|" options:0 metrics:nil views:rootViews]];
+
+    [rootView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-40-[title]-8-[scrollView]|" options:0 metrics:nil views:rootViews]];
+    
+    [self setBuildingBorders];
+    
+    //set scrollView -------------
+    self.kerryPark.image = [UIImage imageNamed:@"KerryPark1.jpeg"];
+    
+    [self.kerryPark setTranslatesAutoresizingMaskIntoConstraints:false];
+    
+    [self.scrollView addSubview:self.kerryPark];
+    
+    NSDictionary *views = @{@"kerryPark":self.kerryPark};
+    
+    [self.scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[kerryPark]|" options:0 metrics:nil views:views]];
+    [self.scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-40-[kerryPark]|" options:0 metrics:nil views:views]];
+    
+    [self.scrollView addSubview:self.twoUnionSquare];
+    [self.scrollView addSubview:self.spaceNeedle];
+    [self.scrollView addSubview:self.columbiaTower];
+    [self.scrollView addSubview:self.mtRainier];
+    [self.scrollView addSubview:self.waMutualBuilding];
+    [self.scrollView addSubview:self.portOfSeattle];
+    [self.scrollView addSubview:self.keyArena];
+    
+    self.view = rootView;
 }
 
-- (void)loadView {
 
-    NSLog(@"SkylineViewController::loadView");
-
-    // Set up base view, '_skylineView'
-    _skylineView = [[UIView alloc] init];
-//    _skylineView.bounds = CGRectMake( 0, 0, CGRectGetWidth( [[UIScreen mainScreen] applicationFrame]),
-//                                            CGRectGetHeight([[UIScreen mainScreen] applicationFrame]));
-    _skylineView.backgroundColor = [UIColor grayColor];
-
-    // Set up image view, '_imageView' and attach it to the '_skylineView'
-    _imageView = [[UIImageView alloc] init];
-    _imageView.bounds = CGRectMake( 0, 0, CGRectGetWidth( [[UIScreen mainScreen] applicationFrame]),
-                                   CGRectGetHeight([[UIScreen mainScreen] applicationFrame]));
-//    _imageView.bounds = CGRectMake( 0, 0, 600, 600 );
-
-    // Attach the 'skylineImage' to the '_imageView'
-    UIImage *skylineImage = [UIImage imageNamed:@"skyline03.jpeg"];
-    _imageView.image = skylineImage;
-    _imageView.userInteractionEnabled = true;
-
-
-//    [self setupAutolayoutForSkylineView];
-
-    self.view = self.skylineView ;
-}
-
-- (void)cellForItemAtIndexPath {
-    NSLog(@"SkylineViewController::cellForItemAtIndexPath");
-}
-
-- (void)viewDidLoad {
+-(void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view, typically from a nib.
-    NSLog(@"SkylineViewController::viewDidLoad");
+    self.scrollView.delegate = self;
+    
+    [self.scrollView setContentOffset:CGPointMake(300, 0) animated:true];
+    
 }
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
-    NSLog(@"SkylineViewController::didReceiveMemoryWarning");
+
+#pragma mark - Button Actions
+-(void)pressedTwoUnionSquare {
+    NSLog(@"Two Union Square");
+    if (self.twoUnionSquare.backgroundColor == nil || self.twoUnionSquare.backgroundColor == [UIColor clearColor]) {
+        self.twoUnionSquare.backgroundColor = [UIColor redColor];
+    } else {
+        self.twoUnionSquare.backgroundColor = [UIColor clearColor];
+    }
 }
 
-//-(UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath {
-//
-//    ImageCell *cell = (ImageCell*)[self.imageCollectionView dequeueReusableCellWithReuseIdentifier:@"IMAGE_CELL" forIndexPath:indexPath];
-//    int index = (int)(indexPath.row % [self.images count]);
-//    cell.imageView.image = self.images[index];
-//    cell.imageView.contentMode = UIViewContentModeScaleAspectFit;
-//    return cell;
-//}
+-(void)pressedSpaceNeedle {
+    NSLog(@"Space Needle");
+    if (self.spaceNeedle.backgroundColor == nil || self.spaceNeedle.backgroundColor == [UIColor clearColor]) {
+        self.spaceNeedle.backgroundColor = [UIColor redColor];
+    } else {
+        self.spaceNeedle.backgroundColor = [UIColor clearColor];
+    }
+}
+
+-(void)pressedColumbiaTower {
+    NSLog(@"Columbia Tower");
+    if (self.columbiaTower.backgroundColor == nil || self.columbiaTower.backgroundColor == [UIColor clearColor]) {
+        self.columbiaTower.backgroundColor = [UIColor blueColor];
+    } else {
+        self.columbiaTower.backgroundColor = [UIColor clearColor];
+    }
+}
+
+-(void)pressedMtRainier {
+    NSLog(@"Mt Rainier");
+    if (self.mtRainier.backgroundColor == nil || self.mtRainier.backgroundColor == [UIColor clearColor]) {
+        self.mtRainier.backgroundColor = [UIColor redColor];
+    } else {
+        self.mtRainier.backgroundColor = [UIColor clearColor];
+    }
+}
+
+-(void)pressedWaMuBuilding {
+    NSLog(@"WaMu Building");
+    if (self.waMutualBuilding.backgroundColor == nil || self.waMutualBuilding.backgroundColor == [UIColor clearColor]) {
+        self.waMutualBuilding.backgroundColor = [UIColor redColor];
+    } else {
+        self.waMutualBuilding.backgroundColor = [UIColor clearColor];
+    }
+}
+
+-(void)pressedPortOfSeattle {
+    NSLog(@"Port of Seattle");
+    if (self.portOfSeattle.backgroundColor == nil || self.portOfSeattle.backgroundColor == [UIColor clearColor]) {
+        self.portOfSeattle.backgroundColor = [UIColor redColor];
+    } else {
+        self.portOfSeattle.backgroundColor = [UIColor clearColor];
+    }
+}
+
+-(void)pressedKeyArena {
+    NSLog(@"Key Arena");
+    if (self.keyArena.backgroundColor == nil || self.keyArena.backgroundColor == [UIColor clearColor]) {
+        self.keyArena.backgroundColor = [UIColor redColor];
+    } else {
+        self.keyArena.backgroundColor = [UIColor clearColor];
+    }
+}
+
+#pragma mark - building borders
+-(void)setBuildingBorders {
+    self.twoUnionSquare = [[UIButton alloc] initWithFrame:CGRectMake(228, 200, 35, 80)];
+    self.spaceNeedle = [[UIButton alloc] initWithFrame:CGRectMake(390, 160, 40, 170)];
+    self.columbiaTower = [[UIButton alloc] initWithFrame:CGRectMake(415, 190, 20, 100)];
+    self.mtRainier = [[UIButton alloc] initWithFrame:CGRectMake(650, 220, 120, 50)];
+    self.waMutualBuilding = [[UIButton alloc] initWithFrame:CGRectMake(475, 210, 25, 90)];
+    self.portOfSeattle = [[UIButton alloc] initWithFrame:CGRectMake(1080, 290, 150, 50)];
+    self.keyArena = [[UIButton alloc] initWithFrame:CGRectMake(630, 350, 150, 50)];
+    
+//    self.twoUnionSquare.backgroundColor = [UIColor redColor];
+//    self.spaceNeedle.backgroundColor = [UIColor redColor];
+//    self.columbiaTower.backgroundColor = [UIColor blueColor];
+//    self.mtRainier.backgroundColor = [UIColor redColor];
+//    self.waMutualBuilding.backgroundColor = [UIColor redColor];
+//    self.portOfSeattle.backgroundColor = [UIColor redColor];
+//    self.keyArena.backgroundColor = [UIColor redColor];
+    
+    self.twoUnionSquare.alpha = 0.3;
+    self.spaceNeedle.alpha = 0.3;
+    self.columbiaTower.alpha = 0.3;
+    self.mtRainier.alpha = 0.3;
+    self.waMutualBuilding.alpha = 0.3;
+    self.portOfSeattle.alpha = 0.3;
+    self.keyArena.alpha = 0.3;
+    
+    [self.spaceNeedle addTarget:self action:@selector(pressedSpaceNeedle) forControlEvents:UIControlEventTouchUpInside];
+    [self.twoUnionSquare addTarget:self action:@selector(pressedTwoUnionSquare) forControlEvents:UIControlEventTouchUpInside];
+    [self.columbiaTower addTarget:self action:@selector(pressedColumbiaTower) forControlEvents:UIControlEventTouchUpInside];
+    [self.mtRainier addTarget:self action:@selector(pressedMtRainier) forControlEvents:UIControlEventTouchUpInside];
+    [self.waMutualBuilding addTarget:self action:@selector(pressedWaMuBuilding) forControlEvents:UIControlEventTouchUpInside];
+    [self.portOfSeattle addTarget:self action:@selector(pressedPortOfSeattle) forControlEvents:UIControlEventTouchUpInside];
+    [self.keyArena addTarget:self action:@selector(pressedKeyArena) forControlEvents:UIControlEventTouchUpInside];
+    
+}
+
+#pragma mark - lazy loading Getters
+-(UIScrollView *)scrollView {
+    if (_scrollView == nil) {
+        _scrollView = [[UIScrollView alloc] init];
+    }
+    return _scrollView;
+}
+
+-(UIImageView *)kerryPark {
+    if (_kerryPark == nil) {
+        _kerryPark = [[UIImageView alloc] init];
+    }
+    return _kerryPark;
+}
+
 
 @end

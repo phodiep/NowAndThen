@@ -52,11 +52,14 @@
     mapVC.tabBarItem.image = [UIImage imageNamed:@"map"];
 
     // Setup 'SkylineVC'
-//    SkylineViewController *skylineVC = [[SkylineViewController alloc] init];
+    SkylineViewController *skylineVC = [[SkylineViewController alloc] init];
 
-    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
-    SkyViewController *skylineVC = [storyboard instantiateViewControllerWithIdentifier:@"SKYLINE_VIEW"];
+//    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+//    SkyViewController *skylineVC = [storyboard instantiateViewControllerWithIdentifier:@"SKYLINE_VIEW"];
+//SkyViewController *skylineVC = [storyboard instantiateViewControllerWithIdentifier:@"SEATTLE_SKYLINE_VIEW"];
 
+    
+    
     skylineVC.tabBarItem.title = @"Skyline";
     skylineVC.tabBarItem.image = [UIImage imageNamed:@"skyline"];
     
