@@ -11,4 +11,8 @@
 
 @interface Building (Annotation) <MKAnnotation>
 
+//@property (strong, nonatomic) MKPinAnnotationView *buildingPin;
+
+-(MKAnnotationView *)annotationView;
+
 @end

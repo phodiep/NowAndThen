@@ -27,5 +27,18 @@
   return title;
 }
 
+-(MKAnnotationView *)annotationView
+{
+  MKAnnotationView *view = [[MKAnnotationView alloc] initWithAnnotation:self reuseIdentifier:@"PhotoAnnotation"];
+  
+  UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 46, 46)];
+  view.enabled = true;
+  view.leftCalloutAccessoryView = imageView;
+  view.rightCalloutAccessoryView = [UIButton buttonWithType:UIButtonTypeDetailDisclosure];
+  view.canShowCallout = true;
+  view.image = [UIImage imageNamed:@"binoculars12"];
+
+  return view;
+}
 
 @end

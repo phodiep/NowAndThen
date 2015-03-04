@@ -32,4 +32,33 @@
   return title;
 }
 
+-(MKAnnotationView *)annotationView
+{
+  MKAnnotationView *view = [[MKAnnotationView alloc] initWithAnnotation:self reuseIdentifier:@"BuildingAnnotation"];
+  
+  UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 46, 46)];
+  view.leftCalloutAccessoryView = imageView;
+  view.enabled = true;
+  view.rightCalloutAccessoryView = [UIButton buttonWithType:UIButtonTypeDetailDisclosure];
+  view.canShowCallout = true;
+  view.image = [UIImage imageNamed:@"location"];
+  
+  return view;
+}
+
+//-(MKPinAnnotationView *)buildingPin
+//{
+//  MKPinAnnotationView *buildingPin;
+////  buildingPin.pinColor = MKPinAnnotationColorPurple;
+//  buildingPin.animatesDrop = true;
+//  
+//  return buildingPin;
+//}
+//
+//-(void)setBuildingPin:(MKPinAnnotationView *)buildingPin
+//{
+//  buildingPin.pinColor = MKPinAnnotationColorPurple;
+//  buildingPin.animatesDrop = true;
+//}
+
 @end
