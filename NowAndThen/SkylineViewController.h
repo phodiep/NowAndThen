@@ -9,6 +9,6 @@
 #import <UIKit/UIKit.h>
 
 @interface SkylineViewController : UIViewController
-- (IBAction)building164;
+
 
 @end
