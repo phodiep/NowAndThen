@@ -18,8 +18,8 @@
 @property (strong, nonatomic) MKMapView *mapView;
 @property (strong, nonatomic) CLLocationManager *locationManager;
 
-@property (strong, nonatomic) IBOutlet UIBarButtonItem *centerOnUser;
--(IBAction)centerOnUser:(id)sender;
+//@property (strong, nonatomic) IBOutlet UIBarButtonItem *centerOnUser;
+//-(IBAction)centerOnUser:(id)sender;
 
 @property (strong, nonatomic) IBOutlet UIBarButtonItem *findFlickrPhotoLocations;
 -(IBAction)findFlickrPhotoLocations:(id)sender;
@@ -30,7 +30,6 @@
 @property (strong, nonatomic) IBOutlet MKUserTrackingBarButtonItem *trackUser;
 
 @property (strong, nonatomic) UIToolbar *toolBar;
-@property (strong, nonatomic) UIToolbar *trackingBar;
 
 @property (nonatomic, copy) NSArray *toolBarItems;
 @property (nonatomic, copy) NSArray *userTrackingItem;
@@ -58,8 +57,6 @@
 //-(NSArray *)getCenterOfScreen:(MKMapRect)mapRect;
 
 -(void)updateCalloutAccessoryImage:(MKAnnotationView *)annotationView;
-
--(void)didSelectImageInfo;
 
 @end
 
@@ -243,6 +240,7 @@
      [UIView animateWithDuration:1.0 animations:^{
        self.mapView.alpha = 1.0;
      }];
+     [self.mapView reloadInputViews];
   }];
 }
 
@@ -365,50 +363,29 @@
 - (void)createViews
 {
   [self.toolBar setTranslatesAutoresizingMaskIntoConstraints:false];
-  [self.trackingBar setTranslatesAutoresizingMaskIntoConstraints:false];
   
   [self.mapView addSubview:self.toolBar];
-  [self.mapView addSubview:self.trackingBar];
   
   [self.toolBar setItems:self.toolBarItems animated:true];
-  [self.trackingBar setItems:self.userTrackingItem animated:true];
 }
 
 
 #pragma mark - createConstraints
 - (void)createConstraints
 {
-  NSDictionary *views = @{@"toolBar" : self.toolBar, @"trackingBar" : self.trackingBar};
+  NSDictionary *views = @{@"toolBar" : self.toolBar};
 
   //toolBar constraints
-  [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-5-[toolBar]-5-|"
+  [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-40-[toolBar]-40-|"
                                                                     options:0
                                                                     metrics:nil
                                                                       views:views]];
 
-  [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-20-[toolBar(40)]"
-                                                                    options:0
-                                                                    metrics:nil
-                                                                      views:views]];
-  
-  //trackingBar constraints
-  [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-5-[trackingBar]-5-|"
-                                                                    options:0
-                                                                    metrics:nil
-                                                                      views:views]];
-  
-  [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[trackingBar(40)]-50-|"
+  [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-22-[toolBar(40)]"
                                                                     options:0
                                                                     metrics:nil
                                                                       views:views]];
 }
-
-
--(void)didSelectImageInfo
-{
-  NSLog(@"hey you hit the button!");
-}
-
 
 #pragma mark - transitionToBuildingDetail
 - (void)transitionToBuildingDetail
@@ -462,16 +439,6 @@
   return _toolBar;
 }
 
--(UIToolbar *)trackingBar
-{
-  if(!_trackingBar)
-  {
-    _trackingBar = [[UIToolbar alloc] init];
-    _trackingBar.delegate = self;
-  }
-  return _trackingBar;
-}
-
 -(MKUserTrackingBarButtonItem *)trackUser
 {
   if (!_trackUser)
@@ -489,7 +456,7 @@
                                                                             target:nil
                                                                             action:nil];
     
-    _toolBarItems = @[self.centerOnUser, spacer, self.findFlickrPhotoLocations, spacer, self.findBuildings];
+    _toolBarItems = @[self.findBuildings, spacer, self.findFlickrPhotoLocations, spacer, self.trackUser];
   }
   return _toolBarItems;
 }
@@ -503,24 +470,26 @@
   return _userTrackingItem;
 }
 
--(UIBarButtonItem *)centerOnUser
-{
-  if (!_centerOnUser)
-  {
-    _centerOnUser = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemTrash
-                                                                  target:self
-                                                                  action:@selector(centerOnUser:)];
-  }
-  return _centerOnUser;
-}
+//-(UIBarButtonItem *)centerOnUser
+//{
+//  if (!_centerOnUser)
+//  {
+//    _centerOnUser = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"Compass"]
+//                                                     style:UIBarButtonItemStylePlain
+//                                                    target:self
+//                                                    action:@selector(centerOnUser:)];
+//  }
+//  return _centerOnUser;
+//}
 
 -(UIBarButtonItem *)findFlickrPhotoLocations
 {
   if (!_findFlickrPhotoLocations)
   {
-    _findFlickrPhotoLocations = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemOrganize
-                                                                              target:self
-                                                                              action:@selector(findFlickrPhotoLocations:)];
+    _findFlickrPhotoLocations = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"binoculars12"]
+                                                                 style:UIBarButtonItemStylePlain
+                                                                target:self
+                                                                action:@selector(findFlickrPhotoLocations:)];
   }
   return _findFlickrPhotoLocations;
 }
@@ -529,9 +498,7 @@
 {
   if (!_findBuildings)
   {
-    _findBuildings = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCompose
-                                                                   target:self
-                                                                   action:@selector(findBuildings:)];
+    _findBuildings = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"buildings5"] style:UIBarButtonItemStylePlain target:self action:@selector(findBuildings:)];
   }
   return _findBuildings;
 }

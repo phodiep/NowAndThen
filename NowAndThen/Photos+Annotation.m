@@ -36,7 +36,7 @@
   view.enabled = true;
   view.rightCalloutAccessoryView = [UIButton buttonWithType:UIButtonTypeDetailDisclosure];
   view.canShowCallout = true;
-  view.image = [UIImage imageNamed:@"binoculars12"];
+  view.image = [UIImage imageNamed:@"findFlickr"];
   return view;
 }
 
