@@ -242,6 +242,57 @@
   [dataTask resume];
 }
 
+-(void)fetchBuildings: (void (^)(NSArray* results))completionHandler {
+    NSString *endPoint = @"http://then-and-now.herokuapp.com/api/v1/building";
+    
+    NSURL *url = [NSURL URLWithString:endPoint];
+    NSMutableURLRequest *request = [[NSMutableURLRequest alloc] initWithURL:url];
+    request.HTTPMethod = @"GET";
+    
+    NSURLSession *session = [NSURLSession sharedSession];
+    
+    NSURLSessionTask *dataTask = [session dataTaskWithRequest:request completionHandler:^(NSData *data, NSURLResponse *response, NSError *error) {
+        if (error)
+        {
+            NSLog(@"%@",error);
+            completionHandler(nil);
+        } else {
+            NSHTTPURLResponse *taskResponse = (NSHTTPURLResponse *)response;
+            NSInteger statusCode = taskResponse.statusCode;
+            
+            switch (statusCode)
+            {
+                case 200 ... 299:
+                {
+                    NSLog(@"%ld",(long)statusCode);
+                    NSArray *results = [Building fetchBuildingsFromJsonData:data];
+                    
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        if (results)
+                        {
+                            completionHandler(results);
+                        } else {
+                            completionHandler(nil);
+                        }
+                    });
+                    break;
+                }
+                case 300 ... 599:
+                {
+                    NSLog(@"%ld",(long)statusCode);
+                    break;
+                }
+                default:
+                {
+                    NSLog(@"default case reached");
+                    break;
+                }
+            }
+        }
+    }];
+    [dataTask resume];
+}
+
 
 -(void)fetchBuildingBySearchTerms:(NSString*)searchTerms withCompletionHandler:(void (^)(NSArray* results))completionHandler {
     if (![searchTerms isEqualToString:@""]) {
