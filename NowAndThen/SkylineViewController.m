@@ -48,17 +48,12 @@
     rootView.backgroundColor = [UIColor whiteColor];
     
     self.goToSelectedBuilding = [[UIButton alloc] init];
-//    self.goToSelectedBuilding.backgroundColor = [UIColor lightGrayColor];
     [self.goToSelectedBuilding setImage:[UIImage imageNamed:@"info"] forState:UIControlStateNormal];
     self.goToSelectedBuilding.hidden = true;
-    
-//    [[myButton layer] setBorderWidth:2.0f];
-//    [[myButton layer] setBorderColor:[UIColor greenColor].CGColor];
     
     [[self.goToSelectedBuilding layer] setBorderWidth:2.0f];
     [[self.goToSelectedBuilding layer] setBorderColor:[UIColor grayColor].CGColor];
     
-//    [self.goToSelectedBuilding setTitle:@"Go To" forState:UIControlStateNormal];
     [self.goToSelectedBuilding addTarget:self action:@selector(goToBuilding) forControlEvents:UIControlEventTouchUpInside];
     
     self.selectedBuildingName = [[UILabel alloc] init];
@@ -84,7 +79,6 @@
     NSDictionary *rootViews = @{@"scrollView":self.scrollView, @"title":title, @"selectedBuilding":self.selectedBuildingName, @"goTo":self.goToSelectedBuilding};
     
     [rootView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-8-[title]-8-|" options:0 metrics:nil views:rootViews]];
-//    [rootView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-8-[selectedBuilding]-8-|" options:0 metrics:nil views:rootViews]];
     [rootView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-8-[goTo(40)]-8-[selectedBuilding]-8-|" options:NSLayoutFormatAlignAllCenterY metrics:nil views:rootViews]];
 
     [rootView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[scrollView]|" options:0 metrics:nil views:rootViews]];
@@ -92,8 +86,7 @@
     [rootView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-30-[title]-8-[goTo(40)]-[scrollView]-50-|" options:0 metrics:nil views:rootViews]];
     
     [self setBuildingBorders];
-    
-    //set scrollView -------------
+
     self.kerryPark.image = [UIImage imageNamed:@"KerryPark1.jpeg"];
     self.kerryPark.userInteractionEnabled = true;
     
@@ -114,14 +107,6 @@
     
     [self.scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[kerryPark]|" options:0 metrics:nil views:views]];
     [self.scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-40-[kerryPark]|" options:0 metrics:nil views:views]];
-    
-//    [self.scrollView addSubview:self.twoUnionSquare];
-//    [self.scrollView addSubview:self.spaceNeedle];
-//    [self.scrollView addSubview:self.columbiaTower];
-//    [self.scrollView addSubview:self.mtRainier];
-//    [self.scrollView addSubview:self.waMutualBuilding];
-//    [self.scrollView addSubview:self.portOfSeattle];
-//    [self.scrollView addSubview:self.keyArena];
     
     self.view = rootView;
 }

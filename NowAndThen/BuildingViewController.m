@@ -258,7 +258,7 @@
     [self prepObjectForAutoLayout: self.moreButton     addToSubView:self.rootView  addToDictionary:@"moreButton"];
     
     [self.rootView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[scrollView]|"                              options:0 metrics:nil views:self.views]];
-    [self.rootView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-8-[menuButton]-16-[buildingLabel]-(>=8)-[moreButton]-8-|" options:NSLayoutFormatAlignAllCenterY metrics:nil views:self.views]];
+    [self.rootView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-8-[menuButton(40)]-8-[buildingLabel]-(>=8)-[moreButton(40)]-8-|" options:NSLayoutFormatAlignAllCenterY metrics:nil views:self.views]];
     [self.rootView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-25-[menuButton]-8-[scrollView]|"           options:0 metrics:nil views:self.views]];
 }
 
