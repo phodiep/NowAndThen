@@ -16,6 +16,7 @@
 @property (strong, nonatomic) UIScrollView *scrollView;
 
 @property (strong, nonatomic) UIImageView *kerryPark;
+@property (strong, nonatomic) UIButton *goToSelectedBuilding;
 @property (strong, nonatomic) UILabel *selectedBuildingName;
 
 @property (strong, nonatomic) NSArray *buildings;
@@ -44,6 +45,11 @@
     UIView *rootView = [[UIView alloc] init];
     rootView.backgroundColor = [UIColor whiteColor];
     
+    self.goToSelectedBuilding = [[UIButton alloc] init];
+    self.goToSelectedBuilding.backgroundColor = [UIColor lightGrayColor];
+    [self.goToSelectedBuilding setTitle:@"Go To Selected Building" forState:UIControlStateNormal];
+    [self.goToSelectedBuilding addTarget:self action:@selector(goToBuilding) forControlEvents:UIControlEventTouchUpInside];
+    
     self.selectedBuildingName = [[UILabel alloc] init];
     self.selectedBuildingName.text = @" ";
     
@@ -54,20 +60,24 @@
     title.font = [UIFont fontWithName:@"HelveticaNeue-Bold" size:18.0f];
     
     [title setTranslatesAutoresizingMaskIntoConstraints:false];
+    [self.goToSelectedBuilding setTranslatesAutoresizingMaskIntoConstraints:false];
     [self.selectedBuildingName setTranslatesAutoresizingMaskIntoConstraints:false];
     [self.scrollView setTranslatesAutoresizingMaskIntoConstraints:false];
 
     [rootView addSubview:title];
+    [rootView addSubview:self.goToSelectedBuilding];
     [rootView addSubview:self.selectedBuildingName];
     [rootView addSubview:self.scrollView];
     
-    NSDictionary *rootViews = @{@"scrollView":self.scrollView, @"title":title, @"selectedBuilding":self.selectedBuildingName};
+    NSDictionary *rootViews = @{@"scrollView":self.scrollView, @"title":title, @"selectedBuilding":self.selectedBuildingName, @"goTo":self.goToSelectedBuilding};
     
     [rootView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-8-[title]-8-|" options:0 metrics:nil views:rootViews]];
     [rootView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-8-[selectedBuilding]-8-|" options:0 metrics:nil views:rootViews]];
+    [rootView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-8-[goTo(200)]" options:0 metrics:nil views:rootViews]];
+
     [rootView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[scrollView]|" options:0 metrics:nil views:rootViews]];
 
-    [rootView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-40-[title]-8-[selectedBuilding]-8-[scrollView]|" options:0 metrics:nil views:rootViews]];
+    [rootView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-40-[title]-16-[selectedBuilding]-8-[goTo]-8-[scrollView]|" options:0 metrics:nil views:rootViews]];
     
     [self setBuildingBorders];
     
@@ -99,7 +109,8 @@
     [super viewDidLoad];
     self.scrollView.delegate = self;
     
-    [self.scrollView setContentOffset:CGPointMake(300, 0) animated:true];
+    //TODO: scroll to space needle on load
+    [self.scrollView setContentOffset:CGPointMake(300, 0) animated:true];  // <<<----- not working???
     
 }
 
@@ -138,7 +149,7 @@
 -(void)pressedMtRainier {
     [self unselectAllButtons];
     self.mtRainier.backgroundColor = [UIColor redColor];
-//    self.selectedBuilding = [self findBuilding:@"Union square"];
+    self.selectedBuilding = nil;
     self.selectedBuildingName.text = @"Mt Rainier";
 }
 
@@ -152,14 +163,14 @@
 -(void)pressedPortOfSeattle {
     [self unselectAllButtons];
     self.portOfSeattle.backgroundColor = [UIColor redColor];
-//    self.selectedBuilding = [self findBuilding:@"Union square"];
+    self.selectedBuilding = nil;
     self.selectedBuildingName.text = @"Port of Seattle";
 }
 
 -(void)pressedKeyArena {
     [self unselectAllButtons];
     self.keyArena.backgroundColor = [UIColor redColor];
-//    self.selectedBuilding = [self findBuilding:@"Union square"];
+    self.selectedBuilding = nil;
     self.selectedBuildingName.text = @"Key Arena";
 }
 
@@ -172,6 +183,36 @@
     self.portOfSeattle.backgroundColor = [UIColor clearColor];
     self.keyArena.backgroundColor = [UIColor clearColor];
 }
+
+-(void)goToBuilding {
+    if (self.selectedBuilding != nil) {
+        [self transitionToBuildingDetail];
+    }
+}
+
+#pragma mark - transitionToBuildingDetail
+- (void)transitionToBuildingDetail
+{
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"SelectedBuilding"
+                                                        object:self
+                                                      userInfo:@{@"Building" : self.selectedBuilding}];
+    int tabIndex = 0;
+    
+    UITabBarController *tabBarController = self.tabBarController;
+    UIView *fromView = tabBarController.selectedViewController.view;
+    UIView *toView = [[tabBarController.viewControllers objectAtIndex:tabIndex] view];
+    
+    [UIView transitionFromView:fromView
+                        toView:toView
+                      duration:0.5
+                       options:UIViewAnimationOptionTransitionFlipFromLeft
+                    completion:^(BOOL finished) {
+                        if (finished) {
+                            tabBarController.selectedIndex = tabIndex;
+                        }
+                    }];
+}
+
 
 #pragma mark - building borders
 -(void)setBuildingBorders {
