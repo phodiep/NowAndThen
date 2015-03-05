@@ -18,6 +18,8 @@
            withBuildingLimit:(NSInteger)limit
                     andBlock:(void (^)(NSArray *buildingsFound))completionHandler;
 
+-(void)fetchBuildings: (void (^)(NSArray* results))completionHandler;
+
 -(void)fetchBuildingImage:(NSString *)imageURL withCompletionHandler:(void (^)(UIImage *image))completionHandler;
 
 -(void)fetchBuildingBySearchTerms:(NSString*)searchTerms withCompletionHandler:(void (^)(NSArray* results))completionHandler;
