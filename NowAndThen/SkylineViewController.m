@@ -8,12 +8,20 @@
 
 #import <Foundation/Foundation.h>
 #import "SkylineViewController.h"
+#import "Building.h"
+#import "NetworkController.h"
 
 @interface SkylineViewController () <UIScrollViewDelegate, UIGestureRecognizerDelegate>
 
+@property (nonatomic) BOOL firstScroll;
 @property (strong, nonatomic) UIScrollView *scrollView;
 
 @property (strong, nonatomic) UIImageView *kerryPark;
+@property (strong, nonatomic) UIButton *goToSelectedBuilding;
+@property (strong, nonatomic) UILabel *selectedBuildingName;
+
+@property (strong, nonatomic) NSArray *buildings;
+@property (strong, nonatomic) Building *selectedBuilding;
 
 @property (strong, nonatomic) UIButton *twoUnionSquare;
 @property (strong, nonatomic) UIButton *spaceNeedle;
@@ -29,8 +37,23 @@
 @implementation SkylineViewController
 
 -(void)loadView {
+    
+    [[NetworkController sharedService] fetchBuildings:^(NSArray *results) {
+        self.buildings = [[NSArray alloc] initWithArray:results];
+    }];
+
+    self.firstScroll = false;
+    
     UIView *rootView = [[UIView alloc] init];
     rootView.backgroundColor = [UIColor whiteColor];
+    
+    self.goToSelectedBuilding = [[UIButton alloc] init];
+    self.goToSelectedBuilding.backgroundColor = [UIColor lightGrayColor];
+    [self.goToSelectedBuilding setTitle:@"Go To Selected Building" forState:UIControlStateNormal];
+    [self.goToSelectedBuilding addTarget:self action:@selector(goToBuilding) forControlEvents:UIControlEventTouchUpInside];
+    
+    self.selectedBuildingName = [[UILabel alloc] init];
+    self.selectedBuildingName.text = @" ";
     
     self.scrollView.backgroundColor = [UIColor whiteColor];
     
@@ -39,17 +62,24 @@
     title.font = [UIFont fontWithName:@"HelveticaNeue-Bold" size:18.0f];
     
     [title setTranslatesAutoresizingMaskIntoConstraints:false];
+    [self.goToSelectedBuilding setTranslatesAutoresizingMaskIntoConstraints:false];
+    [self.selectedBuildingName setTranslatesAutoresizingMaskIntoConstraints:false];
     [self.scrollView setTranslatesAutoresizingMaskIntoConstraints:false];
 
     [rootView addSubview:title];
+    [rootView addSubview:self.goToSelectedBuilding];
+    [rootView addSubview:self.selectedBuildingName];
     [rootView addSubview:self.scrollView];
     
-    NSDictionary *rootViews = @{@"scrollView":self.scrollView, @"title":title};
+    NSDictionary *rootViews = @{@"scrollView":self.scrollView, @"title":title, @"selectedBuilding":self.selectedBuildingName, @"goTo":self.goToSelectedBuilding};
     
     [rootView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-8-[title]-8-|" options:0 metrics:nil views:rootViews]];
+    [rootView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-8-[selectedBuilding]-8-|" options:0 metrics:nil views:rootViews]];
+    [rootView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-8-[goTo(200)]" options:0 metrics:nil views:rootViews]];
+
     [rootView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[scrollView]|" options:0 metrics:nil views:rootViews]];
 
-    [rootView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-40-[title]-8-[scrollView]|" options:0 metrics:nil views:rootViews]];
+    [rootView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-40-[title]-16-[selectedBuilding]-8-[goTo]-8-[scrollView]-65-|" options:0 metrics:nil views:rootViews]];
     
     [self setBuildingBorders];
     
@@ -81,74 +111,117 @@
     [super viewDidLoad];
     self.scrollView.delegate = self;
     
-    [self.scrollView setContentOffset:CGPointMake(300, 0) animated:true];
+}
+
+-(void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+
+    if (self.firstScroll == false) {
+        [self.scrollView setContentOffset:CGPointMake(250, 0) animated:true];
+        self.firstScroll = true;
+    }
     
 }
 
+-(Building *)findBuilding:(NSString *)buildingName {
+    for (Building *building in self.buildings) {
+        if ([building.name isEqualToString: buildingName]) {
+            return building;
+        }
+    }
+    return nil;
+}
 
 #pragma mark - Button Actions
 -(void)pressedTwoUnionSquare {
-    NSLog(@"Two Union Square");
-    if (self.twoUnionSquare.backgroundColor == nil || self.twoUnionSquare.backgroundColor == [UIColor clearColor]) {
-        self.twoUnionSquare.backgroundColor = [UIColor redColor];
-    } else {
-        self.twoUnionSquare.backgroundColor = [UIColor clearColor];
-    }
+    [self unselectAllButtons];
+    self.twoUnionSquare.backgroundColor = [UIColor redColor];
+    self.selectedBuilding = [self findBuilding:@"Union square"];
+    self.selectedBuildingName.text = self.selectedBuilding.name;
 }
 
 -(void)pressedSpaceNeedle {
-    NSLog(@"Space Needle");
-    if (self.spaceNeedle.backgroundColor == nil || self.spaceNeedle.backgroundColor == [UIColor clearColor]) {
-        self.spaceNeedle.backgroundColor = [UIColor redColor];
-    } else {
-        self.spaceNeedle.backgroundColor = [UIColor clearColor];
-    }
+    [self unselectAllButtons];
+
+    self.spaceNeedle.backgroundColor = [UIColor redColor];
+    self.selectedBuilding = [self findBuilding:@"Space Needle"];
+    self.selectedBuildingName.text = self.selectedBuilding.name;
 }
 
 -(void)pressedColumbiaTower {
-    NSLog(@"Columbia Tower");
-    if (self.columbiaTower.backgroundColor == nil || self.columbiaTower.backgroundColor == [UIColor clearColor]) {
-        self.columbiaTower.backgroundColor = [UIColor blueColor];
-    } else {
-        self.columbiaTower.backgroundColor = [UIColor clearColor];
-    }
+    [self unselectAllButtons];
+    self.columbiaTower.backgroundColor = [UIColor blueColor];
+    self.selectedBuilding = [self findBuilding:@"Seattle Municipal Tower"];
+    self.selectedBuildingName.text = self.selectedBuilding.name;
 }
 
 -(void)pressedMtRainier {
-    NSLog(@"Mt Rainier");
-    if (self.mtRainier.backgroundColor == nil || self.mtRainier.backgroundColor == [UIColor clearColor]) {
-        self.mtRainier.backgroundColor = [UIColor redColor];
-    } else {
-        self.mtRainier.backgroundColor = [UIColor clearColor];
-    }
+    [self unselectAllButtons];
+    self.mtRainier.backgroundColor = [UIColor redColor];
+    self.selectedBuilding = nil;
+    self.selectedBuildingName.text = @"Mt Rainier";
 }
 
 -(void)pressedWaMuBuilding {
-    NSLog(@"WaMu Building");
-    if (self.waMutualBuilding.backgroundColor == nil || self.waMutualBuilding.backgroundColor == [UIColor clearColor]) {
-        self.waMutualBuilding.backgroundColor = [UIColor redColor];
-    } else {
-        self.waMutualBuilding.backgroundColor = [UIColor clearColor];
-    }
+    [self unselectAllButtons];
+    self.waMutualBuilding.backgroundColor = [UIColor redColor];
+    self.selectedBuilding = [self findBuilding:@"Seattle Washington Mutual Tower"];
+    self.selectedBuildingName.text = self.selectedBuilding.name;
 }
 
 -(void)pressedPortOfSeattle {
-    NSLog(@"Port of Seattle");
-    if (self.portOfSeattle.backgroundColor == nil || self.portOfSeattle.backgroundColor == [UIColor clearColor]) {
-        self.portOfSeattle.backgroundColor = [UIColor redColor];
-    } else {
-        self.portOfSeattle.backgroundColor = [UIColor clearColor];
-    }
+    [self unselectAllButtons];
+    self.portOfSeattle.backgroundColor = [UIColor redColor];
+    self.selectedBuilding = nil;
+    self.selectedBuildingName.text = @"Port of Seattle";
 }
 
 -(void)pressedKeyArena {
-    NSLog(@"Key Arena");
-    if (self.keyArena.backgroundColor == nil || self.keyArena.backgroundColor == [UIColor clearColor]) {
-        self.keyArena.backgroundColor = [UIColor redColor];
-    } else {
-        self.keyArena.backgroundColor = [UIColor clearColor];
+    [self unselectAllButtons];
+    self.keyArena.backgroundColor = [UIColor redColor];
+    self.selectedBuilding = nil;
+    self.selectedBuildingName.text = @"Key Arena";
+}
+
+-(void)unselectAllButtons {
+    self.twoUnionSquare.backgroundColor = [UIColor clearColor];
+    self.spaceNeedle.backgroundColor = [UIColor clearColor];
+    self.columbiaTower.backgroundColor = [UIColor clearColor];
+    self.mtRainier.backgroundColor = [UIColor clearColor];
+    self.waMutualBuilding.backgroundColor = [UIColor clearColor];
+    self.portOfSeattle.backgroundColor = [UIColor clearColor];
+    self.keyArena.backgroundColor = [UIColor clearColor];
+}
+
+-(void)goToBuilding {
+    if (self.selectedBuilding != nil) {
+        [self transitionToBuildingDetail];
     }
 }
+
+#pragma mark - transitionToBuildingDetail
+- (void)transitionToBuildingDetail
+{
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"SelectedBuilding"
+                                                        object:self
+                                                      userInfo:@{@"Building" : self.selectedBuilding}];
+    int tabIndex = 0;
+    
+    UITabBarController *tabBarController = self.tabBarController;
+    UIView *fromView = tabBarController.selectedViewController.view;
+    UIView *toView = [[tabBarController.viewControllers objectAtIndex:tabIndex] view];
+    
+    [UIView transitionFromView:fromView
+                        toView:toView
+                      duration:0.5
+                       options:UIViewAnimationOptionTransitionFlipFromLeft
+                    completion:^(BOOL finished) {
+                        if (finished) {
+                            tabBarController.selectedIndex = tabIndex;
+                        }
+                    }];
+}
+
 
 #pragma mark - building borders
 -(void)setBuildingBorders {
