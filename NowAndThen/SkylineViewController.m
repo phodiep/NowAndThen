@@ -13,6 +13,7 @@
 
 @interface SkylineViewController () <UIScrollViewDelegate, UIGestureRecognizerDelegate>
 
+@property (nonatomic) BOOL firstScroll;
 @property (strong, nonatomic) UIScrollView *scrollView;
 
 @property (strong, nonatomic) UIImageView *kerryPark;
@@ -41,6 +42,7 @@
         self.buildings = [[NSArray alloc] initWithArray:results];
     }];
 
+    self.firstScroll = false;
     
     UIView *rootView = [[UIView alloc] init];
     rootView.backgroundColor = [UIColor whiteColor];
@@ -77,7 +79,7 @@
 
     [rootView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[scrollView]|" options:0 metrics:nil views:rootViews]];
 
-    [rootView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-40-[title]-16-[selectedBuilding]-8-[goTo]-8-[scrollView]|" options:0 metrics:nil views:rootViews]];
+    [rootView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-40-[title]-16-[selectedBuilding]-8-[goTo]-8-[scrollView]-65-|" options:0 metrics:nil views:rootViews]];
     
     [self setBuildingBorders];
     
@@ -109,8 +111,15 @@
     [super viewDidLoad];
     self.scrollView.delegate = self;
     
-    //TODO: scroll to space needle on load
-    [self.scrollView setContentOffset:CGPointMake(300, 0) animated:true];  // <<<----- not working???
+}
+
+-(void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+
+    if (self.firstScroll == false) {
+        [self.scrollView setContentOffset:CGPointMake(250, 0) animated:true];
+        self.firstScroll = true;
+    }
     
 }
 
