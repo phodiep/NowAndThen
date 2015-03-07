@@ -142,6 +142,12 @@
               photo.latitude = coordinates[0];
               photo.longitude = coordinates[1];
             }];
+            [self fetchBuildingImage:photo.tag withCompletionHandler:^(UIImage *image) {
+              [photo setThumbImage:image];
+              if (photo.thumbImage) {
+                  NSLog(@"photo present");
+              }
+            }];
           }
           
           dispatch_async(dispatch_get_main_queue(), ^{

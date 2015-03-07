@@ -7,6 +7,7 @@
 //
 
 #import "Photos+Annotation.h"
+#import "NetworkController.h"
 
 @implementation Photos (Annotation)
 
@@ -31,12 +32,23 @@
 {
   MKAnnotationView *view = [[MKAnnotationView alloc] initWithAnnotation:self reuseIdentifier:@"PhotoAnnotation"];
   
-  UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 46, 46)];
-  view.leftCalloutAccessoryView = imageView;
+  //UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 46, 46)];
+  //view.leftCalloutAccessoryView = imageView;
   view.enabled = true;
-  view.rightCalloutAccessoryView = [UIButton buttonWithType:UIButtonTypeDetailDisclosure];
-  view.canShowCallout = true;
-  view.image = [UIImage imageNamed:@"findFlickr"];
+  //view.rightCalloutAccessoryView = [UIButton buttonWithType:UIButtonTypeDetailDisclosure];
+  view.canShowCallout = false;
+  
+  view.frame = CGRectMake(self.coordinate.latitude, self.coordinate.longitude, 50, 50);
+  view.layer.cornerRadius = 10.0;
+  
+//  if (self.thumbImage)
+//  {
+//    view.image = self.thumbImage;
+//  } else {
+//    view.image = [UIImage imageNamed:@"smithTowerNew"];
+//  }
+  view.backgroundColor = [UIColor blueColor];
+
   return view;
 }
 

@@ -58,6 +58,9 @@
 
 -(void)updateCalloutAccessoryImage:(MKAnnotationView *)annotationView;
 
+-(void)createImagePreview:(id<MKAnnotation>)annotation;
+
+
 @end
 
 @implementation MapViewController
@@ -240,8 +243,9 @@
      [UIView animateWithDuration:1.0 animations:^{
        self.mapView.alpha = 1.0;
      }];
-     [self.mapView reloadInputViews];
+//     [self.mapView reloadInputViews];
   }];
+//  [self.mapView reloadInputViews];
 }
 
 //         findBuildings
@@ -274,9 +278,17 @@
     Photos *photo = nil;
     photo = (Photos *)view.annotation;
     
+    photo.annotationView.frame = CGRectMake(0, 0, 100, 100);
+    
+    NSLog(@"photo annotation selected");
+    
+    photo.annotationView.backgroundColor = [UIColor greenColor];
+    
     [[NetworkController sharedService] fetchBuildingImage:photo.fullSizeImageURL withCompletionHandler:^(UIImage *image) {
       
       [self updateCalloutAccessoryImage:view];
+      
+      [self createImagePreview:view.annotation];
 
       Building *building = (Building *)self.buildingsOnMap[self.buildingForSearch];
       [building.imageCollection addObject:image];
@@ -312,6 +324,7 @@
         imageView.image = image;
         annotationView.leftCalloutAccessoryView = imageView;
         [annotationView reloadInputViews];
+        photo.thumbImage = image;
         Building *building = (Building *)self.buildingsOnMap[self.buildingForSearch];
         [building.imageCollection addObject:imageView.image];
       }];
@@ -341,6 +354,21 @@
   } else if ([annotation isKindOfClass:[Photos class]]) {
   
     Photos *customAnnotation = (Photos *)annotation;
+    if (!customAnnotation.annotationView.image)
+    {
+      NSLog(@"getting phot0");
+//      [[NetworkController sharedService] fetchBuildingImage:customAnnotation.title withCompletionHandler:^(UIImage *image) {
+//        UIImageView *imageView = [[UIImageView alloc] initWithFrame:customAnnotation.annotationView.frame];
+//        
+//        imageView.image = [UIImage imageNamed:@"smithTowerNew"];
+//        imageView.backgroundColor = [UIColor blackColor];
+//        //customAnnotation.annotationView.image = image;
+//
+//       // [customAnnotation.annotationView addSubview:imageView];
+//        customAnnotation.annotationView.backgroundColor = [UIColor grayColor];
+//        customAnnotation.annotationView.image = imageView.image;
+//      }];
+    }
     return customAnnotation.annotationView;
   }
   return nil;
@@ -409,6 +437,50 @@
 }
 
 
+-(void)createImagePreview:(id<MKAnnotation>)annotation
+{
+  // get location information from annotation
+  
+  Photos *photo = (Photos *)annotation;
+  
+  CGSize mapSize = self.mapView.frame.size;
+  UIView *view = [[UIView alloc] initWithFrame:CGRectMake(mapSize.width / 2, mapSize.height / 2, mapSize.width / 2, mapSize.height / 2)];
+  
+  view.backgroundColor = [UIColor greenColor];
+  [self.mapView addSubview:view];
+
+
+  CGSize imageSize = view.frame.size;
+  UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, imageSize.width * 0.05, imageSize.height * 0.05)];
+//  //imageView.image = photo.thumbImage;
+  [[NetworkController sharedService] fetchBuildingImage:photo.title withCompletionHandler:^(UIImage *image) {
+    imageView.backgroundColor = [UIColor blackColor];
+    //imageView.image = [UIImage imageNamed:@"smithTowerNew"];
+
+    if (photo.thumbImage) {
+        NSLog(@"2");
+      imageView.image = photo.thumbImage;
+    } else {
+          NSLog(@" 3");
+      imageView.image = [UIImage imageNamed:@"smithTowerOld"];
+    }
+    
+    [view addSubview:imageView];
+    [self.mapView addSubview:view];
+
+  }];
+  
+
+  
+  
+  //create UIview - add imageView to view
+  
+  //add image
+  
+  //consider cleanup - how to remove the view - should I have a weak ref to annotaiton?
+}
+
+
 #pragma mark - Lazy Loading Getters
 -(MKMapView *)mapView
 {
@@ -470,18 +542,6 @@
   return _userTrackingItem;
 }
 
-//-(UIBarButtonItem *)centerOnUser
-//{
-//  if (!_centerOnUser)
-//  {
-//    _centerOnUser = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"Compass"]
-//                                                     style:UIBarButtonItemStylePlain
-//                                                    target:self
-//                                                    action:@selector(centerOnUser:)];
-//  }
-//  return _centerOnUser;
-//}
-
 -(UIBarButtonItem *)findFlickrPhotoLocations
 {
   if (!_findFlickrPhotoLocations)
@@ -505,7 +565,7 @@
 
 -(UIAlertController *)buildingSnapShot
 {
-  if (_buildingSnapShot)
+  if (!_buildingSnapShot)
   {
     _buildingSnapShot = [[UIAlertController alloc] init];
   }
