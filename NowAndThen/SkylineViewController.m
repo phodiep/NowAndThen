@@ -48,14 +48,19 @@
     rootView.backgroundColor = [UIColor whiteColor];
     
     self.goToSelectedBuilding = [[UIButton alloc] init];
-    self.goToSelectedBuilding.backgroundColor = [UIColor lightGrayColor];
-    [self.goToSelectedBuilding setTitle:@"Go To Selected Building" forState:UIControlStateNormal];
+    [self.goToSelectedBuilding setImage:[UIImage imageNamed:@"info"] forState:UIControlStateNormal];
+    self.goToSelectedBuilding.hidden = true;
+    
+    [[self.goToSelectedBuilding layer] setBorderWidth:2.0f];
+    [[self.goToSelectedBuilding layer] setBorderColor:[UIColor grayColor].CGColor];
+    
     [self.goToSelectedBuilding addTarget:self action:@selector(goToBuilding) forControlEvents:UIControlEventTouchUpInside];
     
     self.selectedBuildingName = [[UILabel alloc] init];
     self.selectedBuildingName.text = @" ";
     
     self.scrollView.backgroundColor = [UIColor whiteColor];
+    self.scrollView.maximumZoomScale = 1.5;
     
     UILabel *title = [[UILabel alloc] init];
     title.text = @"Seattle Skyline From Kerry Park";
@@ -74,17 +79,25 @@
     NSDictionary *rootViews = @{@"scrollView":self.scrollView, @"title":title, @"selectedBuilding":self.selectedBuildingName, @"goTo":self.goToSelectedBuilding};
     
     [rootView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-8-[title]-8-|" options:0 metrics:nil views:rootViews]];
-    [rootView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-8-[selectedBuilding]-8-|" options:0 metrics:nil views:rootViews]];
-    [rootView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-8-[goTo(200)]" options:0 metrics:nil views:rootViews]];
+    [rootView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-8-[goTo(40)]-8-[selectedBuilding]-8-|" options:NSLayoutFormatAlignAllCenterY metrics:nil views:rootViews]];
 
     [rootView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[scrollView]|" options:0 metrics:nil views:rootViews]];
 
-    [rootView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-40-[title]-16-[selectedBuilding]-8-[goTo]-8-[scrollView]-65-|" options:0 metrics:nil views:rootViews]];
+    [rootView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-30-[title]-8-[goTo(40)]-[scrollView]-50-|" options:0 metrics:nil views:rootViews]];
     
     [self setBuildingBorders];
-    
-    //set scrollView -------------
+
     self.kerryPark.image = [UIImage imageNamed:@"KerryPark1.jpeg"];
+    self.kerryPark.userInteractionEnabled = true;
+    
+    [self.kerryPark addSubview:self.twoUnionSquare];
+    [self.kerryPark addSubview:self.spaceNeedle];
+    [self.kerryPark addSubview:self.columbiaTower];
+    [self.kerryPark addSubview:self.mtRainier];
+    [self.kerryPark addSubview:self.waMutualBuilding];
+    [self.kerryPark addSubview:self.portOfSeattle];
+    [self.kerryPark addSubview:self.keyArena];
+
     
     [self.kerryPark setTranslatesAutoresizingMaskIntoConstraints:false];
     
@@ -94,14 +107,6 @@
     
     [self.scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[kerryPark]|" options:0 metrics:nil views:views]];
     [self.scrollView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-40-[kerryPark]|" options:0 metrics:nil views:views]];
-    
-    [self.scrollView addSubview:self.twoUnionSquare];
-    [self.scrollView addSubview:self.spaceNeedle];
-    [self.scrollView addSubview:self.columbiaTower];
-    [self.scrollView addSubview:self.mtRainier];
-    [self.scrollView addSubview:self.waMutualBuilding];
-    [self.scrollView addSubview:self.portOfSeattle];
-    [self.scrollView addSubview:self.keyArena];
     
     self.view = rootView;
 }
@@ -117,10 +122,13 @@
     [super viewDidAppear:animated];
 
     if (self.firstScroll == false) {
-        [self.scrollView setContentOffset:CGPointMake(250, 0) animated:true];
+        [self.scrollView setContentOffset:CGPointMake(250, 50) animated:true];
         self.firstScroll = true;
     }
-    
+}
+
+-(UIView *)viewForZoomingInScrollView:(UIScrollView *)scrollView {
+    return self.kerryPark;
 }
 
 -(Building *)findBuilding:(NSString *)buildingName {
@@ -138,14 +146,15 @@
     self.twoUnionSquare.backgroundColor = [UIColor redColor];
     self.selectedBuilding = [self findBuilding:@"Union square"];
     self.selectedBuildingName.text = self.selectedBuilding.name;
+    self.goToSelectedBuilding.hidden = false;
 }
 
 -(void)pressedSpaceNeedle {
     [self unselectAllButtons];
-
     self.spaceNeedle.backgroundColor = [UIColor redColor];
     self.selectedBuilding = [self findBuilding:@"Space Needle"];
     self.selectedBuildingName.text = self.selectedBuilding.name;
+    self.goToSelectedBuilding.hidden = false;
 }
 
 -(void)pressedColumbiaTower {
@@ -153,6 +162,7 @@
     self.columbiaTower.backgroundColor = [UIColor blueColor];
     self.selectedBuilding = [self findBuilding:@"Seattle Municipal Tower"];
     self.selectedBuildingName.text = self.selectedBuilding.name;
+    self.goToSelectedBuilding.hidden = false;
 }
 
 -(void)pressedMtRainier {
@@ -160,6 +170,7 @@
     self.mtRainier.backgroundColor = [UIColor redColor];
     self.selectedBuilding = nil;
     self.selectedBuildingName.text = @"Mt Rainier";
+    self.goToSelectedBuilding.hidden = true;
 }
 
 -(void)pressedWaMuBuilding {
@@ -167,6 +178,7 @@
     self.waMutualBuilding.backgroundColor = [UIColor redColor];
     self.selectedBuilding = [self findBuilding:@"Seattle Washington Mutual Tower"];
     self.selectedBuildingName.text = self.selectedBuilding.name;
+    self.goToSelectedBuilding.hidden = false;
 }
 
 -(void)pressedPortOfSeattle {
@@ -174,6 +186,7 @@
     self.portOfSeattle.backgroundColor = [UIColor redColor];
     self.selectedBuilding = nil;
     self.selectedBuildingName.text = @"Port of Seattle";
+    self.goToSelectedBuilding.hidden = true;
 }
 
 -(void)pressedKeyArena {
@@ -181,6 +194,7 @@
     self.keyArena.backgroundColor = [UIColor redColor];
     self.selectedBuilding = nil;
     self.selectedBuildingName.text = @"Key Arena";
+    self.goToSelectedBuilding.hidden = true;
 }
 
 -(void)unselectAllButtons {
@@ -225,13 +239,13 @@
 
 #pragma mark - building borders
 -(void)setBuildingBorders {
-    self.twoUnionSquare = [[UIButton alloc] initWithFrame:CGRectMake(228, 200, 35, 80)];
-    self.spaceNeedle = [[UIButton alloc] initWithFrame:CGRectMake(390, 160, 40, 170)];
-    self.columbiaTower = [[UIButton alloc] initWithFrame:CGRectMake(415, 190, 20, 100)];
-    self.mtRainier = [[UIButton alloc] initWithFrame:CGRectMake(650, 220, 120, 50)];
-    self.waMutualBuilding = [[UIButton alloc] initWithFrame:CGRectMake(475, 210, 25, 90)];
-    self.portOfSeattle = [[UIButton alloc] initWithFrame:CGRectMake(1080, 290, 150, 50)];
-    self.keyArena = [[UIButton alloc] initWithFrame:CGRectMake(630, 350, 150, 50)];
+    self.twoUnionSquare = [[UIButton alloc] initWithFrame:CGRectMake(228, 160, 35, 80)];
+    self.spaceNeedle = [[UIButton alloc] initWithFrame:CGRectMake(390, 120, 40, 170)];
+    self.columbiaTower = [[UIButton alloc] initWithFrame:CGRectMake(415, 150, 20, 100)];
+    self.mtRainier = [[UIButton alloc] initWithFrame:CGRectMake(650, 180, 120, 50)];
+    self.waMutualBuilding = [[UIButton alloc] initWithFrame:CGRectMake(475, 170, 25, 90)];
+    self.portOfSeattle = [[UIButton alloc] initWithFrame:CGRectMake(1080, 250, 150, 50)];
+    self.keyArena = [[UIButton alloc] initWithFrame:CGRectMake(630, 310, 150, 50)];
     
 //    self.twoUnionSquare.backgroundColor = [UIColor redColor];
 //    self.spaceNeedle.backgroundColor = [UIColor redColor];

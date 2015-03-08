@@ -288,8 +288,8 @@
       
       [self createImagePreview:view.annotation];
 
-      Building *building = (Building *)self.buildingsOnMap[self.buildingForSearch];
-      [building.imageCollection addObject:image];
+//      Building *building = (Building *)self.buildingsOnMap[self.buildingForSearch];
+//      [building.imageCollection addObject:image];
     }];
   } else if ([view.annotation isKindOfClass:[Building class]]) {
     Building *building = (Building *)view.annotation;
