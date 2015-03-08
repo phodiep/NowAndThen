@@ -243,9 +243,7 @@
      [UIView animateWithDuration:1.0 animations:^{
        self.mapView.alpha = 1.0;
      }];
-//     [self.mapView reloadInputViews];
   }];
-//  [self.mapView reloadInputViews];
 }
 
 //         findBuildings
