@@ -58,6 +58,9 @@
 
 -(void)updateCalloutAccessoryImage:(MKAnnotationView *)annotationView;
 
+//-(void)createImagePreview:(id<MKAnnotation>)annotation;
+
+
 @end
 
 @implementation MapViewController
@@ -240,7 +243,6 @@
      [UIView animateWithDuration:1.0 animations:^{
        self.mapView.alpha = 1.0;
      }];
-     [self.mapView reloadInputViews];
   }];
 }
 
@@ -271,16 +273,10 @@
 {
   if ([view.annotation isKindOfClass:[Photos class]])
   {
-    Photos *photo = nil;
-    photo = (Photos *)view.annotation;
-    
-    [[NetworkController sharedService] fetchBuildingImage:photo.fullSizeImageURL withCompletionHandler:^(UIImage *image) {
+    [self updateCalloutAccessoryImage:view];
       
-      [self updateCalloutAccessoryImage:view];
+//  [self createImagePreview:photo];
 
-//      Building *building = (Building *)self.buildingsOnMap[self.buildingForSearch];
-//      [building.imageCollection addObject:image];
-    }];
   } else if ([view.annotation isKindOfClass:[Building class]]) {
     Building *building = (Building *)view.annotation;
     self.buildingForSearch = building.name;
@@ -305,23 +301,15 @@
       building = (Building *)annotationView.annotation;
     } else if ([annotationView.annotation isKindOfClass:[Photos class]])
     {
-      Photos *photo = nil;
-      photo = (Photos *) annotationView.annotation;
-      [[NetworkController sharedService] fetchBuildingImage:photo.fullSizeImageURL withCompletionHandler:^(UIImage *image) {
-        
-        imageView.image = image;
-        annotationView.leftCalloutAccessoryView = imageView;
-        [annotationView reloadInputViews];
-        Building *building = (Building *)self.buildingsOnMap[self.buildingForSearch];
-        [building.imageCollection addObject:imageView.image];
-      }];
+      Photos *photo = (Photos *) annotationView.annotation;
+      Building *building = (Building *)self.buildingsOnMap[self.buildingForSearch];
+      [building.imageCollection addObject:photo.thumbImage];
     }
     if (building)
     {
       [[NetworkController sharedService] fetchBuildingImage:building.oldImageURL withCompletionHandler:^(UIImage *image) {
         imageView.image = image;
         annotationView.leftCalloutAccessoryView = imageView;
-        [annotationView reloadInputViews];
       }];
     }
   }
@@ -338,6 +326,7 @@
   {
     Building *customAnnotation = (Building *)annotation;
     return customAnnotation.annotationView;
+    
   } else if ([annotation isKindOfClass:[Photos class]]) {
   
     Photos *customAnnotation = (Photos *)annotation;
@@ -409,6 +398,34 @@
 }
 
 
+//-(void)createImagePreview:(id<MKAnnotation>)annotation
+//{
+//  
+//  Photos *photo = (Photos *)annotation;
+//  
+//  CGSize mapSize = self.mapView.frame.size;
+//  UIView *view = [[UIView alloc] initWithFrame:CGRectMake(mapSize.width / 2, mapSize.height / 2, mapSize.width / 2, mapSize.height / 2)];
+//  
+//  view.backgroundColor = [UIColor greenColor];
+//  [self.mapView addSubview:view];
+//
+//
+//  CGSize imageSize = view.frame.size;
+//  UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, imageSize.width, imageSize.height)];
+//
+//  [view addSubview:imageView];
+//  
+//  if (photo.thumbImage)
+//  {
+//    NSLog(@"photo present");
+//    imageView.image = photo.thumbImage;
+//  } else {
+//    imageView.image = photo.annotationView.image;
+//  }
+//  
+//}
+
+
 #pragma mark - Lazy Loading Getters
 -(MKMapView *)mapView
 {
@@ -470,18 +487,6 @@
   return _userTrackingItem;
 }
 
-//-(UIBarButtonItem *)centerOnUser
-//{
-//  if (!_centerOnUser)
-//  {
-//    _centerOnUser = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"Compass"]
-//                                                     style:UIBarButtonItemStylePlain
-//                                                    target:self
-//                                                    action:@selector(centerOnUser:)];
-//  }
-//  return _centerOnUser;
-//}
-
 -(UIBarButtonItem *)findFlickrPhotoLocations
 {
   if (!_findFlickrPhotoLocations)
@@ -505,7 +510,7 @@
 
 -(UIAlertController *)buildingSnapShot
 {
-  if (_buildingSnapShot)
+  if (!_buildingSnapShot)
   {
     _buildingSnapShot = [[UIAlertController alloc] init];
   }

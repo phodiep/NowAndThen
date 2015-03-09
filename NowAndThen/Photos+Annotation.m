@@ -7,6 +7,7 @@
 //
 
 #import "Photos+Annotation.h"
+#import "NetworkController.h"
 
 @implementation Photos (Annotation)
 
@@ -32,12 +33,22 @@
   MKAnnotationView *view = [[MKAnnotationView alloc] initWithAnnotation:self reuseIdentifier:@"PhotoAnnotation"];
   
   UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 46, 46)];
-  view.leftCalloutAccessoryView = imageView;
+  imageView.image = self.thumbImage;
+  view.leftCalloutAccessoryView = imageView;  
+  view.image = self.thumbImage;
   view.enabled = true;
   view.rightCalloutAccessoryView = [UIButton buttonWithType:UIButtonTypeDetailDisclosure];
   view.canShowCallout = true;
-  view.image = [UIImage imageNamed:@"findFlickr"];
+  [view addSubview:imageView];
+  view.frame = CGRectMake(self.coordinate.latitude, self.coordinate.longitude, 50, 50);
+  view.layer.cornerRadius = 10.0;
+  imageView.image = self.thumbImage;
+  [[NetworkController sharedService] fetchBuildingImage:self.fullSizeImageURL withCompletionHandler:^(UIImage *image) {
+    self.thumbImage = image;
+    imageView.image = self.thumbImage;
+  }];
   return view;
 }
+
 
 @end

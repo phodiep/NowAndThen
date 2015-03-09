@@ -7,6 +7,7 @@
 //
 
 #import "NetworkController.h"
+#import "Photos+Annotation.h"
 
 
 @implementation NetworkController
@@ -131,7 +132,7 @@
       {
         case 200 ... 299:
         {
-          NSLog(@"%ld", (long)statusCode);
+         // NSLog(@"%ld", (long)statusCode);
           
           photoAlbum = [Photos buildObjectsFromData:data andTag:building];
           
@@ -143,7 +144,6 @@
               photo.longitude = coordinates[1];
             }];
           }
-          
           dispatch_async(dispatch_get_main_queue(), ^{
             if (photoAlbum)
             {
