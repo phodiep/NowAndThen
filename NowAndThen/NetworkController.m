@@ -138,7 +138,6 @@
           
           for (int i = 0; i < photoAlbum.count; i++)
           {
-            NSLog(@"photo fetched");
             Photos *photo = (Photos *)photoAlbum[i];
             [self fetchFlickrImageLocation:photo.photo_id withCompletionHandler:^(NSArray *coordinates) {
               photo.latitude = coordinates[0];
@@ -148,7 +147,6 @@
           dispatch_async(dispatch_get_main_queue(), ^{
             if (photoAlbum)
             {
-              NSLog(@"returning to main q");
               completionHandler(photoAlbum);
             } else {
               NSLog(@"photoAlbum returns: %@", photoAlbum);

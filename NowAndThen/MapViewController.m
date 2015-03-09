@@ -58,7 +58,7 @@
 
 -(void)updateCalloutAccessoryImage:(MKAnnotationView *)annotationView;
 
--(void)createImagePreview:(id<MKAnnotation>)annotation;
+//-(void)createImagePreview:(id<MKAnnotation>)annotation;
 
 
 @end
@@ -237,16 +237,7 @@
      [self.mapView removeAnnotations:self.mapView.annotations];
      for (int i = 0; i < images.count; i++)
      {
-       
        Photos *photoToAdd = (Photos *)images[i];
-       
-//       [[NetworkController sharedService] fetchBuildingImage:photoToAdd.fullSizeImageURL withCompletionHandler:^(UIImage *image) {
-//         photoToAdd.annotationView.image = image;
-//         photoToAdd.thumbImage = image;
-//         
-//       }];
-       
-       
        [self.mapView addAnnotation:photoToAdd];
      }
      [UIView animateWithDuration:1.0 animations:^{
@@ -282,25 +273,10 @@
 {
   if ([view.annotation isKindOfClass:[Photos class]])
   {
-    Photos *photo = nil;
-    photo = (Photos *)view.annotation;
-    
-    photo.annotationView.frame = CGRectMake(0, 0, 100, 100);
-    
-    NSLog(@"photo annotation selected");
-    
-    photo.annotationView.backgroundColor = [UIColor greenColor];
-    
-    [[NetworkController sharedService] fetchBuildingImage:photo.fullSizeImageURL withCompletionHandler:^(UIImage *image) {
+    [self updateCalloutAccessoryImage:view];
       
-      photo.annotationView.image = image;
-      [self updateCalloutAccessoryImage:view];
-      
-      [self createImagePreview:photo];
+//  [self createImagePreview:photo];
 
-//      Building *building = (Building *)self.buildingsOnMap[self.buildingForSearch];
-//      [building.imageCollection addObject:image];
-    }];
   } else if ([view.annotation isKindOfClass:[Building class]]) {
     Building *building = (Building *)view.annotation;
     self.buildingForSearch = building.name;
@@ -325,24 +301,15 @@
       building = (Building *)annotationView.annotation;
     } else if ([annotationView.annotation isKindOfClass:[Photos class]])
     {
-      Photos *photo = nil;
-      photo = (Photos *) annotationView.annotation;
-      [[NetworkController sharedService] fetchBuildingImage:photo.fullSizeImageURL withCompletionHandler:^(UIImage *image) {
-        
-        imageView.image = image;
-        annotationView.leftCalloutAccessoryView = imageView;
-        [annotationView reloadInputViews];
-        photo.thumbImage = image;
-        Building *building = (Building *)self.buildingsOnMap[self.buildingForSearch];
-        [building.imageCollection addObject:imageView.image];
-      }];
+      Photos *photo = (Photos *) annotationView.annotation;
+      Building *building = (Building *)self.buildingsOnMap[self.buildingForSearch];
+      [building.imageCollection addObject:photo.thumbImage];
     }
     if (building)
     {
       [[NetworkController sharedService] fetchBuildingImage:building.oldImageURL withCompletionHandler:^(UIImage *image) {
         imageView.image = image;
         annotationView.leftCalloutAccessoryView = imageView;
-        [annotationView reloadInputViews];
       }];
     }
   }
@@ -359,24 +326,10 @@
   {
     Building *customAnnotation = (Building *)annotation;
     return customAnnotation.annotationView;
+    
   } else if ([annotation isKindOfClass:[Photos class]]) {
   
     Photos *customAnnotation = (Photos *)annotation;
-    if (!customAnnotation.annotationView.image)
-    {
-     
-//      [[NetworkController sharedService] fetchBuildingImage:customAnnotation.title withCompletionHandler:^(UIImage *image) {
-//        UIImageView *imageView = [[UIImageView alloc] initWithFrame:customAnnotation.annotationView.frame];
-//        
-//        imageView.image = [UIImage imageNamed:@"smithTowerNew"];
-//        imageView.backgroundColor = [UIColor blackColor];
-//        //customAnnotation.annotationView.image = image;
-//
-//       // [customAnnotation.annotationView addSubview:imageView];
-//        customAnnotation.annotationView.backgroundColor = [UIColor grayColor];
-//        customAnnotation.annotationView.image = imageView.image;
-//      }];
-    }
     return customAnnotation.annotationView;
   }
   return nil;
@@ -445,33 +398,32 @@
 }
 
 
--(void)createImagePreview:(id<MKAnnotation>)annotation
-{
-  // get location information from annotation
-  
-  Photos *photo = (Photos *)annotation;
-  
-  CGSize mapSize = self.mapView.frame.size;
-  UIView *view = [[UIView alloc] initWithFrame:CGRectMake(mapSize.width / 2, mapSize.height / 2, mapSize.width / 2, mapSize.height / 2)];
-  
-  view.backgroundColor = [UIColor greenColor];
-  [self.mapView addSubview:view];
-
-
-  CGSize imageSize = view.frame.size;
-  UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, imageSize.width, imageSize.height)];
-
-  [view addSubview:imageView];
-  
-  if (photo.thumbImage)
-  {
-    NSLog(@"photo present");
-    imageView.image = photo.thumbImage;
-  } else {
-    imageView.image = photo.annotationView.image;
-  }
-  
-}
+//-(void)createImagePreview:(id<MKAnnotation>)annotation
+//{
+//  
+//  Photos *photo = (Photos *)annotation;
+//  
+//  CGSize mapSize = self.mapView.frame.size;
+//  UIView *view = [[UIView alloc] initWithFrame:CGRectMake(mapSize.width / 2, mapSize.height / 2, mapSize.width / 2, mapSize.height / 2)];
+//  
+//  view.backgroundColor = [UIColor greenColor];
+//  [self.mapView addSubview:view];
+//
+//
+//  CGSize imageSize = view.frame.size;
+//  UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, imageSize.width, imageSize.height)];
+//
+//  [view addSubview:imageView];
+//  
+//  if (photo.thumbImage)
+//  {
+//    NSLog(@"photo present");
+//    imageView.image = photo.thumbImage;
+//  } else {
+//    imageView.image = photo.annotationView.image;
+//  }
+//  
+//}
 
 
 #pragma mark - Lazy Loading Getters

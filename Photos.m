@@ -52,7 +52,6 @@
   return self;
 }
 
-//@synthesize thumbImage = _thumbImage;
 
 -(UIImage *)thumbImage
 {
@@ -63,13 +62,5 @@
   return _thumbImage;
 }
 
-//-(void)setThumbImage:(UIImage *)thumbImage
-//{
-//  if (!thumbImage)
-//  {
-//    thumbImage = [[UIImage alloc] init];
-//    self.thumbImage = thumbImage;
-//  }
-//}
 
 @end

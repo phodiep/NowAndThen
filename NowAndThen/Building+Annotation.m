@@ -46,19 +46,5 @@
   return view;
 }
 
-//-(MKPinAnnotationView *)buildingPin
-//{
-//  MKPinAnnotationView *buildingPin;
-////  buildingPin.pinColor = MKPinAnnotationColorPurple;
-//  buildingPin.animatesDrop = true;
-//  
-//  return buildingPin;
-//}
-//
-//-(void)setBuildingPin:(MKPinAnnotationView *)buildingPin
-//{
-//  buildingPin.pinColor = MKPinAnnotationColorPurple;
-//  buildingPin.animatesDrop = true;
-//}
 
 @end
