@@ -32,24 +32,21 @@
 {
   MKAnnotationView *view = [[MKAnnotationView alloc] initWithAnnotation:self reuseIdentifier:@"PhotoAnnotation"];
   
-  //UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 46, 46)];
+  UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 50, 50)];
   //view.leftCalloutAccessoryView = imageView;
   view.enabled = true;
   //view.rightCalloutAccessoryView = [UIButton buttonWithType:UIButtonTypeDetailDisclosure];
   view.canShowCallout = false;
-  
+  [view addSubview:imageView];
   view.frame = CGRectMake(self.coordinate.latitude, self.coordinate.longitude, 50, 50);
-  view.layer.cornerRadius = 10.0;
-  
-//  if (self.thumbImage)
-//  {
-//    view.image = self.thumbImage;
-//  } else {
-//    view.image = [UIImage imageNamed:@"smithTowerNew"];
-//  }
-  view.backgroundColor = [UIColor blueColor];
-
+ // view.layer.cornerRadius = 10.0;
+  imageView.layer.cornerRadius = 10.0;
+  [[NetworkController sharedService] fetchBuildingImage:self.fullSizeImageURL withCompletionHandler:^(UIImage *image) {
+    imageView.image = image;
+    self.thumbImage = image;
+  }];
   return view;
 }
+
 
 @end

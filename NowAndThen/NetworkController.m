@@ -7,6 +7,7 @@
 //
 
 #import "NetworkController.h"
+#import "Photos+Annotation.h"
 
 
 @implementation NetworkController
@@ -131,28 +132,23 @@
       {
         case 200 ... 299:
         {
-          NSLog(@"%ld", (long)statusCode);
+         // NSLog(@"%ld", (long)statusCode);
           
           photoAlbum = [Photos buildObjectsFromData:data andTag:building];
           
           for (int i = 0; i < photoAlbum.count; i++)
           {
+            NSLog(@"photo fetched");
             Photos *photo = (Photos *)photoAlbum[i];
             [self fetchFlickrImageLocation:photo.photo_id withCompletionHandler:^(NSArray *coordinates) {
               photo.latitude = coordinates[0];
               photo.longitude = coordinates[1];
             }];
-            [self fetchBuildingImage:photo.tag withCompletionHandler:^(UIImage *image) {
-              [photo setThumbImage:image];
-              if (photo.thumbImage) {
-                  NSLog(@"photo present");
-              }
-            }];
           }
-          
           dispatch_async(dispatch_get_main_queue(), ^{
             if (photoAlbum)
             {
+              NSLog(@"returning to main q");
               completionHandler(photoAlbum);
             } else {
               NSLog(@"photoAlbum returns: %@", photoAlbum);

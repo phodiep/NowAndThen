@@ -237,7 +237,16 @@
      [self.mapView removeAnnotations:self.mapView.annotations];
      for (int i = 0; i < images.count; i++)
      {
+       
        Photos *photoToAdd = (Photos *)images[i];
+       
+//       [[NetworkController sharedService] fetchBuildingImage:photoToAdd.fullSizeImageURL withCompletionHandler:^(UIImage *image) {
+//         photoToAdd.annotationView.image = image;
+//         photoToAdd.thumbImage = image;
+//         
+//       }];
+       
+       
        [self.mapView addAnnotation:photoToAdd];
      }
      [UIView animateWithDuration:1.0 animations:^{
@@ -284,9 +293,10 @@
     
     [[NetworkController sharedService] fetchBuildingImage:photo.fullSizeImageURL withCompletionHandler:^(UIImage *image) {
       
+      photo.annotationView.image = image;
       [self updateCalloutAccessoryImage:view];
       
-      [self createImagePreview:view.annotation];
+      [self createImagePreview:photo];
 
 //      Building *building = (Building *)self.buildingsOnMap[self.buildingForSearch];
 //      [building.imageCollection addObject:image];
@@ -354,7 +364,7 @@
     Photos *customAnnotation = (Photos *)annotation;
     if (!customAnnotation.annotationView.image)
     {
-      NSLog(@"getting phot0");
+     
 //      [[NetworkController sharedService] fetchBuildingImage:customAnnotation.title withCompletionHandler:^(UIImage *image) {
 //        UIImageView *imageView = [[UIImageView alloc] initWithFrame:customAnnotation.annotationView.frame];
 //        
@@ -449,33 +459,18 @@
 
 
   CGSize imageSize = view.frame.size;
-  UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, imageSize.width * 0.05, imageSize.height * 0.05)];
-//  //imageView.image = photo.thumbImage;
-  [[NetworkController sharedService] fetchBuildingImage:photo.title withCompletionHandler:^(UIImage *image) {
-    imageView.backgroundColor = [UIColor blackColor];
-    //imageView.image = [UIImage imageNamed:@"smithTowerNew"];
+  UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, imageSize.width, imageSize.height)];
 
-    if (photo.thumbImage) {
-        NSLog(@"2");
-      imageView.image = photo.thumbImage;
-    } else {
-          NSLog(@" 3");
-      imageView.image = [UIImage imageNamed:@"smithTowerOld"];
-    }
-    
-    [view addSubview:imageView];
-    [self.mapView addSubview:view];
-
-  }];
+  [view addSubview:imageView];
   
-
+  if (photo.thumbImage)
+  {
+    NSLog(@"photo present");
+    imageView.image = photo.thumbImage;
+  } else {
+    imageView.image = photo.annotationView.image;
+  }
   
-  
-  //create UIview - add imageView to view
-  
-  //add image
-  
-  //consider cleanup - how to remove the view - should I have a weak ref to annotaiton?
 }
 
 

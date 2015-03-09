@@ -54,15 +54,15 @@
 
 //@synthesize thumbImage = _thumbImage;
 
-//-(UIImage *)thumbImage
-//{
-//  if (!_thumbImage)
-//  {
-//    _thumbImage = [[UIImage alloc] init];
-//  }
-//  return _thumbImage;
-//}
-//
+-(UIImage *)thumbImage
+{
+  if (!_thumbImage)
+  {
+    _thumbImage = [[UIImage alloc] init];
+  }
+  return _thumbImage;
+}
+
 //-(void)setThumbImage:(UIImage *)thumbImage
 //{
 //  if (!thumbImage)
