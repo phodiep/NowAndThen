@@ -38,6 +38,8 @@
 
 @property (nonatomic) bool didLoadUserLocation;
 
+@property (strong, nonatomic) NSMutableArray *pendinvViewsForAnimation;
+
 //methods for setting up views
 -(void)createViews;
 -(void)createConstraints;
@@ -54,12 +56,13 @@
 -(NSArray *)getBoundingBox:(MKMapRect)mapRect;
 -(NSArray *)getBoundingBoxForImages:(MKMapRect)mapRect;
 
-//-(NSArray *)getCenterOfScreen:(MKMapRect)mapRect;
-
 -(void)updateCalloutAccessoryImage:(MKAnnotationView *)annotationView;
 
+//custom annotation callout
 //-(void)createImagePreview:(id<MKAnnotation>)annotation;
 
+
+-(void)processPendingViewsForAnimation;
 
 @end
 
@@ -212,7 +215,8 @@
 }
 
 #pragma mark - centerOnBuilding
--(void)centerOnBuilding:(Building*)building {
+-(void)centerOnBuilding:(Building*)building
+{
     NSLog(@"long: %@ ... lat: %@", building.longitude, building.latitude);
     CLLocationCoordinate2D buildingLocation;
     buildingLocation.latitude = [building.latitude doubleValue];
@@ -230,6 +234,7 @@
   MKMapRect mapRect = self.mapView.visibleMapRect;
  
   self.mapView.alpha = 0.4;
+  NSMutableArray *photos = [[NSMutableArray alloc] init];
   [[NetworkController sharedService] fetchFlickrImagesForBuilding:self.buildingForSearch
                                                   withBoundingBox:[self getBoundingBoxForImages:mapRect]
                                              andCompletionHandler:^(NSArray *images)
@@ -238,12 +243,21 @@
      for (int i = 0; i < images.count; i++)
      {
        Photos *photoToAdd = (Photos *)images[i];
+       [photos addObject:photoToAdd];
        [self.mapView addAnnotation:photoToAdd];
      }
+     
      [UIView animateWithDuration:1.0 animations:^{
+       self.mapView.alpha = 0.6;
+     } completion:^(BOOL finished) {
+       //moves the map slightly, allowing annotations to refresh.
+       MKCoordinateRegion mapShiftRegion = MKCoordinateRegionForMapRect(self.mapView.visibleMapRect);
+       mapShiftRegion.center.latitude += 0.000001;
+       [self.mapView setRegion:mapShiftRegion
+                      animated:true];
        self.mapView.alpha = 1.0;
      }];
-  }];
+   }];
 }
 
 //         findBuildings
@@ -273,10 +287,18 @@
 {
   if ([view.annotation isKindOfClass:[Photos class]])
   {
-    [self updateCalloutAccessoryImage:view];
-      
-//  [self createImagePreview:photo];
-
+    Photos *photo = (Photos *)view.annotation;
+    Building *building = (Building *)self.buildingsOnMap[self.buildingForSearch];
+    [building.imageCollection addObject:photo.thumbImageView.image];
+    
+    UIView *customView = [[UIView alloc] initWithFrame:CGRectMake((view.bounds.size.width * 0.5f) - 100, view.bounds.origin.y, 200, 200)];
+    [view addSubview:customView];
+    UIImageView *popUpImage = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 200, 200)];
+    popUpImage.clipsToBounds = true;
+    popUpImage.layer.cornerRadius = 10.0;
+    popUpImage.image = photo.thumbImageView.image;
+    [customView addSubview:popUpImage];
+    
   } else if ([view.annotation isKindOfClass:[Building class]]) {
     Building *building = (Building *)view.annotation;
     self.buildingForSearch = building.name;
@@ -284,7 +306,31 @@
   }
 }
 
+// didAddAnnotationViews
+-(void)mapView:(MKMapView *)mapView didAddAnnotationViews:(NSArray *)views
+{
+  for (MKAnnotationView *view in views)
+  {
+    view.alpha = 0;
+    
+    [self.pendinvViewsForAnimation addObject:view];
+  }
+  [self processPendingViewsForAnimation];
+}
 
+-(void)mapView:(MKMapView *)mapView didDeselectAnnotationView:(MKAnnotationView *)view
+{
+  if ([view.annotation isKindOfClass:[Photos class]])
+  {
+    Photos *photo = (Photos *)view.annotation;
+    
+    [self.mapView removeAnnotation:view.annotation];
+    view.annotation = nil;
+    [self.mapView addAnnotation:photo];
+  }
+}
+
+//custom method for updating Annotation Callouts
 -(void)updateCalloutAccessoryImage:(MKAnnotationView *)annotationView
 {
   UIImageView *imageView = nil;
@@ -299,11 +345,6 @@
     if ([annotationView.annotation isKindOfClass:[Building class]])
     {
       building = (Building *)annotationView.annotation;
-    } else if ([annotationView.annotation isKindOfClass:[Photos class]])
-    {
-      Photos *photo = (Photos *) annotationView.annotation;
-      Building *building = (Building *)self.buildingsOnMap[self.buildingForSearch];
-      [building.imageCollection addObject:photo.thumbImage];
     }
     if (building)
     {
@@ -397,33 +438,28 @@
   }];
 }
 
-
-//-(void)createImagePreview:(id<MKAnnotation>)annotation
-//{
-//  
-//  Photos *photo = (Photos *)annotation;
-//  
-//  CGSize mapSize = self.mapView.frame.size;
-//  UIView *view = [[UIView alloc] initWithFrame:CGRectMake(mapSize.width / 2, mapSize.height / 2, mapSize.width / 2, mapSize.height / 2)];
-//  
-//  view.backgroundColor = [UIColor greenColor];
-//  [self.mapView addSubview:view];
-//
-//
-//  CGSize imageSize = view.frame.size;
-//  UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, imageSize.width, imageSize.height)];
-//
-//  [view addSubview:imageView];
-//  
-//  if (photo.thumbImage)
-//  {
-//    NSLog(@"photo present");
-//    imageView.image = photo.thumbImage;
-//  } else {
-//    imageView.image = photo.annotationView.image;
-//  }
-//  
-//}
+//method for animating annotations
+-(void)processPendingViewsForAnimation
+{
+  static BOOL runningAnimations = false;
+  
+  if ([self.pendinvViewsForAnimation count] == 0) {return;}
+  if (runningAnimations) {return;}
+  
+  runningAnimations = true;
+  
+  MKAnnotationView *view = [self.pendinvViewsForAnimation lastObject];
+  
+  [UIView animateWithDuration:0.05 animations:^{
+    view.alpha = 1;
+    
+    
+  } completion:^(BOOL finished) {
+    [self.pendinvViewsForAnimation removeObject:view];
+    runningAnimations = false;
+    [self processPendingViewsForAnimation];
+  }];
+}
 
 
 #pragma mark - Lazy Loading Getters
@@ -524,6 +560,15 @@
     _buildingsOnMap = [[NSMutableDictionary alloc] init];
   }
   return _buildingsOnMap;
+}
+
+-(NSMutableArray *)pendinvViewsForAnimation
+{
+  if (_pendinvViewsForAnimation == nil)
+  {
+    _pendinvViewsForAnimation = [[NSMutableArray alloc] init];
+  }
+  return _pendinvViewsForAnimation;
 }
 
 @end

@@ -23,7 +23,7 @@
 @property (strong, nonatomic) NSString *tag;
 
 @property (strong, nonatomic) NSString *thumbImageURL;
-@property (strong, nonatomic) UIImage *thumbImage;
+@property (strong, nonatomic) UIImageView *thumbImageView;
 
 @property (strong, nonatomic) NSString *fullSizeImageURL;
 
