@@ -53,13 +53,15 @@
 }
 
 
--(UIImage *)thumbImage
+-(UIImageView *)thumbImageView
 {
-  if (!_thumbImage)
+  if (!_thumbImageView)
   {
-    _thumbImage = [[UIImage alloc] init];
+    _thumbImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 50.0, 50.0)];
+    _thumbImageView.layer.cornerRadius = 10.0;
+    _thumbImageView.clipsToBounds = true;
   }
-  return _thumbImage;
+  return _thumbImageView;
 }
 
 

@@ -62,9 +62,6 @@
 
 //-(void)createImagePreview:(id<MKAnnotation>)annotation;
 
-//TODO: maybe delete this
--(void)reloadMapView;
-
 -(void)processPendingViewsForAnimation;
 
 @end
@@ -330,7 +327,7 @@
     {
       Photos *photo = (Photos *) annotationView.annotation;
       Building *building = (Building *)self.buildingsOnMap[self.buildingForSearch];
-      [building.imageCollection addObject:photo.thumbImage];
+      [building.imageCollection addObject:photo.thumbImageView.image];
     }
     if (building)
     {

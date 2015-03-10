@@ -101,14 +101,14 @@
 {
   NSString *key = @"df08b7ebda37296e4e09406516dedec3";
  // NSString *clientSecret = @"c5e6171a087297c2";
-  
+  NSString *numberOfPhotosFetched = @"15";
   
   NSString *compressedBuildingString = [building stringByReplacingOccurrencesOfString:@" "
                                                                            withString:@""];
   
   NSLog(@"%@",compressedBuildingString);
   
-  NSString *fetchURL = [NSString stringWithFormat:@"https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=%@&text=%@&bbox=%@,%@,%@,%@,&content_type=1&per_page=10&format=json&nojsoncallback=1",key, compressedBuildingString, box[0], box[1], box[2], box[3]];
+  NSString *fetchURL = [NSString stringWithFormat:@"https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=%@&text=%@&bbox=%@,%@,%@,%@,&content_type=1&per_page=%@&format=json&nojsoncallback=1",key, compressedBuildingString, box[0], box[1], box[2], box[3], numberOfPhotosFetched];
   
   NSURL *url = [NSURL URLWithString:fetchURL];
   
