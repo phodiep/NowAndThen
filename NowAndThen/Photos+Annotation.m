@@ -42,6 +42,7 @@
   [view addSubview:imageView];
   view.frame = CGRectMake(self.coordinate.latitude, self.coordinate.longitude, 50, 50);
   view.layer.cornerRadius = 10.0;
+  imageView.layer.masksToBounds = true;
   imageView.image = self.thumbImage;
   [[NetworkController sharedService] fetchBuildingImage:self.fullSizeImageURL withCompletionHandler:^(UIImage *image) {
     self.thumbImage = image;

@@ -38,6 +38,8 @@
 
 @property (nonatomic) bool didLoadUserLocation;
 
+@property (strong, nonatomic) NSMutableArray *pendinvViewsForAnimation;
+
 //methods for setting up views
 -(void)createViews;
 -(void)createConstraints;
@@ -60,6 +62,10 @@
 
 //-(void)createImagePreview:(id<MKAnnotation>)annotation;
 
+//TODO: maybe delete this
+-(void)reloadMapView;
+
+-(void)processPendingViewsForAnimation;
 
 @end
 
@@ -230,6 +236,7 @@
   MKMapRect mapRect = self.mapView.visibleMapRect;
  
   self.mapView.alpha = 0.4;
+  NSMutableArray *photos = [[NSMutableArray alloc] init];
   [[NetworkController sharedService] fetchFlickrImagesForBuilding:self.buildingForSearch
                                                   withBoundingBox:[self getBoundingBoxForImages:mapRect]
                                              andCompletionHandler:^(NSArray *images)
@@ -238,12 +245,21 @@
      for (int i = 0; i < images.count; i++)
      {
        Photos *photoToAdd = (Photos *)images[i];
+       [photos addObject:photoToAdd];
        [self.mapView addAnnotation:photoToAdd];
      }
+     
      [UIView animateWithDuration:1.0 animations:^{
+       self.mapView.alpha = 0.6;
+     } completion:^(BOOL finished) {
+       //moves the map slightly, allowing annotations to refresh.
+       MKCoordinateRegion mapShiftRegion = MKCoordinateRegionForMapRect(self.mapView.visibleMapRect);
+       mapShiftRegion.center.latitude += 0.000001;
+       [self.mapView setRegion:mapShiftRegion
+                      animated:true];
        self.mapView.alpha = 1.0;
      }];
-  }];
+   }];
 }
 
 //         findBuildings
@@ -283,8 +299,19 @@
     [self updateCalloutAccessoryImage:view];
   }
 }
+// didAddAnnotationViews
+-(void)mapView:(MKMapView *)mapView didAddAnnotationViews:(NSArray *)views
+{
+  for (MKAnnotationView *view in views)
+  {
+    view.alpha = 0;
+    
+    [self.pendinvViewsForAnimation addObject:view];
+  }
+  [self processPendingViewsForAnimation];
+}
 
-
+//custom method for updating Annotation Callouts
 -(void)updateCalloutAccessoryImage:(MKAnnotationView *)annotationView
 {
   UIImageView *imageView = nil;
@@ -397,6 +424,28 @@
   }];
 }
 
+//method for animating annotations
+-(void)processPendingViewsForAnimation
+{
+  static BOOL runningAnimations = false;
+  
+  if ([self.pendinvViewsForAnimation count] == 0) {return;}
+  if (runningAnimations) {return;}
+  
+  runningAnimations = true;
+  
+  MKAnnotationView *view = [self.pendinvViewsForAnimation lastObject];
+  
+  [UIView animateWithDuration:0.05 animations:^{
+    view.alpha = 1;
+    
+    
+  } completion:^(BOOL finished) {
+    [self.pendinvViewsForAnimation removeObject:view];
+    runningAnimations = false;
+    [self processPendingViewsForAnimation];
+  }];
+}
 
 //-(void)createImagePreview:(id<MKAnnotation>)annotation
 //{
@@ -424,6 +473,8 @@
 //  }
 //  
 //}
+
+/***     above are temp things    maybe **/
 
 
 #pragma mark - Lazy Loading Getters
@@ -524,6 +575,15 @@
     _buildingsOnMap = [[NSMutableDictionary alloc] init];
   }
   return _buildingsOnMap;
+}
+
+-(NSMutableArray *)pendinvViewsForAnimation
+{
+  if (_pendinvViewsForAnimation == nil)
+  {
+    _pendinvViewsForAnimation = [[NSMutableArray alloc] init];
+  }
+  return _pendinvViewsForAnimation;
 }
 
 @end
