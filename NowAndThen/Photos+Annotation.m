@@ -32,9 +32,9 @@
 {
   MKAnnotationView *view = [[MKAnnotationView alloc] initWithAnnotation:self reuseIdentifier:@"PhotoAnnotation"];
   
-  UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 46, 46)];
+  //UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 46, 46)];
   
-  view.leftCalloutAccessoryView = imageView;
+  //view.leftCalloutAccessoryView = imageView;
   view.rightCalloutAccessoryView = [UIButton buttonWithType:UIButtonTypeDetailDisclosure];
   view.enabled = true;
   view.canShowCallout = true;
@@ -43,7 +43,7 @@
   [[NetworkController sharedService] fetchBuildingImage:self.fullSizeImageURL withCompletionHandler:^(UIImage *image) {
     self.thumbImageView.image = image;
     [view addSubview:self.thumbImageView];
-    imageView.image = image;
+    //imageView.image = image;
   }];
   return view;
 }

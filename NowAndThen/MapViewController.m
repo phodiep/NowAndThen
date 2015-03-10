@@ -56,11 +56,11 @@
 -(NSArray *)getBoundingBox:(MKMapRect)mapRect;
 -(NSArray *)getBoundingBoxForImages:(MKMapRect)mapRect;
 
-//-(NSArray *)getCenterOfScreen:(MKMapRect)mapRect;
-
 -(void)updateCalloutAccessoryImage:(MKAnnotationView *)annotationView;
 
+//custom annotation callout
 //-(void)createImagePreview:(id<MKAnnotation>)annotation;
+
 
 -(void)processPendingViewsForAnimation;
 
@@ -215,7 +215,8 @@
 }
 
 #pragma mark - centerOnBuilding
--(void)centerOnBuilding:(Building*)building {
+-(void)centerOnBuilding:(Building*)building
+{
     NSLog(@"long: %@ ... lat: %@", building.longitude, building.latitude);
     CLLocationCoordinate2D buildingLocation;
     buildingLocation.latitude = [building.latitude doubleValue];
@@ -286,16 +287,25 @@
 {
   if ([view.annotation isKindOfClass:[Photos class]])
   {
-    [self updateCalloutAccessoryImage:view];
-      
-//  [self createImagePreview:photo];
-
+    Photos *photo = (Photos *)view.annotation;
+    Building *building = (Building *)self.buildingsOnMap[self.buildingForSearch];
+    [building.imageCollection addObject:photo.thumbImageView.image];
+    
+    UIView *customView = [[UIView alloc] initWithFrame:CGRectMake((view.bounds.size.width * 0.5f) - 100, view.bounds.origin.y, 200, 200)];
+    [view addSubview:customView];
+    UIImageView *popUpImage = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 200, 200)];
+    popUpImage.clipsToBounds = true;
+    popUpImage.layer.cornerRadius = 10.0;
+    popUpImage.image = photo.thumbImageView.image;
+    [customView addSubview:popUpImage];
+    
   } else if ([view.annotation isKindOfClass:[Building class]]) {
     Building *building = (Building *)view.annotation;
     self.buildingForSearch = building.name;
     [self updateCalloutAccessoryImage:view];
   }
 }
+
 // didAddAnnotationViews
 -(void)mapView:(MKMapView *)mapView didAddAnnotationViews:(NSArray *)views
 {
@@ -306,6 +316,18 @@
     [self.pendinvViewsForAnimation addObject:view];
   }
   [self processPendingViewsForAnimation];
+}
+
+-(void)mapView:(MKMapView *)mapView didDeselectAnnotationView:(MKAnnotationView *)view
+{
+  if ([view.annotation isKindOfClass:[Photos class]])
+  {
+    Photos *photo = (Photos *)view.annotation;
+    
+    [self.mapView removeAnnotation:view.annotation];
+    view.annotation = nil;
+    [self.mapView addAnnotation:photo];
+  }
 }
 
 //custom method for updating Annotation Callouts
@@ -323,11 +345,6 @@
     if ([annotationView.annotation isKindOfClass:[Building class]])
     {
       building = (Building *)annotationView.annotation;
-    } else if ([annotationView.annotation isKindOfClass:[Photos class]])
-    {
-      Photos *photo = (Photos *) annotationView.annotation;
-      Building *building = (Building *)self.buildingsOnMap[self.buildingForSearch];
-      [building.imageCollection addObject:photo.thumbImageView.image];
     }
     if (building)
     {
@@ -443,35 +460,6 @@
     [self processPendingViewsForAnimation];
   }];
 }
-
-//-(void)createImagePreview:(id<MKAnnotation>)annotation
-//{
-//  
-//  Photos *photo = (Photos *)annotation;
-//  
-//  CGSize mapSize = self.mapView.frame.size;
-//  UIView *view = [[UIView alloc] initWithFrame:CGRectMake(mapSize.width / 2, mapSize.height / 2, mapSize.width / 2, mapSize.height / 2)];
-//  
-//  view.backgroundColor = [UIColor greenColor];
-//  [self.mapView addSubview:view];
-//
-//
-//  CGSize imageSize = view.frame.size;
-//  UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, imageSize.width, imageSize.height)];
-//
-//  [view addSubview:imageView];
-//  
-//  if (photo.thumbImage)
-//  {
-//    NSLog(@"photo present");
-//    imageView.image = photo.thumbImage;
-//  } else {
-//    imageView.image = photo.annotationView.image;
-//  }
-//  
-//}
-
-/***     above are temp things    maybe **/
 
 
 #pragma mark - Lazy Loading Getters
